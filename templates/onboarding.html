@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block title %}Bienvenido - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 d-flex align-items-center">
+    <div class="row w-100">
+        <div class="col-12 col-lg-6 offset-lg-3 text-center">
+            <!-- Logo and Brand -->
+            <div class="mb-5">
+                <div class="mb-4">
+                    <i class="bi bi-heart-fill text-primary" style="font-size: 5rem;"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-primary mb-3">RecuerdaMe</h1>
+                <p class="lead text-muted">
+                    Acompañamiento digital para personas con Alzheimer y sus familias
+                </p>
+            </div>
+            
+            <!-- Onboarding Slides -->
+            <div id="onboardingCarousel" class="carousel slide mb-5" data-bs-ride="carousel" data-bs-interval="false">
+                <div class="carousel-inner">
+                    <!-- Slide 1 -->
+                    <div class="carousel-item active">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-5">
+                                <i class="bi bi-geo-alt-fill text-primary mb-4" style="font-size: 4rem;"></i>
+                                <h3 class="h4 mb-3">Ubicación Segura</h3>
+                                <p class="text-muted mb-0">
+                                    Mantén a tu ser querido seguro con alertas de ubicación y geovallas personalizables. 
+                                    Comparte la ubicación solo cuando sea necesario.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 2 -->
+                    <div class="carousel-item">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-5">
+                                <i class="bi bi-people-fill text-success mb-4" style="font-size: 4rem;"></i>
+                                <h3 class="h4 mb-3">Galería de Recuerdos</h3>
+                                <p class="text-muted mb-0">
+                                    Crea una galería personalizada con fotos y notas de personas importantes. 
+                                    Ayuda a mantener conexiones familiares y emocionales.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 3 -->
+                    <div class="carousel-item">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-5">
+                                <i class="bi bi-alarm-fill text-warning mb-4" style="font-size: 4rem;"></i>
+                                <h3 class="h4 mb-3">Recordatorios Inteligentes</h3>
+                                <p class="text-muted mb-0">
+                                    Programa recordatorios para medicación, citas médicas y actividades diarias. 
+                                    Notificaciones suaves y oportunas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="0" 
+                            class="active bg-primary" aria-current="true"></button>
+                    <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="1" 
+                            class="bg-primary"></button>
+                    <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="2" 
+                            class="bg-primary"></button>
+                </div>
+            </div>
+            
+            <!-- Navigation Controls -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <button class="btn btn-outline-secondary btn-lg" id="prevSlide">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Anterior
+                </button>
+                
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary fs-6 px-3 py-2" id="slideCounter">1 de 3</span>
+                </div>
+                
+                <button class="btn btn-primary btn-lg" id="nextSlide">
+                    <span id="nextText">Siguiente</span>
+                    <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center" id="actionButtons" style="display: none !important;">
+                <a href="{{ url_for('family_create') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Crear Nueva Familia
+                </a>
+                <a href="{{ url_for('family_join') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Unirse con Código
+                </a>
+            </div>
+            
+            <!-- Features -->
+            <div class="row g-4 mt-5" id="features" style="display: none !important;">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="bi bi-shield-check text-success mb-3" style="font-size: 2.5rem;"></i>
+                        <h5>Privacidad Total</h5>
+                        <p class="text-muted small">
+                            Tus datos están seguros. Solo la familia autorizada tiene acceso.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="bi bi-phone text-primary mb-3" style="font-size: 2.5rem;"></i>
+                        <h5>Fácil de Usar</h5>
+                        <p class="text-muted small">
+                            Diseñado especialmente para personas mayores. Botones grandes y navegación simple.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="bi bi-heart text-danger mb-3" style="font-size: 2.5rem;"></i>
+                        <h5>Con Amor</h5>
+                        <p class="text-muted small">
+                            Creado por familias que entienden los desafíos del Alzheimer.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="mt-5 pt-4 border-top">
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    RecuerdaMe es una aplicación web progresiva (PWA) que puedes instalar en tu dispositivo.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('info_alzheimer') }}" class="text-decoration-none small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Información sobre Alzheimer
+                    </a>
+                    <span class="text-muted">•</span>
+                    <a href="#" class="text-decoration-none small">
+                        <i class="bi bi-shield-check me-1"></i>
+                        Privacidad
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Install PWA Modal -->
+<div class="modal fade" id="installModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 text-center">
+                <div class="w-100">
+                    <i class="bi bi-download text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h4 class="modal-title">Instalar RecuerdaMe</h4>
+                </div>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-3">
+                    Para una mejor experiencia, puedes instalar RecuerdaMe en tu dispositivo.
+                </p>
+                <p class="small text-muted">
+                    Funcionará como una aplicación nativa, con acceso rápido desde tu pantalla de inicio.
+                </p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Ahora no
+                </button>
+                <button type="button" class="btn btn-primary" id="installBtn">
+                    <i class="bi bi-download me-2"></i>
+                    Instalar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = new bootstrap.Carousel(document.getElementById('onboardingCarousel'));
+    const prevBtn = document.getElementById('prevSlide');
+    const nextBtn = document.getElementById('nextSlide');
+    const nextText = document.getElementById('nextText');
+    const slideCounter = document.getElementById('slideCounter');
+    const actionButtons = document.getElementById('actionButtons');
+    const features = document.getElementById('features');
+    
+    let currentSlide = 0;
+    const totalSlides = 3;
+    
+    // Update UI based on current slide
+    function updateUI() {
+        slideCounter.textContent = `${currentSlide + 1} de ${totalSlides}`;
+        
+        // Update button states
+        prevBtn.disabled = currentSlide === 0;
+        
+        if (currentSlide === totalSlides - 1) {
+            nextText.textContent = 'Comenzar';
+            nextBtn.classList.remove('btn-primary');
+            nextBtn.classList.add('btn-success');
+        } else {
+            nextText.textContent = 'Siguiente';
+            nextBtn.classList.remove('btn-success');
+            nextBtn.classList.add('btn-primary');
+        }
+    }
+    
+    // Navigation event listeners
+    prevBtn.addEventListener('click', function() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            carousel.prev();
+            updateUI();
+        }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            carousel.next();
+            updateUI();
+        } else {
+            // Last slide - show action buttons
+            showActionButtons();
+        }
+    });
+    
+    // Show action buttons and features
+    function showActionButtons() {
+        document.querySelector('.carousel').style.display = 'none';
+        document.querySelector('.d-flex.justify-content-between').style.display = 'none';
+        actionButtons.style.display = 'block !important';
+        actionButtons.classList.remove('d-none');
+        features.style.display = 'block !important';
+        features.classList.remove('d-none');
+        
+        // Animate in
+        setTimeout(() => {
+            actionButtons.classList.add('animate__animated', 'animate__fadeInUp');
+            features.classList.add('animate__animated', 'animate__fadeInUp');
+        }, 100);
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' && currentSlide > 0) {
+            prevBtn.click();
+        } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+            nextBtn.click();
+        }
+    });
+    
+    // Initialize UI
+    updateUI();
+    
+    // PWA Install functionality
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        
+        // Show install modal after onboarding
+        setTimeout(() => {
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                const installModal = new bootstrap.Modal(document.getElementById('installModal'));
+                installModal.show();
+            }
+        }, 5000);
+    });
+    
+    document.getElementById('installBtn').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            // Clear the saved prompt since it can't be used again
+            deferredPrompt = null;
+        }
+        
+        // Close modal
+        bootstrap.Modal.getInstance(document.getElementById('installModal')).hide();
+        
+        showToast('RecuerdaMe se está instalando...', 'success');
+    });
+    
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('RecuerdaMe ya está instalado como PWA');
+    }
+    
+    // Show welcome message
+    setTimeout(() => {
+        showToast('¡Bienvenido a RecuerdaMe! Desliza para conocer las funcionalidades.', 'info');
+    }, 1000);
+});
+</script>
+
+<style>
+/* Custom carousel styling */
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 8px;
+}
+
+.carousel-inner {
+    border-radius: 1rem;
+}
+
+/* Hover effects */
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Feature cards animation */
+.col-md-4:hover {
+    transform: translateY(-5px);
+    transition: transform 0.2s ease;
+}
+
+/* Brand styling */
+.display-4 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .carousel {
+        transition: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background-color: var(--bs-dark);
+        border-color: var(--bs-gray-700);
+    }
+}
+</style>
+{% endblock %}

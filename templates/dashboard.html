@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Mapa - RecuerdaMe{% endblock %}
+
+{% block main_class %}position-relative p-0{% endblock %}
+
+{% block content %}
+<!-- Map Container -->
+<div class="position-relative" style="height: calc(100vh - 64px);">
+    <!-- Google Maps -->
+    <div id="map" class="w-100 h-100"></div>
+    
+    <!-- Map Controls Overlay -->
+    <div class="position-absolute top-0 end-0 p-3 d-flex flex-column gap-2" style="z-index: 1000;">
+        <button class="btn btn-primary btn-lg shadow" id="btnRefresh" 
+                title="Actualizar ubicación" aria-label="Actualizar ubicación">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Refrescar
+        </button>
+        
+        <button class="btn btn-outline-secondary shadow" id="btnToggleRadius" 
+                title="Mostrar/ocultar radio seguro" aria-label="Mostrar/ocultar radio seguro">
+            <i class="bi bi-shield-check me-2"></i>
+            Radio Seguro
+        </button>
+        
+        <button class="btn btn-outline-secondary shadow" id="btnFollow" 
+                title="Seguir en tiempo real" aria-label="Seguir en tiempo real">
+            <i class="bi bi-crosshair me-2"></i>
+            <span class="follow-text">Seguir</span>
+        </button>
+    </div>
+    
+    <!-- Status Card (Bottom) -->
+    <div class="position-absolute bottom-0 start-0 end-0 p-3" style="z-index: 1000;">
+        <div class="card shadow-lg">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="statusBadge" class="badge text-bg-secondary" aria-live="polite">
+                            <i class="bi bi-clock me-1"></i>
+                            Cargando...
+                        </span>
+                        <small class="text-muted" id="userInfo">{{ family.userName or 'Usuario' }}</small>
+                    </div>
+                    <small class="text-muted" id="lastUpdate" aria-live="polite">
+                        Actualizado: --:--
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Spinner -->
+    <div id="mapLoading" class="position-absolute top-50 start-50 translate-middle" style="z-index: 1001;">
+        <div class="d-flex flex-column align-items-center text-primary">
+            <div class="spinner-border mb-3" role="status">
+                <span class="visually-hidden">Cargando mapa...</span>
+            </div>
+            <p class="text-center fw-medium">Cargando mapa...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Data for JavaScript -->
+<script type="application/json" id="familyData">
+{
+    "familyId": "{{ family.familyId }}",
+    "familyName": "{{ family.familyName }}",
+    "homeLat": {{ family.homeLat }},
+    "homeLng": {{ family.homeLng }},
+    "safeRadius": {{ family.safeRadius }},
+    "userName": "{{ family.userName }}"
+}
+</script>
+{% endblock %}
+
+{% block scripts %}
+<!-- Google Maps JavaScript API -->
+        <!-- Google Maps -->
+        <script async defer 
+                src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMapApp&loading=async">
+        </script>
+
+<!-- Maps and Location Scripts -->
+<script src="{{ url_for('static', filename='js/location.js') }}"></script>
+<script src="{{ url_for('static', filename='js/maps.js') }}"></script>
+
+<script>
+// Datos familiares globales
+window.familyData = {
+    familyId: '{{ family.familyId }}',
+    familyName: '{{ family.familyName }}',
+    homeLat: {{ family.homeLat }},
+    homeLng: {{ family.homeLng }},
+    safeRadius: {{ family.safeRadius }},
+    userName: '{{ family.userName }}'
+};
+
+// Global callback for Google Maps API
+function initMapApp() {
+    try {
+        console.log('🗺️ Callback de Google Maps ejecutado');
+        
+        // Llamar a la función de inicialización real
+        if (typeof window.initializeGoogleMaps === 'function') {
+            window.initializeGoogleMaps();
+        } else {
+            console.error('❌ Función initializeGoogleMaps no encontrada en maps.js');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error inicializando mapa:', error);
+        if (typeof showToast === 'function') {
+            showToast('Error cargando el mapa', 'error');
+        }
+    }
+}
+
+// TODO: Implementar autenticación real y obtener UID del usuario
+const currentUserId = 'demo-user-123';
+</script>
+</script>
+</script>
+{% endblock %}

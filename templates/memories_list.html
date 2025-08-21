@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}Recuerdos - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="bi bi-people-fill text-primary me-2"></i>
+                        Recuerdos
+                    </h1>
+                    <p class="text-muted mb-0">Personas importantes en la vida de tu ser querido</p>
+                </div>
+                <button class="btn btn-primary btn-lg" id="btnAddPerson">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Agregar Persona
+                </button>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Buscar persona..." id="searchInput">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Persons Grid -->
+            <div class="row g-4" id="personsGrid">
+                <!-- Demo Person Cards -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 person-card" data-person-id="demo-1">
+                        <div class="card-img-top position-relative" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="position-absolute top-50 start-50 translate-middle text-white">
+                                <i class="bi bi-person-circle" style="font-size: 4rem;"></i>
+                            </div>
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-success">
+                                6 fotos
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">María José</h5>
+                            <p class="card-text text-muted">Hija mayor</p>
+                            <p class="card-text small">
+                                <i class="bi bi-calendar-heart me-1"></i>
+                                Agregada hace 3 días
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm flex-fill">
+                                    <i class="bi bi-eye me-1"></i>
+                                    Ver Fotos
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 person-card" data-person-id="demo-2">
+                        <div class="card-img-top position-relative" style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <div class="position-absolute top-50 start-50 translate-middle text-white">
+                                <i class="bi bi-person-circle" style="font-size: 4rem;"></i>
+                            </div>
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-success">
+                                4 fotos
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Carlos</h5>
+                            <p class="card-text text-muted">Hijo menor</p>
+                            <p class="card-text small">
+                                <i class="bi bi-calendar-heart me-1"></i>
+                                Agregada hace 1 semana
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm flex-fill">
+                                    <i class="bi bi-eye me-1"></i>
+                                    Ver Fotos
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 person-card" data-person-id="demo-3">
+                        <div class="card-img-top position-relative" style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <div class="position-absolute top-50 start-50 translate-middle text-white">
+                                <i class="bi bi-person-circle" style="font-size: 4rem;"></i>
+                            </div>
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-success">
+                                8 fotos
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Dr. González</h5>
+                            <p class="card-text text-muted">Médico de familia</p>
+                            <p class="card-text small">
+                                <i class="bi bi-calendar-heart me-1"></i>
+                                Agregada hace 2 semanas
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm flex-fill">
+                                    <i class="bi bi-eye me-1"></i>
+                                    Ver Fotos
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add New Person Card -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 border-dashed text-center" id="addPersonCard">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-plus-circle text-primary mb-3" style="font-size: 4rem;"></i>
+                            <h5 class="card-title text-primary">Agregar Nueva Persona</h5>
+                            <p class="card-text text-muted">
+                                Añade a alguien especial con fotos y recuerdos
+                            </p>
+                            <button class="btn btn-primary btn-lg mt-2">
+                                <i class="bi bi-plus-lg me-2"></i>
+                                Crear Recuerdo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty State (Hidden) -->
+            <div class="text-center py-5 d-none" id="emptyState">
+                <i class="bi bi-people text-muted mb-3" style="font-size: 4rem;"></i>
+                <h3 class="text-muted">No hay recuerdos aún</h3>
+                <p class="text-muted mb-4">
+                    Comienza agregando personas importantes para crear una galería de recuerdos
+                </p>
+                <button class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Agregar Primera Persona
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add/Edit Person -->
+<div class="modal fade" id="personModal" tabindex="-1" aria-labelledby="personModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="personModalLabel">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Agregar Nueva Persona
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="personForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="personName" class="form-label">Nombre completo *</label>
+                            <input type="text" class="form-control form-control-lg" id="personName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="personRelation" class="form-label">Relación *</label>
+                            <select class="form-select form-select-lg" id="personRelation" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="hijo">Hijo/a</option>
+                                <option value="nieto">Nieto/a</option>
+                                <option value="hermano">Hermano/a</option>
+                                <option value="amigo">Amigo/a</option>
+                                <option value="medico">Médico</option>
+                                <option value="cuidador">Cuidador/a</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="personNotes" class="form-label">Notas y recuerdos</label>
+                        <textarea class="form-control" id="personNotes" rows="3" 
+                                  placeholder="Escribe algo especial sobre esta persona..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="personPhotos" class="form-label">Fotos (máximo 6)</label>
+                        <input type="file" class="form-control form-control-lg" id="personPhotos" 
+                               multiple accept="image/*" max="6">
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Selecciona hasta 6 fotos claras de la persona
+                        </div>
+                    </div>
+                    
+                    <!-- Photo Preview -->
+                    <div class="row g-2" id="photoPreview"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary btn-lg" id="savePerson">
+                    <i class="bi bi-check-lg me-2"></i>
+                    Guardar Persona
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// TODO: Implementar lógica de recuerdos
+document.addEventListener('DOMContentLoaded', function() {
+    const addPersonBtns = document.querySelectorAll('#btnAddPerson, #addPersonCard button');
+    const personModal = new bootstrap.Modal(document.getElementById('personModal'));
+    const searchInput = document.getElementById('searchInput');
+    const personCards = document.querySelectorAll('.person-card');
+    
+    // Abrir modal para agregar persona
+    addPersonBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            personModal.show();
+        });
+    });
+    
+    // Búsqueda de personas
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        personCards.forEach(card => {
+            const name = card.querySelector('.card-title').textContent.toLowerCase();
+            const relation = card.querySelector('.card-text').textContent.toLowerCase();
+            const shouldShow = name.includes(searchTerm) || relation.includes(searchTerm);
+            card.style.display = shouldShow ? 'block' : 'none';
+        });
+    });
+    
+    // Preview de fotos
+    document.getElementById('personPhotos').addEventListener('change', function(e) {
+        const files = Array.from(e.target.files).slice(0, 6);
+        const previewContainer = document.getElementById('photoPreview');
+        previewContainer.innerHTML = '';
+        
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const col = document.createElement('div');
+                col.className = 'col-4 col-md-2';
+                col.innerHTML = `
+                    <div class="position-relative">
+                        <img src="${e.target.result}" class="img-fluid rounded" style="aspect-ratio: 1; object-fit: cover;">
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle" 
+                                style="width: 24px; height: 24px; margin: 4px;" onclick="this.parentElement.parentElement.remove()">
+                            <i class="bi bi-x" style="font-size: 0.75rem;"></i>
+                        </button>
+                    </div>
+                `;
+                previewContainer.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    // Ver persona
+    document.querySelectorAll('.person-card [data-person-id]').forEach(card => {
+        card.addEventListener('click', function() {
+            const personId = this.getAttribute('data-person-id');
+            window.location.href = `/memory/${personId}`;
+        });
+    });
+    
+    showToast('Vista de recuerdos cargada. Funcionalidad completa próximamente.', 'info');
+});
+</script>
+{% endblock %}

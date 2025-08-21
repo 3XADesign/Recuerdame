@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+
+{% block title %}Alertas - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                        Alertas y Notificaciones
+                    </h1>
+                    <p class="text-muted mb-0">Historial de eventos importantes</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary" id="markAllReadBtn">
+                        <i class="bi bi-check-all me-2"></i>
+                        Marcar todo como visto
+                    </button>
+                    <button class="btn btn-outline-danger" id="clearAlertsBtn">
+                        <i class="bi bi-trash me-2"></i>
+                        Limpiar alertas
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <ul class="nav nav-pills mb-4" id="alertTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="pill" 
+                            data-bs-target="#all-alerts" type="button" role="tab">
+                        Todas
+                        <span class="badge bg-secondary ms-2">8</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="geofence-tab" data-bs-toggle="pill" 
+                            data-bs-target="#geofence-alerts" type="button" role="tab">
+                        <i class="bi bi-geo-alt me-1"></i>
+                        Ubicación
+                        <span class="badge bg-warning ms-2">3</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reminder-tab" data-bs-toggle="pill" 
+                            data-bs-target="#reminder-alerts" type="button" role="tab">
+                        <i class="bi bi-alarm me-1"></i>
+                        Recordatorios
+                        <span class="badge bg-info ms-2">5</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Alerts Content -->
+            <div class="tab-content" id="alertTabsContent">
+                <!-- All Alerts -->
+                <div class="tab-pane fade show active" id="all-alerts" role="tabpanel">
+                    <div class="row g-3">
+                        <!-- Alert: Geofence -->
+                        <div class="col-12">
+                            <div class="card border-warning shadow-sm alert-item" data-type="geofence">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-shrink-0 me-3">
+                                            <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 48px; height: 48px;">
+                                                <i class="bi bi-geo-alt-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0 text-warning">Fuera del área segura</h6>
+                                                <small class="text-muted">Hace 15 min</small>
+                                            </div>
+                                            <p class="mb-2">
+                                                Carmen se encuentra fuera del radio de seguridad (650m de casa). 
+                                                Última ubicación: Calle Mayor, 45.
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-geo-alt me-1"></i>
+                                                    Ver en mapa
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success" onclick="acknowledgeAlert(this)">
+                                                    <i class="bi bi-check me-1"></i>
+                                                    Marcar como visto
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Alert: Reminder -->
+                        <div class="col-12">
+                            <div class="card border-info shadow-sm alert-item" data-type="reminder">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-shrink-0 me-3">
+                                            <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 48px; height: 48px;">
+                                                <i class="bi bi-alarm-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0 text-info">Recordatorio: Medicación</h6>
+                                                <small class="text-muted">Hace 30 min</small>
+                                            </div>
+                                            <p class="mb-2">
+                                                Es hora de tomar la medicación de la mañana (Donepezilo 10mg).
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-outline-success" onclick="acknowledgeAlert(this)">
+                                                    <i class="bi bi-check me-1"></i>
+                                                    Medicación tomada
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-warning">
+                                                    <i class="bi bi-clock me-1"></i>
+                                                    Posponer 15 min
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Alert: Acknowledged -->
+                        <div class="col-12">
+                            <div class="card shadow-sm alert-item acknowledged" data-type="geofence">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-shrink-0 me-3">
+                                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 48px; height: 48px;">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0 text-success">De vuelta en casa</h6>
+                                                <small class="text-muted">Hace 1 hora</small>
+                                            </div>
+                                            <p class="mb-2 text-muted">
+                                                Carmen ha regresado al área segura. Ubicación actual: Casa.
+                                            </p>
+                                            <small class="text-success">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Visto por María García
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- More alerts... -->
+                        <div class="col-12">
+                            <div class="card shadow-sm alert-item acknowledged" data-type="reminder">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-shrink-0 me-3">
+                                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 48px; height: 48px;">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0 text-success">Cita médica completada</h6>
+                                                <small class="text-muted">Hace 2 horas</small>
+                                            </div>
+                                            <p class="mb-2 text-muted">
+                                                Cita con Dr. González - Revisión mensual completada.
+                                            </p>
+                                            <small class="text-success">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Confirmado por Carlos García
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Geofence Alerts -->
+                <div class="tab-pane fade" id="geofence-alerts" role="tabpanel">
+                    <div class="text-center py-4">
+                        <i class="bi bi-geo-alt text-muted mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="text-muted">Alertas de ubicación</h5>
+                        <p class="text-muted">Las alertas de geovalla aparecerán aquí</p>
+                    </div>
+                </div>
+                
+                <!-- Reminder Alerts -->
+                <div class="tab-pane fade" id="reminder-alerts" role="tabpanel">
+                    <div class="text-center py-4">
+                        <i class="bi bi-alarm text-muted mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="text-muted">Recordatorios</h5>
+                        <p class="text-muted">Los recordatorios aparecerán aquí</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Load More -->
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-secondary btn-lg" id="loadMoreBtn">
+                    <i class="bi bi-arrow-down me-2"></i>
+                    Cargar más alertas
+                </button>
+            </div>
+            
+            <!-- Empty State (Hidden) -->
+            <div class="text-center py-5 d-none" id="emptyState">
+                <i class="bi bi-bell-slash text-muted mb-3" style="font-size: 4rem;"></i>
+                <h3 class="text-muted">No hay alertas</h3>
+                <p class="text-muted mb-4">
+                    Cuando ocurran eventos importantes, aparecerán aquí
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Actions Modal -->
+<div class="modal fade" id="alertActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Acciones de Alerta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Qué acción deseas realizar con esta alerta?</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" onclick="markAsResolved()">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Marcar como resuelto
+                    </button>
+                    <button class="btn btn-primary" onclick="contactFamily()">
+                        <i class="bi bi-telephone me-2"></i>
+                        Contactar familia
+                    </button>
+                    <button class="btn btn-warning" onclick="setReminder()">
+                        <i class="bi bi-alarm me-2"></i>
+                        Recordar más tarde
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// TODO: Implementar funcionalidad completa de alertas
+document.addEventListener('DOMContentLoaded', function() {
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    const clearAlertsBtn = document.getElementById('clearAlertsBtn');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    
+    // Marcar todas como leídas
+    markAllReadBtn.addEventListener('click', function() {
+        const unreadAlerts = document.querySelectorAll('.alert-item:not(.acknowledged)');
+        unreadAlerts.forEach(alert => {
+            alert.classList.add('acknowledged');
+            const icon = alert.querySelector('.rounded-circle');
+            icon.className = 'rounded-circle bg-success text-white d-flex align-items-center justify-content-center';
+            icon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+        });
+        showToast('Todas las alertas marcadas como vistas', 'success');
+    });
+    
+    // Limpiar alertas
+    clearAlertsBtn.addEventListener('click', function() {
+        if (confirm('¿Estás seguro de que deseas eliminar todas las alertas?')) {
+            const alertsContainer = document.getElementById('all-alerts');
+            alertsContainer.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-bell-slash text-muted mb-3" style="font-size: 4rem;"></i>
+                    <h3 class="text-muted">No hay alertas</h3>
+                    <p class="text-muted">Todas las alertas han sido eliminadas</p>
+                </div>
+            `;
+            showToast('Alertas eliminadas', 'success');
+        }
+    });
+    
+    // Cargar más
+    loadMoreBtn.addEventListener('click', function() {
+        showToast('Cargando más alertas... Funcionalidad próximamente.', 'info');
+    });
+    
+    showToast('Vista de alertas cargada. Funcionalidad completa próximamente.', 'info');
+});
+
+// Reconocer alerta individual
+function acknowledgeAlert(button) {
+    const alertCard = button.closest('.alert-item');
+    alertCard.classList.add('acknowledged');
+    
+    const icon = alertCard.querySelector('.rounded-circle');
+    icon.className = 'rounded-circle bg-success text-white d-flex align-items-center justify-content-center';
+    icon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+    
+    const title = alertCard.querySelector('h6');
+    title.className = 'mb-0 text-success';
+    
+    // Agregar información de quién la vio
+    const actionsDiv = button.parentElement;
+    actionsDiv.innerHTML = `
+        <small class="text-success">
+            <i class="bi bi-check-circle me-1"></i>
+            Visto por ti
+        </small>
+    `;
+    
+    showToast('Alerta marcada como vista', 'success');
+}
+
+function markAsResolved() {
+    showToast('Alerta marcada como resuelta', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('alertActionModal')).hide();
+}
+
+function contactFamily() {
+    showToast('Contactando familia... Funcionalidad próximamente.', 'info');
+    bootstrap.Modal.getInstance(document.getElementById('alertActionModal')).hide();
+}
+
+function setReminder() {
+    showToast('Recordatorio configurado', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('alertActionModal')).hide();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Familia - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="h2 mb-3">
+                    <i class="bi bi-house-heart-fill text-primary me-2"></i>
+                    Configurar Familia
+                </h1>
+                <p class="text-muted">
+                    Gestiona tu familia y configura el área segura para tus seres queridos
+                </p>
+            </div>
+            
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4" id="familyTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="create-tab" data-bs-toggle="tab" 
+                            data-bs-target="#create-panel" type="button" role="tab">
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Crear Nueva Familia
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="join-tab" data-bs-toggle="tab" 
+                            data-bs-target="#join-panel" type="button" role="tab">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Unirse con Código
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="invites-tab" data-bs-toggle="tab" 
+                            data-bs-target="#invites-panel" type="button" role="tab">
+                        <i class="bi bi-share me-2"></i>
+                        Invitaciones
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tab Content -->
+            <div class="tab-content" id="familyTabContent">
+                <!-- Create Family Panel -->
+                <div class="tab-pane fade show active" id="create-panel" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <form id="createFamilyForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="familyName" class="form-label">Nombre de la familia *</label>
+                                        <input type="text" class="form-control form-control-lg" 
+                                               id="familyName" placeholder="Ej: Familia García" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ownerName" class="form-label">Tu nombre *</label>
+                                        <input type="text" class="form-control form-control-lg" 
+                                               id="ownerName" placeholder="Ej: María García" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="homeAddress" class="form-label">Dirección del hogar *</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control form-control-lg" 
+                                               id="homeAddress" placeholder="Ingresa la dirección..." required>
+                                        <button type="button" class="btn btn-outline-secondary" id="searchAddressBtn">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Esta será la dirección de referencia para el área segura
+                                    </div>
+                                </div>
+                                
+                                <!-- Map for Address Selection -->
+                                <div class="mb-3">
+                                    <label class="form-label">Ubicación en el mapa</label>
+                                    <div id="createMap" class="rounded border" style="height: 300px;"></div>
+                                    <div class="form-text">
+                                        <i class="bi bi-cursor me-1"></i>
+                                        Arrastra el marcador para ajustar la ubicación exacta
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="safeRadius" class="form-label">Radio de seguridad (metros)</label>
+                                        <select class="form-select form-select-lg" id="safeRadius">
+                                            <option value="200">200m - Muy cercano</option>
+                                            <option value="500" selected>500m - Recomendado</option>
+                                            <option value="1000">1000m - Amplio</option>
+                                            <option value="2000">2000m - Muy amplio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ownerEmail" class="form-label">Email (opcional)</label>
+                                        <input type="email" class="form-control form-control-lg" 
+                                               id="ownerEmail" placeholder="tu@email.com">
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex gap-3 justify-content-end">
+                                    <button type="button" class="btn btn-secondary btn-lg">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-lg" id="createFamilyBtn">
+                                        <i class="bi bi-check-lg me-2"></i>
+                                        Crear Familia
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Join Family Panel -->
+                <div class="tab-pane fade" id="join-panel" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <i class="bi bi-qr-code text-primary mb-3" style="font-size: 4rem;"></i>
+                            <h4 class="mb-3">Únete a una familia existente</h4>
+                            <p class="text-muted mb-4">
+                                Introduce el código de invitación que te compartió un familiar
+                            </p>
+                            
+                            <form id="joinFamilyForm" class="row g-3 justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="input-group input-group-lg">
+                                        <input type="text" class="form-control text-center" 
+                                               id="inviteCode" placeholder="CÓDIGO-123" 
+                                               style="letter-spacing: 2px; text-transform: uppercase;" 
+                                               maxlength="8" required>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Los códigos de invitación expiran en 24 horas
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Invitations Panel -->
+                <div class="tab-pane fade" id="invites-panel" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- Generate Invitation -->
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-share me-2"></i>
+                                        Generar Nueva Invitación
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="generateInviteForm" class="row g-3 align-items-end">
+                                        <div class="col-md-6">
+                                            <label for="inviteRole" class="form-label">Rol del invitado</label>
+                                            <select class="form-select" id="inviteRole" required>
+                                                <option value="familiar">Familiar</option>
+                                                <option value="usuario">Usuario (persona cuidada)</option>
+                                                <option value="admin">Administrador</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                                <i class="bi bi-plus-lg me-2"></i>
+                                                Generar Código
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Active Invitations -->
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-clock me-2"></i>
+                                        Invitaciones Activas
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="activeInvites">
+                                        <!-- Demo Invitation -->
+                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded mb-3">
+                                            <div>
+                                                <h6 class="mb-1 font-monospace fs-4 text-primary">ABC-123</h6>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-person me-1"></i>
+                                                    Rol: Familiar • 
+                                                    <i class="bi bi-clock me-1"></i>
+                                                    Expira en 18 horas
+                                                </small>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-outline-primary" onclick="copyInviteCode('ABC-123')">
+                                                    <i class="bi bi-copy"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success" onclick="shareInvite('ABC-123')">
+                                                    <i class="bi bi-share"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Empty State -->
+                                        <div class="text-center py-4 d-none" id="emptyInvites">
+                                            <i class="bi bi-inbox text-muted mb-3" style="font-size: 3rem;"></i>
+                                            <h5 class="text-muted">No hay invitaciones activas</h5>
+                                            <p class="text-muted">Genera códigos para invitar familiares a unirse</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Family Members -->
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-people me-2"></i>
+                                        Miembros de la Familia
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <!-- Demo Members -->
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0">María García</h6>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-shield-check me-1"></i>
+                                                        Administrador
+                                                    </small>
+                                                </div>
+                                                <span class="badge bg-success">En línea</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0">Carlos García</h6>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-people me-1"></i>
+                                                        Familiar
+                                                    </small>
+                                                </div>
+                                                <span class="badge bg-secondary">Offline</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="familyCreatedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-center border-0">
+                <div class="w-100">
+                    <i class="bi bi-check-circle-fill text-success mb-3" style="font-size: 4rem;"></i>
+                    <h4 class="modal-title">¡Familia Creada!</h4>
+                </div>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-3">Tu familia ha sido configurada correctamente.</p>
+                <p class="mb-0">Ahora puedes invitar a otros familiares y comenzar a usar RecuerdaMe.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-primary btn-lg" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Ir al Mapa
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initFamilyMaps" async defer></script>
+
+<script>
+// TODO: Implementar funcionalidad completa de familia
+let createMap;
+let homeMarker;
+let selectedLocation = { lat: 40.4168, lng: -3.7038 }; // Madrid por defecto
+
+function initFamilyMaps() {
+    // Inicializar mapa para crear familia
+    createMap = new google.maps.Map(document.getElementById('createMap'), {
+        center: selectedLocation,
+        zoom: 15,
+        streetViewControl: false,
+        mapTypeControl: false
+    });
+    
+    homeMarker = new google.maps.Marker({
+        position: selectedLocation,
+        map: createMap,
+        draggable: true,
+        title: 'Ubicación del hogar'
+    });
+    
+    homeMarker.addListener('dragend', function() {
+        selectedLocation = {
+            lat: homeMarker.getPosition().lat(),
+            lng: homeMarker.getPosition().lng()
+        };
+        updateAddressFromCoords();
+    });
+    
+    // Autocompletado de direcciones
+    const addressInput = document.getElementById('homeAddress');
+    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+    autocomplete.bindTo('bounds', createMap);
+    
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+            selectedLocation = {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            };
+            homeMarker.setPosition(selectedLocation);
+            createMap.setCenter(selectedLocation);
+            createMap.setZoom(15);
+        }
+    });
+}
+
+function updateAddressFromCoords() {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location: selectedLocation }, function(results, status) {
+        if (status === 'OK' && results[0]) {
+            document.getElementById('homeAddress').value = results[0].formatted_address;
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const createForm = document.getElementById('createFamilyForm');
+    const joinForm = document.getElementById('joinFamilyForm');
+    const generateInviteForm = document.getElementById('generateInviteForm');
+    
+    // Crear familia
+    createForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            name: document.getElementById('familyName').value,
+            ownerName: document.getElementById('ownerName').value,
+            email: document.getElementById('ownerEmail').value,
+            lat: selectedLocation.lat,
+            lng: selectedLocation.lng,
+            radius: parseInt(document.getElementById('safeRadius').value)
+        };
+        
+        try {
+            const response = await fetch('/api/family', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                const modal = new bootstrap.Modal(document.getElementById('familyCreatedModal'));
+                modal.show();
+                
+                modal._element.addEventListener('hidden.bs.modal', function() {
+                    window.location.href = '/dashboard';
+                });
+            } else {
+                showToast('Error creando familia: ' + result.error, 'error');
+            }
+        } catch (error) {
+            showToast('Error de conexión', 'error');
+        }
+    });
+    
+    // Unirse a familia
+    joinForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const code = document.getElementById('inviteCode').value;
+        showToast(`Intentando unirse con código: ${code}. Funcionalidad próximamente.`, 'info');
+    });
+    
+    // Generar invitación
+    generateInviteForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const role = document.getElementById('inviteRole').value;
+        
+        try {
+            const response = await fetch('/api/invite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    familyId: 'demo-family', // TODO: usar ID real
+                    role: role 
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast(`Código generado: ${result.inviteCode}`, 'success');
+                // TODO: Agregar a la lista de invitaciones activas
+            } else {
+                showToast('Error generando invitación', 'error');
+            }
+        } catch (error) {
+            showToast('Error de conexión', 'error');
+        }
+    });
+    
+    // Formatear código de invitación
+    document.getElementById('inviteCode').addEventListener('input', function(e) {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+});
+
+// Copiar código de invitación
+function copyInviteCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        showToast('Código copiado al portapapeles', 'success');
+    });
+}
+
+// Compartir invitación
+function shareInvite(code) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Invitación a RecuerdaMe',
+            text: `Te invito a unirte a nuestra familia en RecuerdaMe. Código: ${code}`,
+            url: window.location.origin
+        });
+    } else {
+        copyInviteCode(code);
+    }
+}
+</script>
+{% endblock %}

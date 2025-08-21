@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Unirse a Familia - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="text-center mb-4">
+                <i class="bi bi-qr-code text-primary mb-3" style="font-size: 5rem;"></i>
+                <h1 class="h2 mb-3">Únete a una Familia</h1>
+                <p class="text-muted">
+                    Introduce el código de invitación que te compartió un familiar
+                </p>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form id="joinFamilyForm">
+                        <div class="mb-4">
+                            <label for="inviteCode" class="form-label">Código de Invitación</label>
+                            <input type="text" class="form-control form-control-lg text-center" 
+                                   id="inviteCode" placeholder="CÓDIGO-123" 
+                                   style="letter-spacing: 3px; text-transform: uppercase; font-size: 1.5rem;" 
+                                   maxlength="8" required>
+                            <div class="form-text text-center">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Los códigos expiran en 24 horas
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="memberName" class="form-label">Tu nombre completo</label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="memberName" placeholder="Ej: Carlos García" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="memberEmail" class="form-label">Email (opcional)</label>
+                            <input type="email" class="form-control form-control-lg" 
+                                   id="memberEmail" placeholder="tu@email.com">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-arrow-right me-2"></i>
+                                Unirse a la Familia
+                            </button>
+                            <a href="{{ url_for('family_create') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// TODO: Implementar lógica de unirse a familia
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('joinFamilyForm');
+    const codeInput = document.getElementById('inviteCode');
+    
+    // Formatear código de invitación
+    codeInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            code: document.getElementById('inviteCode').value,
+            name: document.getElementById('memberName').value,
+            email: document.getElementById('memberEmail').value
+        };
+        
+        showToast(`Intentando unirse con código: ${formData.code}. Funcionalidad próximamente.`, 'info');
+    });
+});
+</script>
+{% endblock %}

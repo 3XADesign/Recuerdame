@@ -1,0 +1,526 @@
+{% extends 'base.html' %}
+
+{% block title %}Información sobre Alzheimer - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="h2 mb-3">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    Información sobre Alzheimer
+                </h1>
+                <p class="text-muted lead">
+                    Recursos y pautas para familias y cuidadores
+                </p>
+            </div>
+            
+            <!-- Quick Navigation -->
+            <div class="row g-3 mb-5">
+                <div class="col-md-3">
+                    <div class="card text-center h-100 info-card" data-target="understanding">
+                        <div class="card-body">
+                            <i class="bi bi-lightbulb text-primary mb-3" style="font-size: 2.5rem;"></i>
+                            <h5 class="card-title">Entender la Enfermedad</h5>
+                            <p class="card-text">Información básica sobre el Alzheimer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 info-card" data-target="communication">
+                        <div class="card-body">
+                            <i class="bi bi-chat-heart text-success mb-3" style="font-size: 2.5rem;"></i>
+                            <h5 class="card-title">Comunicación</h5>
+                            <p class="card-text">Cómo comunicarse efectivamente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 info-card" data-target="daily-care">
+                        <div class="card-body">
+                            <i class="bi bi-heart text-danger mb-3" style="font-size: 2.5rem;"></i>
+                            <h5 class="card-title">Cuidado Diario</h5>
+                            <p class="card-text">Rutinas y cuidados cotidianos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 info-card" data-target="resources">
+                        <div class="card-body">
+                            <i class="bi bi-telephone text-warning mb-3" style="font-size: 2.5rem;"></i>
+                            <h5 class="card-title">Recursos</h5>
+                            <p class="card-text">Contactos y ayuda profesional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Sections -->
+            
+            <!-- Understanding Section -->
+            <div id="understanding" class="content-section">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-lightbulb me-2"></i>
+                            Entendiendo el Alzheimer
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-primary">¿Qué es el Alzheimer?</h5>
+                                <p>
+                                    El Alzheimer es la forma más común de demencia, representando entre el 60% y 80% de los casos. 
+                                    Es una enfermedad progresiva que destruye la memoria y otras funciones mentales importantes.
+                                </p>
+                                
+                                <h6 class="text-primary mt-4">Etapas de la enfermedad:</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <span class="badge bg-success me-2">Leve</span>
+                                        Pérdida de memoria ocasional, dificultad con tareas complejas
+                                    </li>
+                                    <li class="mb-2">
+                                        <span class="badge bg-warning me-2">Moderada</span>
+                                        Confusión, cambios de personalidad, necesidad de ayuda diaria
+                                    </li>
+                                    <li class="mb-2">
+                                        <span class="badge bg-danger me-2">Severa</span>
+                                        Pérdida de comunicación, necesidad de cuidado completo
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-primary">Síntomas Tempranos</h5>
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        Señales de Alerta
+                                    </h6>
+                                    <ul class="mb-0">
+                                        <li>Pérdida de memoria que afecta las actividades diarias</li>
+                                        <li>Dificultad para planificar o resolver problemas</li>
+                                        <li>Confusión con el tiempo o lugar</li>
+                                        <li>Problemas para completar tareas familiares</li>
+                                        <li>Cambios en el humor o personalidad</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <strong>Importante:</strong> Estos síntomas no son parte normal del envejecimiento. 
+                                    Consulte con un médico si nota alguno de estos signos.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Communication Section -->
+            <div id="communication" class="content-section">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-chat-heart me-2"></i>
+                            Comunicación Efectiva
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-success">Técnicas de Comunicación</h5>
+                                
+                                <div class="mb-4">
+                                    <h6>
+                                        <i class="bi bi-check-circle text-success me-1"></i>
+                                        Lo que SÍ hacer:
+                                    </h6>
+                                    <ul>
+                                        <li>Hablar despacio y con claridad</li>
+                                        <li>Mantener contacto visual</li>
+                                        <li>Usar frases simples y directas</li>
+                                        <li>Dar tiempo para responder</li>
+                                        <li>Mostrar paciencia y comprensión</li>
+                                        <li>Usar gestos y señales visuales</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h6>
+                                        <i class="bi bi-x-circle text-danger me-1"></i>
+                                        Lo que NO hacer:
+                                    </h6>
+                                    <ul>
+                                        <li>Contradecir o corregir constantemente</li>
+                                        <li>Hacer preguntas complejas</li>
+                                        <li>Hablar como si no estuviera presente</li>
+                                        <li>Mostrar frustración o impaciencia</li>
+                                        <li>Gritar o hablar muy alto</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-success">Manejo de Situaciones Difíciles</h5>
+                                
+                                <div class="accordion" id="communicationAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" 
+                                                    data-bs-toggle="collapse" data-bs-target="#agitation">
+                                                Agitación o Agresividad
+                                            </button>
+                                        </h2>
+                                        <div id="agitation" class="accordion-collapse collapse" 
+                                             data-bs-parent="#communicationAccordion">
+                                            <div class="accordion-body">
+                                                <ul>
+                                                    <li>Mantén la calma y habla suavemente</li>
+                                                    <li>Identifica y elimina posibles desencadenantes</li>
+                                                    <li>Distrae con actividades agradables</li>
+                                                    <li>Proporciona un ambiente tranquilo</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" 
+                                                    data-bs-toggle="collapse" data-bs-target="#repetition">
+                                                Preguntas Repetitivas
+                                            </button>
+                                        </h2>
+                                        <div id="repetition" class="accordion-collapse collapse" 
+                                             data-bs-parent="#communicationAccordion">
+                                            <div class="accordion-body">
+                                                <ul>
+                                                    <li>Responde con paciencia cada vez</li>
+                                                    <li>Usa recordatorios visuales</li>
+                                                    <li>Redirige la atención a otra actividad</li>
+                                                    <li>Busca la emoción detrás de la pregunta</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" 
+                                                    data-bs-toggle="collapse" data-bs-target="#wandering">
+                                                Deambulación
+                                            </button>
+                                        </h2>
+                                        <div id="wandering" class="accordion-collapse collapse" 
+                                             data-bs-parent="#communicationAccordion">
+                                            <div class="accordion-body">
+                                                <ul>
+                                                    <li>Asegura un ambiente seguro</li>
+                                                    <li>Proporciona ejercicio regular</li>
+                                                    <li>Mantén objetos familiares visibles</li>
+                                                    <li>Considera sistemas de seguimiento</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Daily Care Section -->
+            <div id="daily-care" class="content-section">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-heart me-2"></i>
+                            Cuidado Diario
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h5 class="text-danger">Rutina Diaria</h5>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-sunrise me-2"></i>
+                                            Mañana
+                                        </span>
+                                        <small>7:00 - 12:00</small>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-sun me-2"></i>
+                                            Tarde
+                                        </span>
+                                        <small>12:00 - 18:00</small>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-moon me-2"></i>
+                                            Noche
+                                        </span>
+                                        <small>18:00 - 22:00</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info mt-3">
+                                    <small>
+                                        <strong>Tip:</strong> Mantén rutinas consistentes para reducir confusión y ansiedad.
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h5 class="text-danger">Alimentación</h5>
+                                <ul>
+                                    <li>Comidas regulares y nutritivas</li>
+                                    <li>Texturas apropiadas y fáciles de masticar</li>
+                                    <li>Hidratación adecuada</li>
+                                    <li>Supervisión durante las comidas</li>
+                                    <li>Ambiente tranquilo sin distracciones</li>
+                                </ul>
+                                
+                                <h6 class="text-danger mt-4">Seguridad en la Cocina</h6>
+                                <ul class="small">
+                                    <li>Supervisar el uso de electrodomésticos</li>
+                                    <li>Instalar cerraduras de seguridad</li>
+                                    <li>Quitar objetos peligrosos</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h5 class="text-danger">Higiene Personal</h5>
+                                <ul>
+                                    <li>Asistencia respetuosa con el baño</li>
+                                    <li>Rutina de cuidado dental</li>
+                                    <li>Ropa cómoda y fácil de poner</li>
+                                    <li>Mantener dignidad y privacidad</li>
+                                </ul>
+                                
+                                <h6 class="text-danger mt-4">Ejercicio y Actividades</h6>
+                                <ul class="small">
+                                    <li>Caminatas diarias supervisadas</li>
+                                    <li>Ejercicios de estimulación cognitiva</li>
+                                    <li>Actividades que disfrute</li>
+                                    <li>Música y arte terapia</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resources Section -->
+            <div id="resources" class="content-section">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="bi bi-telephone me-2"></i>
+                            Recursos y Contactos
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-warning">Emergencias</h5>
+                                <div class="list-group mb-4">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Emergencias Médicas</h6>
+                                            <small>Llamar inmediatamente</small>
+                                        </div>
+                                        <a href="tel:112" class="btn btn-danger btn-sm">112</a>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Centro de Crisis 24h</h6>
+                                            <small>Apoyo en situaciones difíciles</small>
+                                        </div>
+                                        <a href="tel:024" class="btn btn-warning btn-sm">024</a>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="text-warning">Organizaciones</h5>
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">CEAFA</h6>
+                                            <small>Nacional</small>
+                                        </div>
+                                        <p class="mb-1">Confederación Española de Alzheimer</p>
+                                        <small>Información y apoyo a familias</small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">Fundación Alzheimer España</h6>
+                                            <small>Nacional</small>
+                                        </div>
+                                        <p class="mb-1">Investigación y programas de apoyo</p>
+                                        <small>www.fundacionalzheimeresp.org</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-warning">Recursos Útiles</h5>
+                                
+                                <div class="card border-info mb-3">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-book me-1"></i>
+                                            Guías y Manuales
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <a href="#" class="text-decoration-none">
+                                                    📖 Guía para cuidadores familiares
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-decoration-none">
+                                                    📖 Manual de estimulación cognitiva
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-decoration-none">
+                                                    📖 Adaptación del hogar
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="card border-success mb-3">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-people me-1"></i>
+                                            Grupos de Apoyo
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="small mb-2">
+                                            Conectar con otros cuidadores es fundamental para el bienestar emocional.
+                                        </p>
+                                        <button class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-search me-1"></i>
+                                            Encontrar grupos locales
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-smartphone me-1"></i>
+                                            Apps Recomendadas
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>📱 NeuroNation - Entrenamiento cerebral</li>
+                                            <li>📱 Lumosity - Ejercicios cognitivos</li>
+                                            <li>📱 CogniFit - Evaluación cognitiva</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back to Top Button -->
+<button class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle" 
+        id="backToTop" style="width: 50px; height: 50px; display: none;">
+    <i class="bi bi-arrow-up"></i>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const infoCards = document.querySelectorAll('.info-card');
+    const sections = document.querySelectorAll('.content-section');
+    const backToTop = document.getElementById('backToTop');
+    
+    // Navigation between sections
+    infoCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const target = this.dataset.target;
+            const section = document.getElementById(target);
+            
+            if (section) {
+                section.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Back to top functionality
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTop.style.display = 'block';
+        } else {
+            backToTop.style.display = 'none';
+        }
+    });
+    
+    backToTop.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Add hover effects to info cards
+    infoCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+        
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+    });
+    
+    showToast('Información sobre Alzheimer cargada. Recursos verificados y actualizados.', 'success');
+});
+</script>
+
+<style>
+.info-card {
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.info-card:hover {
+    border-color: var(--bs-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.content-section {
+    scroll-margin-top: 100px;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(var(--bs-success-rgb), 0.1);
+    border-color: var(--bs-success);
+}
+</style>
+{% endblock %}

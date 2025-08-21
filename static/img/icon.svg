@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'>
+  <rect width='192' height='192' fill='#007bff' rx='24'/>
+  <circle cx='96' cy='70' r='30' fill='white'/>
+  <path d='M96 120 L76 140 L116 140 Z' fill='white'/>
+  <text x='96' y='165' font-family='Arial' font-size='16' fill='white' text-anchor='middle'>RecuerdaMe</text>
+</svg>

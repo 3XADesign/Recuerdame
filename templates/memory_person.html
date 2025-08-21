@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ person_id | title }} - Recuerdos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{{ url_for('memories_list') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver a Recuerdos
+        </a>
+    </div>
+    
+    <!-- Person Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center mb-3 mb-md-0">
+                            <div class="position-relative d-inline-block">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <h1 class="h2 mb-1">María José García</h1>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-people me-1"></i>
+                                Hija mayor
+                            </p>
+                            <p class="mb-0">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar-plus me-1"></i>
+                                    Agregada el 15 de agosto, 2025
+                                </small>
+                            </p>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <div class="d-flex flex-column gap-2">
+                                <button class="btn btn-primary" id="editPersonBtn">
+                                    <i class="bi bi-pencil me-2"></i>
+                                    Editar Información
+                                </button>
+                                <button class="btn btn-outline-success" id="addPhotosBtn">
+                                    <i class="bi bi-camera-fill me-2"></i>
+                                    Agregar Fotos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notes Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-heart me-2"></i>
+                        Notas y Recuerdos
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" id="editNotesBtn">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="notesDisplay">
+                        <p class="mb-0 fs-5 lh-base">
+                            María José es mi hija mayor. Siempre me trae flores los domingos y me ayuda con las compras. 
+                            Es doctora en el Hospital San Carlos. Tiene dos hijos: Pablo y Carmen, mis nietos favoritos. 
+                            Le encanta cocinar paella como yo le enseñé cuando era pequeña.
+                        </p>
+                    </div>
+                    <div id="notesEdit" class="d-none">
+                        <textarea class="form-control form-control-lg" rows="4" id="notesTextarea">María José es mi hija mayor. Siempre me trae flores los domingos y me ayuda con las compras. Es doctora en el Hospital San Carlos. Tiene dos hijos: Pablo y Carmen, mis nietos favoritos. Le encanta cocinar paella como yo le enseñé cuando era pequeña.</textarea>
+                        <div class="mt-2">
+                            <button class="btn btn-success btn-sm me-2" id="saveNotesBtn">
+                                <i class="bi bi-check-lg me-1"></i>
+                                Guardar
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="cancelNotesBtn">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Photos Gallery -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-images me-2"></i>
+                        Galería de Fotos
+                        <span class="badge bg-primary ms-2">6 fotos</span>
+                    </h5>
+                    <button class="btn btn-sm btn-primary" id="uploadPhotosBtn">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Subir Fotos
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Photo Grid -->
+                    <div class="row g-3" id="photosGrid">
+                        <!-- Demo Photos -->
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative photo-item">
+                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
+                                        style="width: 28px; height: 28px;" title="Ver en grande">
+                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative photo-item">
+                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
+                                        style="width: 28px; height: 28px;" title="Ver en grande">
+                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative photo-item">
+                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
+                                        style="width: 28px; height: 28px;" title="Ver en grande">
+                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative photo-item">
+                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
+                                        style="width: 28px; height: 28px;" title="Ver en grande">
+                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative photo-item">
+                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
+                                        style="width: 28px; height: 28px;" title="Ver en grande">
+                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative photo-item">
+                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
+                                        style="width: 28px; height: 28px;" title="Ver en grande">
+                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div class="text-center py-4 d-none" id="emptyPhotos">
+                        <i class="bi bi-camera text-muted mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="text-muted">No hay fotos aún</h5>
+                        <p class="text-muted mb-3">Agrega fotos para crear recuerdos visuales</p>
+                        <button class="btn btn-primary">
+                            <i class="bi bi-camera-fill me-2"></i>
+                            Subir Primera Foto
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden File Input -->
+<input type="file" id="photoInput" class="d-none" multiple accept="image/*" max="6">
+
+<!-- Modal: Photo Viewer -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalLabel">Foto de María José</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <div id="photoCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- Dynamic content -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="deletePhotoBtn">
+                    <i class="bi bi-trash me-2"></i>
+                    Eliminar Foto
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// TODO: Implementar funcionalidad completa de persona individual
+document.addEventListener('DOMContentLoaded', function() {
+    const editNotesBtn = document.getElementById('editNotesBtn');
+    const saveNotesBtn = document.getElementById('saveNotesBtn');
+    const cancelNotesBtn = document.getElementById('cancelNotesBtn');
+    const notesDisplay = document.getElementById('notesDisplay');
+    const notesEdit = document.getElementById('notesEdit');
+    const notesTextarea = document.getElementById('notesTextarea');
+    
+    const photoInput = document.getElementById('photoInput');
+    const uploadPhotosBtn = document.getElementById('uploadPhotosBtn');
+    const addPhotosBtn = document.getElementById('addPhotosBtn');
+    
+    // Editar notas
+    editNotesBtn.addEventListener('click', function() {
+        notesDisplay.classList.add('d-none');
+        notesEdit.classList.remove('d-none');
+        notesTextarea.focus();
+    });
+    
+    saveNotesBtn.addEventListener('click', function() {
+        const newNotes = notesTextarea.value;
+        notesDisplay.querySelector('p').textContent = newNotes;
+        notesDisplay.classList.remove('d-none');
+        notesEdit.classList.add('d-none');
+        showToast('Notas guardadas correctamente', 'success');
+    });
+    
+    cancelNotesBtn.addEventListener('click', function() {
+        notesDisplay.classList.remove('d-none');
+        notesEdit.classList.add('d-none');
+    });
+    
+    // Subir fotos
+    [uploadPhotosBtn, addPhotosBtn].forEach(btn => {
+        btn.addEventListener('click', () => photoInput.click());
+    });
+    
+    photoInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            showToast(`${files.length} foto(s) seleccionada(s). Funcionalidad de subida próximamente.`, 'info');
+        }
+    });
+    
+    // Ver fotos en modal
+    document.querySelectorAll('.photo-item button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const photoModal = new bootstrap.Modal(document.getElementById('photoModal'));
+            photoModal.show();
+        });
+    });
+    
+    showToast('Vista de persona cargada. Funcionalidad completa próximamente.', 'info');
+});
+</script>
+{% endblock %}

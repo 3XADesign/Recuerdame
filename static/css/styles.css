@@ -1,0 +1,519 @@
+/* =========================================
+   RecuerdaMe - Custom Styles
+   Seniors-first design with accessibility
+   ========================================= */
+
+:root {
+    /* Color Palette */
+    --primary-color: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #059669;
+    --warning-color: #d97706;
+    --danger-color: #dc2626;
+    --info-color: #0891b2;
+    
+    /* Typography */
+    --base-font-size: 18px;
+    --large-font-size: 22px;
+    --heading-font-size: 28px;
+    
+    /* Spacing */
+    --base-spacing: 1rem;
+    --large-spacing: 2rem;
+    
+    /* Borders */
+    --border-radius: 0.75rem;
+    --border-width: 2px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+    
+    /* High Contrast Mode */
+    --hc-bg: #ffffff;
+    --hc-text: #000000;
+    --hc-primary: #0066cc;
+    --hc-border: #333333;
+}
+
+/* =========================================
+   Base Typography (Seniors First)
+   ========================================= */
+
+body {
+    font-size: var(--base-font-size);
+    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+h1, .h1 { font-size: 2.5rem; }
+h2, .h2 { font-size: 2rem; }
+h3, .h3 { font-size: 1.75rem; }
+h4, .h4 { font-size: 1.5rem; }
+
+p, .text-base {
+    font-size: var(--base-font-size);
+    margin-bottom: 1rem;
+}
+
+.text-large {
+    font-size: var(--large-font-size);
+}
+
+/* =========================================
+   Enhanced Buttons (XL, Touch-Friendly)
+   ========================================= */
+
+.btn {
+    font-size: var(--base-font-size);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    border-width: var(--border-width);
+    transition: all 0.2s ease;
+    min-height: 48px; /* Touch target minimum */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-lg {
+    font-size: var(--large-font-size);
+    padding: 1rem 2rem;
+    min-height: 56px;
+}
+
+.btn-xl {
+    font-size: 1.25rem;
+    padding: 1.25rem 2.5rem;
+    min-height: 64px;
+    border-radius: 1rem;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.5);
+    outline-offset: 2px;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Floating Action Button */
+.btn-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 1.5rem;
+    z-index: 1050;
+    box-shadow: var(--shadow-lg);
+}
+
+/* =========================================
+   Form Controls (Large, Accessible)
+   ========================================= */
+
+.form-control,
+.form-select {
+    font-size: var(--base-font-size);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    border-width: var(--border-width);
+    min-height: 48px;
+}
+
+.form-control-lg,
+.form-select-lg {
+    font-size: var(--large-font-size);
+    padding: 1rem 1.25rem;
+    min-height: 56px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+    border-color: var(--primary-color);
+}
+
+.form-label {
+    font-size: var(--base-font-size);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--bs-gray-800);
+}
+
+/* =========================================
+   Navigation & Layout
+   ========================================= */
+
+.navbar {
+    padding: 1rem 0;
+    min-height: 64px;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    font-size: var(--base-font-size);
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(37, 99, 235, 0.1);
+}
+
+.nav-link.active {
+    background-color: rgba(37, 99, 235, 0.15);
+    font-weight: 600;
+}
+
+/* =========================================
+   Cards & Content
+   ========================================= */
+
+.card {
+    border-radius: var(--border-radius);
+    border-width: 1px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    font-weight: 600;
+    font-size: var(--base-font-size);
+    padding: 1rem 1.5rem;
+    border-bottom-width: 1px;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* =========================================
+   Alerts & Toasts
+   ========================================= */
+
+.alert {
+    font-size: var(--base-font-size);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    border-width: var(--border-width);
+}
+
+.toast {
+    font-size: var(--base-font-size);
+    min-width: 300px;
+}
+
+.toast-header {
+    font-weight: 600;
+}
+
+/* =========================================
+   Badges & Labels
+   ========================================= */
+
+.badge {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.badge-lg {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+/* =========================================
+   Map & Location Specific
+   ========================================= */
+
+.map-container {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.map-overlay {
+    position: absolute;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow: var(--shadow-md);
+}
+
+.location-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.location-status.safe {
+    background-color: rgba(5, 150, 105, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(5, 150, 105, 0.3);
+}
+
+.location-status.warning {
+    background-color: rgba(217, 119, 6, 0.1);
+    color: var(--warning-color);
+    border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.location-status.danger {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+/* =========================================
+   High Contrast Mode
+   ========================================= */
+
+[data-bs-theme="high-contrast"] {
+    --bs-body-bg: var(--hc-bg);
+    --bs-body-color: var(--hc-text);
+    --bs-primary: var(--hc-primary);
+    --bs-border-color: var(--hc-border);
+}
+
+[data-bs-theme="high-contrast"] .btn {
+    border-width: 3px;
+    font-weight: 700;
+}
+
+[data-bs-theme="high-contrast"] .form-control,
+[data-bs-theme="high-contrast"] .form-select {
+    border-width: 3px;
+    background-color: var(--hc-bg);
+    color: var(--hc-text);
+}
+
+[data-bs-theme="high-contrast"] .card {
+    border-width: 2px;
+    border-color: var(--hc-border);
+}
+
+/* =========================================
+   Loading States
+   ========================================= */
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    border-radius: inherit;
+}
+
+.spinner-border-lg {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+/* =========================================
+   Animations
+   ========================================= */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.3s ease;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* =========================================
+   Utility Classes
+   ========================================= */
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.text-seniors {
+    font-size: var(--large-font-size);
+    line-height: 1.4;
+}
+
+.shadow-smooth {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.rounded-xl {
+    border-radius: 1rem;
+}
+
+.rounded-2xl {
+    border-radius: 1.5rem;
+}
+
+/* =========================================
+   Responsive Design
+   ========================================= */
+
+@media (max-width: 768px) {
+    :root {
+        --base-font-size: 16px;
+        --large-font-size: 20px;
+    }
+    
+    .btn-fab {
+        bottom: 1rem;
+        right: 1rem;
+        width: 56px;
+        height: 56px;
+    }
+    
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* =========================================
+   Print Styles
+   ========================================= */
+
+@media print {
+    .btn,
+    .navbar,
+    .offcanvas,
+    .modal,
+    .toast-container {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+    
+    .card {
+        border: 1pt solid #000;
+        break-inside: avoid;
+    }
+}
+
+/* =========================================
+   Focus & Accessibility
+   ========================================= */
+
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Enhanced focus indicators */
+*:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+button:focus,
+.btn:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.5);
+    outline-offset: 2px;
+}
+
+/* =========================================
+   Custom Scrollbar (Webkit)
+   ========================================= */
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

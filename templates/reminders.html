@@ -1,0 +1,499 @@
+{% extends 'base.html' %}
+
+{% block title %}Recordatorios - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="bi bi-alarm-fill text-primary me-2"></i>
+                        Recordatorios
+                    </h1>
+                    <p class="text-muted mb-0">Programa recordatorios para medicación, citas y actividades</p>
+                </div>
+                <button class="btn btn-primary btn-lg" id="addReminderBtn">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Nuevo Recordatorio
+                </button>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-primary text-center quick-action" data-type="medication">
+                        <div class="card-body py-3">
+                            <i class="bi bi-capsule text-primary mb-2" style="font-size: 2rem;"></i>
+                            <h6 class="card-title mb-0">Medicación</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-info text-center quick-action" data-type="appointment">
+                        <div class="card-body py-3">
+                            <i class="bi bi-calendar-check text-info mb-2" style="font-size: 2rem;"></i>
+                            <h6 class="card-title mb-0">Cita Médica</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-success text-center quick-action" data-type="meal">
+                        <div class="card-body py-3">
+                            <i class="bi bi-cup-hot text-success mb-2" style="font-size: 2rem;"></i>
+                            <h6 class="card-title mb-0">Comida</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-warning text-center quick-action" data-type="activity">
+                        <div class="card-body py-3">
+                            <i class="bi bi-person-walking text-warning mb-2" style="font-size: 2rem;"></i>
+                            <h6 class="card-title mb-0">Actividad</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Active Reminders -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock me-2"></i>
+                        Próximos Recordatorios
+                    </h5>
+                    <span class="badge bg-primary">3 activos</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <!-- Active Reminder 1 -->
+                        <div class="list-group-item d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
+                                     style="width: 48px; height: 48px;">
+                                    <i class="bi bi-capsule"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">Donepezilo 10mg</h6>
+                                        <p class="mb-1 text-muted">Medicación para el Alzheimer</p>
+                                        <small class="text-primary fw-bold">
+                                            <i class="bi bi-clock me-1"></i>
+                                            Próximo: Hoy a las 20:00
+                                        </small>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editReminder('med-1')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="reminder1" checked>
+                                            <label class="form-check-label visually-hidden" for="reminder1">Activar</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Active Reminder 2 -->
+                        <div class="list-group-item d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" 
+                                     style="width: 48px; height: 48px;">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">Cita con Dr. González</h6>
+                                        <p class="mb-1 text-muted">Revisión mensual - Neurología</p>
+                                        <small class="text-info fw-bold">
+                                            <i class="bi bi-clock me-1"></i>
+                                            Próximo: Mañana a las 10:30
+                                        </small>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-info" onclick="editReminder('apt-1')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="reminder2" checked>
+                                            <label class="form-check-label visually-hidden" for="reminder2">Activar</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Active Reminder 3 -->
+                        <div class="list-group-item d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" 
+                                     style="width: 48px; height: 48px;">
+                                    <i class="bi bi-cup-hot"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">Desayuno</h6>
+                                        <p class="mb-1 text-muted">Recordatorio diario de alimentación</p>
+                                        <small class="text-success fw-bold">
+                                            <i class="bi bi-clock me-1"></i>
+                                            Próximo: Mañana a las 08:00
+                                        </small>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-success" onclick="editReminder('meal-1')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="reminder3" checked>
+                                            <label class="form-check-label visually-hidden" for="reminder3">Activar</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Historial Reciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <!-- Timeline Item 1 -->
+                        <div class="timeline-item d-flex align-items-start mb-3">
+                            <div class="timeline-marker bg-success me-3"></div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-1">Medicación tomada</h6>
+                                    <small class="text-muted">Hace 2 horas</small>
+                                </div>
+                                <p class="mb-0 text-muted">Donepezilo 10mg - Confirmado por Carmen</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline Item 2 -->
+                        <div class="timeline-item d-flex align-items-start mb-3">
+                            <div class="timeline-marker bg-warning me-3"></div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-1">Recordatorio perdido</h6>
+                                    <small class="text-muted">Ayer 14:00</small>
+                                </div>
+                                <p class="mb-0 text-muted">Almuerzo - Sin confirmación</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline Item 3 -->
+                        <div class="timeline-item d-flex align-items-start mb-3">
+                            <div class="timeline-marker bg-info me-3"></div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-1">Cita completada</h6>
+                                    <small class="text-muted">Ayer 10:30</small>
+                                </div>
+                                <p class="mb-0 text-muted">Dr. González - Revisión completada exitosamente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Reminder Modal -->
+<div class="modal fade" id="reminderModal" tabindex="-1" aria-labelledby="reminderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reminderModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Nuevo Recordatorio
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reminderForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reminderTitle" class="form-label">Título del recordatorio *</label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="reminderTitle" placeholder="Ej: Tomar medicación" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="reminderType" class="form-label">Tipo *</label>
+                            <select class="form-select form-select-lg" id="reminderType" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="medication">💊 Medicación</option>
+                                <option value="appointment">📅 Cita médica</option>
+                                <option value="meal">🍽️ Comida</option>
+                                <option value="activity">🚶 Actividad</option>
+                                <option value="other">📋 Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reminderDescription" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="reminderDescription" rows="2" 
+                                  placeholder="Información adicional sobre el recordatorio..."></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reminderDate" class="form-label">Fecha *</label>
+                            <input type="date" class="form-control form-control-lg" id="reminderDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="reminderTime" class="form-label">Hora *</label>
+                            <input type="time" class="form-control form-control-lg" id="reminderTime" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reminderRepeat" class="form-label">Repetir</label>
+                            <select class="form-select form-select-lg" id="reminderRepeat">
+                                <option value="once">Una vez</option>
+                                <option value="daily">Diariamente</option>
+                                <option value="weekly">Semanalmente</option>
+                                <option value="monthly">Mensualmente</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="reminderTarget" class="form-label">Destinatario</label>
+                            <select class="form-select form-select-lg" id="reminderTarget">
+                                <option value="usuario">Solo usuario</option>
+                                <option value="familia">Toda la familia</option>
+                                <option value="cuidadores">Solo cuidadores</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="reminderNotification" checked>
+                            <label class="form-check-label" for="reminderNotification">
+                                Enviar notificación push
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger d-none" id="deleteReminderBtn">
+                    <i class="bi bi-trash me-2"></i>
+                    Eliminar
+                </button>
+                <button type="button" class="btn btn-primary btn-lg" id="saveReminderBtn">
+                    <i class="bi bi-check-lg me-2"></i>
+                    Guardar Recordatorio
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// TODO: Implementar funcionalidad completa de recordatorios
+document.addEventListener('DOMContentLoaded', function() {
+    const addReminderBtn = document.getElementById('addReminderBtn');
+    const reminderModal = new bootstrap.Modal(document.getElementById('reminderModal'));
+    const quickActions = document.querySelectorAll('.quick-action');
+    const reminderForm = document.getElementById('reminderForm');
+    
+    // Configurar fecha mínima a hoy
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('reminderDate').min = today;
+    document.getElementById('reminderDate').value = today;
+    
+    // Configurar hora por defecto
+    const now = new Date();
+    const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                       now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('reminderTime').value = currentTime;
+    
+    // Abrir modal para nuevo recordatorio
+    addReminderBtn.addEventListener('click', function() {
+        resetForm();
+        document.getElementById('reminderModalLabel').innerHTML = 
+            '<i class="bi bi-plus-circle me-2"></i>Nuevo Recordatorio';
+        reminderModal.show();
+    });
+    
+    // Quick actions
+    quickActions.forEach(action => {
+        action.addEventListener('click', function() {
+            const type = this.dataset.type;
+            resetForm();
+            setQuickActionDefaults(type);
+            reminderModal.show();
+        });
+    });
+    
+    // Guardar recordatorio
+    document.getElementById('saveReminderBtn').addEventListener('click', function() {
+        if (validateForm()) {
+            const formData = getFormData();
+            showToast(`Recordatorio "${formData.title}" creado exitosamente`, 'success');
+            reminderModal.hide();
+            // TODO: Enviar datos al servidor
+        }
+    });
+    
+    // Switches de activar/desactivar
+    document.querySelectorAll('.form-check-input[type="checkbox"]').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const isActive = this.checked;
+            const status = isActive ? 'activado' : 'desactivado';
+            showToast(`Recordatorio ${status}`, 'info');
+        });
+    });
+    
+    showToast('Vista de recordatorios cargada. Funcionalidad completa próximamente.', 'info');
+});
+
+function resetForm() {
+    document.getElementById('reminderForm').reset();
+    document.getElementById('deleteReminderBtn').classList.add('d-none');
+    
+    // Restaurar valores por defecto
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('reminderDate').value = today;
+    
+    const now = new Date();
+    const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                       now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('reminderTime').value = currentTime;
+    
+    document.getElementById('reminderNotification').checked = true;
+}
+
+function setQuickActionDefaults(type) {
+    const defaults = {
+        medication: {
+            title: 'Tomar medicación',
+            type: 'medication',
+            description: 'Recordatorio para tomar la medicación',
+            repeat: 'daily'
+        },
+        appointment: {
+            title: 'Cita médica',
+            type: 'appointment',
+            description: 'Recordatorio de cita médica',
+            repeat: 'once'
+        },
+        meal: {
+            title: 'Hora de comer',
+            type: 'meal',
+            description: 'Recordatorio de comida',
+            repeat: 'daily'
+        },
+        activity: {
+            title: 'Actividad física',
+            type: 'activity',
+            description: 'Recordatorio de ejercicio o actividad',
+            repeat: 'daily'
+        }
+    };
+    
+    const preset = defaults[type];
+    if (preset) {
+        document.getElementById('reminderTitle').value = preset.title;
+        document.getElementById('reminderType').value = preset.type;
+        document.getElementById('reminderDescription').value = preset.description;
+        document.getElementById('reminderRepeat').value = preset.repeat;
+    }
+}
+
+function validateForm() {
+    const title = document.getElementById('reminderTitle').value.trim();
+    const type = document.getElementById('reminderType').value;
+    const date = document.getElementById('reminderDate').value;
+    const time = document.getElementById('reminderTime').value;
+    
+    if (!title || !type || !date || !time) {
+        showToast('Por favor completa todos los campos obligatorios', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+function getFormData() {
+    return {
+        title: document.getElementById('reminderTitle').value.trim(),
+        type: document.getElementById('reminderType').value,
+        description: document.getElementById('reminderDescription').value.trim(),
+        date: document.getElementById('reminderDate').value,
+        time: document.getElementById('reminderTime').value,
+        repeat: document.getElementById('reminderRepeat').value,
+        target: document.getElementById('reminderTarget').value,
+        notification: document.getElementById('reminderNotification').checked
+    };
+}
+
+function editReminder(reminderId) {
+    // TODO: Cargar datos del recordatorio existente
+    document.getElementById('reminderModalLabel').innerHTML = 
+        '<i class="bi bi-pencil me-2"></i>Editar Recordatorio';
+    document.getElementById('deleteReminderBtn').classList.remove('d-none');
+    
+    const reminderModal = new bootstrap.Modal(document.getElementById('reminderModal'));
+    reminderModal.show();
+    
+    showToast(`Editando recordatorio ${reminderId}. Funcionalidad próximamente.`, 'info');
+}
+</script>
+
+<style>
+.quick-action {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.timeline-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+</style>
+{% endblock %}
