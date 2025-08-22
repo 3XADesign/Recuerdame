@@ -11,6 +11,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# VS Code Python temporary files
+tempCodeRunnerFile.py
+
 # Flask
 instance/*
 !instance/.gitignore
