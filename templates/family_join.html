@@ -1,87 +1,698 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Unirse a Familia - RecuerdaMe{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-6">
-            <div class="text-center mb-4">
-                <i class="bi bi-qr-code text-primary mb-3" style="font-size: 5rem;"></i>
-                <h1 class="h2 mb-3">Únete a una Familia</h1>
-                <p class="text-muted">
-                    Introduce el código de invitación que te compartió un familiar
-                </p>
+<div class="page-container">
+    <!-- Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <button class="btn-icon" onclick="history.back()" aria-label="Volver">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5"></path>
+                    <path d="M12 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <h1 class="page-title">Unirse a Familia</h1>
+        </div>
+    </header>
+
+    <!-- Método de unión -->
+    <div class="join-methods">
+        <div class="method-tabs">
+            <button class="method-tab active" data-method="code" onclick="switchMethod('code')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                Código
+            </button>
+            <button class="method-tab" data-method="invitation" onclick="switchMethod('invitation')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Invitación
+            </button>
+        </div>
+    </div>
+
+    <!-- Unirse por código -->
+    <div class="join-method-content" id="codeMethod">
+        <div class="method-header">
+            <div class="method-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
             </div>
-            
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <form id="joinFamilyForm">
-                        <div class="mb-4">
-                            <label for="inviteCode" class="form-label">Código de Invitación</label>
-                            <input type="text" class="form-control form-control-lg text-center" 
-                                   id="inviteCode" placeholder="CÓDIGO-123" 
-                                   style="letter-spacing: 3px; text-transform: uppercase; font-size: 1.5rem;" 
-                                   maxlength="8" required>
-                            <div class="form-text text-center">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Los códigos expiran en 24 horas
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="memberName" class="form-label">Tu nombre completo</label>
-                            <input type="text" class="form-control form-control-lg" 
-                                   id="memberName" placeholder="Ej: Carlos García" required>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="memberEmail" class="form-label">Email (opcional)</label>
-                            <input type="email" class="form-control form-control-lg" 
-                                   id="memberEmail" placeholder="tu@email.com">
-                        </div>
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                Unirse a la Familia
-                            </button>
-                            <a href="{{ url_for('family_create') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-arrow-left me-2"></i>
-                                Volver
-                            </a>
-                        </div>
-                    </form>
+            <h2>Unirse con código</h2>
+            <p>Ingresa el código de invitación que te compartió un miembro de la familia.</p>
+        </div>
+
+        <form id="joinByCodeForm" class="join-form">
+            <div class="form-group">
+                <label for="familyCode">Código de familia</label>
+                <div class="code-input-container">
+                    <input type="text" id="familyCode" name="code" required 
+                           placeholder="Ej: FAM-ABC123" 
+                           pattern="[A-Z]{3}-[A-Z0-9]{6}"
+                           maxlength="10"
+                           style="text-transform: uppercase;">
+                    <button type="button" class="btn-icon" onclick="pasteCode()" aria-label="Pegar código">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
+                <div class="form-help">
+                    <small>El código tiene el formato FAM-XXXXXX</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Unirse a familia
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Unirse por invitación -->
+    <div class="join-method-content hidden" id="invitationMethod">
+        <div class="method-header">
+            <div class="method-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </div>
+            <h2>Unirse por invitación</h2>
+            <p>Ingresa tu correo electrónico para buscar invitaciones pendientes.</p>
+        </div>
+
+        <form id="joinByInvitationForm" class="join-form">
+            <div class="form-group">
+                <label for="userEmail">Correo electrónico</label>
+                <input type="email" id="userEmail" name="email" required 
+                       placeholder="tu@correo.com">
+                <div class="form-help">
+                    <small>Buscaremos invitaciones enviadas a este correo</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    Buscar invitaciones
+                </button>
+            </div>
+        </form>
+
+        <!-- Lista de invitaciones encontradas -->
+        <div class="invitations-list hidden" id="invitationsList">
+            <h3>Invitaciones encontradas</h3>
+            <div id="invitationsContainer"></div>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="join-info">
+        <h3>¿Cómo obtener una invitación?</h3>
+        <div class="info-steps">
+            <div class="info-step">
+                <div class="step-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Solicita al administrador</h4>
+                    <p>Pide a un miembro de la familia que te envíe el código o una invitación por correo.</p>
+                </div>
+            </div>
+
+            <div class="info-step">
+                <div class="step-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Revisa tu correo</h4>
+                    <p>Las invitaciones se envían por correo electrónico con un enlace directo.</p>
+                </div>
+            </div>
+
+            <div class="info-step">
+                <div class="step-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 2v4"></path>
+                        <path d="M16 2v4"></path>
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <path d="M3 10h18"></path>
+                        <path d="M8 14h.01"></path>
+                        <path d="M12 14h.01"></path>
+                        <path d="M16 14h.01"></path>
+                        <path d="M8 18h.01"></path>
+                        <path d="M12 18h.01"></path>
+                        <path d="M16 18h.01"></path>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Códigos temporales</h4>
+                    <p>Los códigos de familia expiran después de 7 días por seguridad.</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block scripts %}
+    <!-- Crear nueva familia -->
+    <div class="alternative-action">
+        <div class="divider">
+            <span>¿No tienes invitación?</span>
+        </div>
+        <button class="btn-outline" onclick="location.href='/family/create'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Crear nueva familia
+        </button>
+    </div>
+</div>
+
 <script>
-// TODO: Implementar lógica de unirse a familia
+// Variables globales
+let currentMethod = 'code';
+
+// Inicialización
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('joinFamilyForm');
-    const codeInput = document.getElementById('inviteCode');
+    setupCodeInput();
+    setupForms();
+});
+
+// Configurar input de código
+function setupCodeInput() {
+    const codeInput = document.getElementById('familyCode');
+    const submitBtn = document.querySelector('#joinByCodeForm button[type="submit"]');
     
-    // Formatear código de invitación
     codeInput.addEventListener('input', function(e) {
-        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        
+        // Formatear con guión
+        if (value.length > 3) {
+            value = value.substring(0, 3) + '-' + value.substring(3, 9);
+        }
+        
+        e.target.value = value;
+        
+        // Validar formato completo
+        const isValid = /^[A-Z]{3}-[A-Z0-9]{6}$/.test(value);
+        submitBtn.disabled = !isValid;
+        submitBtn.style.opacity = isValid ? '1' : '0.5';
     });
-    
-    form.addEventListener('submit', function(e) {
+}
+
+// Configurar formularios
+function setupForms() {
+    // Formulario de código
+    document.getElementById('joinByCodeForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const formData = {
-            code: document.getElementById('inviteCode').value,
-            name: document.getElementById('memberName').value,
-            email: document.getElementById('memberEmail').value
-        };
+        const code = document.getElementById('familyCode').value.trim();
         
-        showToast(`Intentando unirse con código: ${formData.code}. Funcionalidad próximamente.`, 'info');
+        if (!code || !/^[A-Z]{3}-[A-Z0-9]{6}$/.test(code)) {
+            UI.showToast('Ingresa un código válido', 'warning');
+            return;
+        }
+        
+        try {
+            UI.showLoading('Verificando código...');
+            
+            const response = await API.post('/family/join/code', { code });
+            
+            if (response.success) {
+                UI.showToast('Te has unido a la familia exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.href = '/home';
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Error joining family:', error);
+            
+            let message = 'Error al unirse a la familia';
+            if (error.message.includes('Invalid code')) {
+                message = 'Código inválido o expirado';
+            } else if (error.message.includes('Already member')) {
+                message = 'Ya eres miembro de esta familia';
+            } else if (error.message) {
+                message = error.message;
+            }
+            
+            UI.showToast(message, 'error');
+        } finally {
+            UI.hideLoading();
+        }
     });
-});
+    
+    // Formulario de invitación
+    document.getElementById('joinByInvitationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('userEmail').value.trim();
+        
+        if (!email || !isValidEmail(email)) {
+            UI.showToast('Ingresa un correo electrónico válido', 'warning');
+            return;
+        }
+        
+        try {
+            UI.showLoading('Buscando invitaciones...');
+            
+            const response = await API.post('/family/invitations/search', { email });
+            
+            if (response.success && response.data.invitations.length > 0) {
+                showInvitations(response.data.invitations);
+                UI.showToast(`${response.data.invitations.length} invitación(es) encontrada(s)`, 'success');
+            } else {
+                UI.showToast('No se encontraron invitaciones para este correo', 'info');
+                hideInvitations();
+            }
+        } catch (error) {
+            console.error('Error searching invitations:', error);
+            UI.showToast('Error al buscar invitaciones', 'error');
+            hideInvitations();
+        } finally {
+            UI.hideLoading();
+        }
+    });
+}
+
+// Cambiar método de unión
+function switchMethod(method) {
+    currentMethod = method;
+    
+    // Actualizar tabs
+    document.querySelectorAll('.method-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-method="${method}"]`).classList.add('active');
+    
+    // Mostrar/ocultar contenido
+    document.querySelectorAll('.join-method-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    document.getElementById(`${method}Method`).classList.remove('hidden');
+}
+
+// Pegar código del portapapeles
+async function pasteCode() {
+    try {
+        const text = await navigator.clipboard.readText();
+        const cleanText = text.trim().toUpperCase();
+        
+        // Verificar si es un código válido
+        if (/^[A-Z]{3}-?[A-Z0-9]{6}$/.test(cleanText)) {
+            let formattedCode = cleanText.replace('-', '');
+            formattedCode = formattedCode.substring(0, 3) + '-' + formattedCode.substring(3);
+            
+            document.getElementById('familyCode').value = formattedCode;
+            document.getElementById('familyCode').dispatchEvent(new Event('input'));
+            
+            UI.showToast('Código pegado', 'success');
+        } else {
+            UI.showToast('El texto copiado no es un código válido', 'warning');
+        }
+    } catch (error) {
+        console.error('Error pasting code:', error);
+        UI.showToast('Error al pegar código', 'error');
+    }
+}
+
+// Mostrar invitaciones
+function showInvitations(invitations) {
+    const container = document.getElementById('invitationsContainer');
+    const list = document.getElementById('invitationsList');
+    
+    container.innerHTML = '';
+    
+    invitations.forEach(invitation => {
+        const invitationCard = document.createElement('div');
+        invitationCard.className = 'invitation-card';
+        invitationCard.innerHTML = `
+            <div class="invitation-info">
+                <h4>${invitation.family_name}</h4>
+                <p>Invitado por: ${invitation.sender_name}</p>
+                <span class="invitation-date">Enviado: ${new Date(invitation.created_at).toLocaleDateString()}</span>
+            </div>
+            <div class="invitation-actions">
+                <button class="btn-secondary" onclick="declineInvitation('${invitation.id}')">
+                    Rechazar
+                </button>
+                <button class="btn-primary" onclick="acceptInvitation('${invitation.id}')">
+                    Aceptar
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(invitationCard);
+    });
+    
+    list.classList.remove('hidden');
+}
+
+// Ocultar invitaciones
+function hideInvitations() {
+    document.getElementById('invitationsList').classList.add('hidden');
+}
+
+// Aceptar invitación
+async function acceptInvitation(invitationId) {
+    try {
+        UI.showLoading('Aceptando invitación...');
+        
+        const response = await API.post(`/family/invitations/${invitationId}/accept`);
+        
+        if (response.success) {
+            UI.showToast('Te has unido a la familia exitosamente', 'success');
+            setTimeout(() => {
+                window.location.href = '/home';
+            }, 1500);
+        }
+    } catch (error) {
+        console.error('Error accepting invitation:', error);
+        UI.showToast('Error al aceptar invitación', 'error');
+    } finally {
+        UI.hideLoading();
+    }
+}
+
+// Rechazar invitación
+async function declineInvitation(invitationId) {
+    if (!confirm('¿Estás seguro de que quieres rechazar esta invitación?')) {
+        return;
+    }
+    
+    try {
+        UI.showLoading('Rechazando invitación...');
+        
+        const response = await API.post(`/family/invitations/${invitationId}/decline`);
+        
+        if (response.success) {
+            UI.showToast('Invitación rechazada', 'info');
+            
+            // Remover de la lista
+            const invitationCard = document.querySelector(`[onclick*="${invitationId}"]`).closest('.invitation-card');
+            invitationCard.remove();
+            
+            // Si no quedan invitaciones, ocultar lista
+            if (document.querySelectorAll('.invitation-card').length === 0) {
+                hideInvitations();
+            }
+        }
+    } catch (error) {
+        console.error('Error declining invitation:', error);
+        UI.showToast('Error al rechazar invitación', 'error');
+    } finally {
+        UI.hideLoading();
+    }
+}
+
+// Validar email
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 </script>
+{% endblock %}
+
+{% block styles %}
+<style>
+.join-methods {
+    padding: 0 var(--space-lg) var(--space-lg);
+}
+
+.method-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    background: var(--color-surface);
+    border-radius: var(--radius-full);
+    padding: var(--space-xs);
+}
+
+.method-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    justify-content: center;
+}
+
+.method-tab.active {
+    background: var(--color-primary);
+    color: white;
+}
+
+.join-method-content {
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.join-method-content.hidden {
+    display: none;
+}
+
+.method-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.method-icon {
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+}
+
+.method-header h2 {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+}
+
+.method-header p {
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.join-form {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+}
+
+.code-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.code-input-container input {
+    flex: 1;
+    padding-right: 48px;
+    font-family: monospace;
+    font-size: var(--font-lg);
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.code-input-container .btn-icon {
+    position: absolute;
+    right: var(--space-sm);
+}
+
+.invitations-list {
+    margin-top: var(--space-lg);
+}
+
+.invitations-list h3 {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-text);
+}
+
+.invitation-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-md);
+    border: 2px solid var(--color-border);
+}
+
+.invitation-info h4 {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.invitation-info p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.invitation-date {
+    font-size: var(--font-sm);
+    color: var(--color-text-secondary);
+}
+
+.invitation-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+.join-info {
+    padding: 0 var(--space-lg) var(--space-xl);
+}
+
+.join-info h3 {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    text-align: center;
+    color: var(--color-text);
+}
+
+.info-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.info-step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+}
+
+.step-icon {
+    color: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: var(--space-xs);
+}
+
+.step-content h4 {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.step-content p {
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.alternative-action {
+    padding: 0 var(--space-lg) var(--space-xl);
+    text-align: center;
+}
+
+.divider {
+    position: relative;
+    margin-bottom: var(--space-lg);
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-border);
+    z-index: 1;
+}
+
+.divider span {
+    position: relative;
+    background: var(--color-background);
+    padding: 0 var(--space-md);
+    color: var(--color-text-secondary);
+    font-size: var(--font-sm);
+    z-index: 2;
+}
+
+@media (min-width: 768px) {
+    .join-form {
+        max-width: 500px;
+        margin: 0 auto var(--space-lg);
+    }
+    
+    .invitation-card {
+        flex-direction: row;
+    }
+    
+    .invitation-actions {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 767px) {
+    .method-tab {
+        flex-direction: column;
+        padding: var(--space-sm);
+        font-size: var(--font-sm);
+    }
+    
+    .invitation-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .invitation-actions {
+        justify-content: stretch;
+    }
+    
+    .invitation-actions button {
+        flex: 1;
+    }
+}
+</style>
 {% endblock %}

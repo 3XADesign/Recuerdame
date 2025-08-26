@@ -1,342 +1,292 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory
-import firebase_admin
-from firebase_admin import credentials, firestore, auth as firebase_auth, storage
-from google.cloud.firestore import GeoPoint
 import os
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import uuid
-
-# Cargar variables de entorno
-load_dotenv()
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+import firebase_admin
+from firebase_admin import credentials, firestore, auth
+import json
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Inicializar Firebase Admin
-def init_firebase():
-    """Inicializa Firebase Admin SDK usando variables de entorno"""
-    try:
-        # Usar credenciales desde variable de entorno o archivo
-        cred_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-        if cred_path and os.path.exists(cred_path):
-            cred = credentials.Certificate(cred_path)
+# Initialize Firebase Admin SDK (optional for development)
+try:
+    if not firebase_admin._apps:
+        # Try to load Firebase credentials
+        firebase_key_path = 'firebase-admin-key.json'
+        if os.path.exists(firebase_key_path):
+            cred = credentials.Certificate(firebase_key_path)
+            firebase_admin.initialize_app(cred)
+            db = firestore.client()
+            print("✅ Firebase inicializado correctamente")
         else:
-            # Fallback a archivo local para desarrollo
-            cred = credentials.Certificate('instance/firebase.json')
-        
-        # Configurar con Storage Bucket
-        storage_bucket = os.getenv('FIREBASE_STORAGE_BUCKET', 'your-project.appspot.com')
-        
-        firebase_admin.initialize_app(cred, {
-            'storageBucket': storage_bucket
-        })
-        print("✅ Firebase Admin SDK inicializado correctamente")
-        return True
-    except Exception as e:
-        print(f"❌ Error inicializando Firebase: {e}")
-        return False
-
-# Inicializar Firebase
-firebase_initialized = init_firebase()
-if firebase_initialized:
-    db = firestore.client()
-else:
+            print("⚠️  Firebase key no encontrado - funcionando en modo desarrollo")
+            db = None
+    else:
+        db = firestore.client()
+except Exception as e:
+    print(f"⚠️  Firebase initialization error: {e}")
+    print("📝 Para configurar Firebase:")
+    print("   1. Descarga firebase-admin-key.json de Firebase Console")
+    print("   2. Colócalo en la raíz del proyecto")
     db = None
-    print("⚠️ Ejecutando en modo de desarrollo sin Firebase")
-
-# Context processor para inyectar variables globales en templates
-@app.context_processor
-def inject_global_vars():
-    return {
-        'GOOGLE_MAPS_API_KEY': os.getenv('GOOGLE_MAPS_API_KEY', 'YOUR_API_KEY_HERE'),
-        'current_year': datetime.now().year
-    }
-
-# --- RUTAS PRINCIPALES ---
 
 @app.route('/')
 def home():
-    """Ruta inicial - onboarding si no hay sesión"""
-    # TODO: Verificar sesión real con Firebase Auth
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
+    """Landing page for family members with action cards"""
+    # TODO: Check authentication and get user data
+    user_data = {
+        'name': 'María',
+        'is_authenticated': True,
+        'family_id': 'demo-family'
+    }
+    return render_template('home.html', user=user_data)
+
+@app.route('/onboarding')
+def onboarding():
+    """3-screen onboarding flow"""
     return render_template('onboarding.html')
 
-@app.route('/dashboard')
-def dashboard():
-    """Vista principal del mapa para familiares"""
-    # TODO: Verificar autenticación y permisos
-    # TODO: Obtener datos reales de la familia del usuario
-    
-    # Datos de ejemplo para desarrollo
-    family_data = {
-        'familyId': session.get('family_id', 'demo-family'),
-        'familyName': 'Familia García',
-        'homeLat': 40.4168,  # Madrid
-        'homeLng': -3.7038,
-        'safeRadius': 500,
-        'userName': 'Abuela Carmen'
-    }
-    
-    return render_template('dashboard.html', family=family_data)
-
-# Servir manifest.json
-@app.route('/manifest.json')
-def manifest():
-    return send_from_directory('.', 'manifest.json')
-
-# Servir service worker
-@app.route('/service-worker.js')
-def service_worker():
-    return send_from_directory('.', 'service-worker.js')
+@app.route('/map')
+def map_view():
+    """Google Maps view with location tracking"""
+    # TODO: Get family locations from Firestore
+    return render_template('map.html', maps_api_key=os.environ.get('GOOGLE_MAPS_API_KEY'))
 
 @app.route('/memories')
 def memories_list():
-    """Lista de recuerdos (personas)"""
+    """List of shared memories"""
+    # TODO: Fetch memories from Firestore
     return render_template('memories_list.html')
 
 @app.route('/memory/<person_id>')
 def memory_person(person_id):
-    """Ficha individual de una persona"""
+    """Individual person's memory page"""
+    # TODO: Fetch person data and memories
     return render_template('memory_person.html', person_id=person_id)
+
+@app.route('/reminders')
+def reminders():
+    """Medication and care reminders"""
+    # TODO: Fetch reminders from Firestore
+    return render_template('reminders.html')
+
+@app.route('/alerts')
+def alerts():
+    """Timeline of safety alerts"""
+    # TODO: Fetch alerts from Firestore
+    return render_template('alerts.html')
 
 @app.route('/family/create')
 def family_create():
-    """Crear nueva familia"""
+    """Create new family group"""
     return render_template('family_create.html')
 
 @app.route('/family/join')
 def family_join():
-    """Unirse a familia con código"""
+    """Join existing family group"""
     return render_template('family_join.html')
 
-@app.route('/alerts')
-def alerts():
-    """Lista de alertas"""
-    return render_template('alerts.html')
-
-@app.route('/reminders')
-def reminders():
-    """Gestión de recordatorios"""
-    return render_template('reminders.html')
-
-@app.route('/info-alzheimer')
-def info_alzheimer():
-    """Información sobre Alzheimer"""
-    return render_template('info_alzheimer.html')
-
-# --- API ENDPOINTS ---
-
-@app.route('/api/family', methods=['POST'])
-def create_family():
-    """Crear nueva familia"""
-    if not db:
-        return jsonify({'error': 'Firebase no disponible'}), 500
+@app.route('/settings')
+def settings():
+    """User settings and preferences"""
+    # TODO: Get user data from Firebase Auth
+    user_data = {
+        'uid': 'demo-user-123',
+        'displayName': 'María García',
+        'email': 'maria@example.com',
+        'phone': '+34 612 345 678',
+        'photoUrl': None
+    }
     
-    try:
-        data = request.get_json()
-        
-        # Validar datos requeridos
-        if not all(k in data for k in ['name', 'lat', 'lng']):
-            return jsonify({'error': 'Faltan campos requeridos'}), 400
-        
-        # Crear documento de familia
-        family_ref = db.collection('families').document()
-        family_data = {
-            'name': data['name'],
-            'homeGeopoint': GeoPoint(float(data['lat']), float(data['lng'])),
-            'safeRadiusMeters': int(data.get('radius', 500)),
-            'createdAt': datetime.utcnow(),
-            'ownerUid': session.get('user_id', 'demo-user')  # TODO: usar UID real
-        }
-        
-        family_ref.set(family_data)
-        
-        # Agregar usuario como miembro admin
-        member_ref = family_ref.collection('members').document(session.get('user_id', 'demo-user'))
-        member_data = {
-            'role': 'admin',
-            'displayName': data.get('ownerName', 'Usuario'),
-            'email': data.get('email', ''),
-            'createdAt': datetime.utcnow(),
-            'fcmTokens': []
-        }
-        member_ref.set(member_data)
-        
-        return jsonify({
-            'success': True,
-            'familyId': family_ref.id,
-            'message': 'Familia creada exitosamente'
-        })
-        
-    except Exception as e:
-        print(f"Error creando familia: {e}")
-        return jsonify({'error': 'Error interno del servidor'}), 500
+    # TODO: Get families from Firestore
+    families = [
+        {'id': 'family-1', 'name': 'Familia García'},
+        {'id': 'family-2', 'name': 'Familia Extendida'}
+    ]
+    
+    active_family_id = 'family-1'
+    active_family = {
+        'id': active_family_id,
+        'name': 'Familia García',
+        'homeGeopoint': {'lat': 40.4168, 'lng': -3.7038},
+        'safeRadiusMeters': 500
+    }
+    
+    i18n = {
+        'languages': [
+            {'code': 'es', 'name': 'Español'},
+            {'code': 'en', 'name': 'English'}
+        ]
+    }
+    
+    return render_template('settings.html', 
+                         user=user_data,
+                         families=families,
+                         activeFamilyId=active_family_id,
+                         activeFamily=active_family,
+                         i18n=i18n)
+
+# API Endpoints
+@app.route('/api/family', methods=['POST'])
+def api_create_family():
+    """Create a new family group"""
+    # TODO: Implement family creation logic
+    data = request.get_json()
+    return jsonify({'success': True, 'family_id': 'demo-family-123'})
 
 @app.route('/api/invite', methods=['POST'])
-def create_invite():
-    """Crear código de invitación"""
-    if not db:
-        return jsonify({'error': 'Firebase no disponible'}), 500
+def api_send_invite():
+    """Send family invitation"""
+    # TODO: Implement invitation logic
+    data = request.get_json()
+    return jsonify({'success': True, 'message': 'Invitation sent'})
+
+# Settings API Endpoints
+@app.route('/api/profile', methods=['POST'])
+def api_update_profile():
+    """Update user profile"""
+    # TODO: Validate auth.uid and update families/{familyId}/members/{uid}
+    data = request.get_json()
     
-    try:
-        data = request.get_json()
-        family_id = data.get('familyId')
-        role = data.get('role', 'familiar')
-        
-        if not family_id:
-            return jsonify({'error': 'familyId requerido'}), 400
-        
-        # Generar código único de 6 caracteres
-        invite_code = str(uuid.uuid4())[:8].upper()
-        
-        # Crear invitación
-        invite_ref = db.collection('families').document(family_id).collection('invites').document()
-        invite_data = {
-            'code': invite_code,
-            'role': role,
-            'createdBy': session.get('user_id', 'demo-user'),
-            'expiresAt': datetime.utcnow() + timedelta(hours=24),
-            'isUsed': False,
-            'createdAt': datetime.utcnow()
-        }
-        
-        invite_ref.set(invite_data)
-        
-        return jsonify({
-            'success': True,
-            'inviteCode': invite_code,
-            'expiresAt': invite_data['expiresAt'].isoformat()
-        })
-        
-    except Exception as e:
-        print(f"Error creando invitación: {e}")
-        return jsonify({'error': 'Error interno del servidor'}), 500
+    # Validations
+    if 'displayName' in data and (len(data['displayName']) < 2 or len(data['displayName']) > 60):
+        return jsonify({'error': 'Nombre debe tener entre 2 y 60 caracteres'}), 400
+    
+    # TODO: Update Firestore
+    return jsonify({'success': True, 'message': 'Perfil actualizado'})
+
+@app.route('/api/profile/avatar', methods=['POST'])
+def api_upload_avatar():
+    """Get signed URL for avatar upload"""
+    # TODO: Generate signed URL for Firebase Storage
+    import uuid
+    file_name = f"avatars/{uuid.uuid4()}.jpg"
+    
+    return jsonify({
+        'signedUrl': f'https://storage.googleapis.com/demo-bucket/{file_name}?signed=true',
+        'publicUrl': f'https://storage.googleapis.com/demo-bucket/{file_name}'
+    })
+
+@app.route('/api/family/settings', methods=['POST'])
+def api_update_family_settings():
+    """Update family settings (home location, safe radius)"""
+    # TODO: Validate auth.uid belongs to familyId
+    data = request.get_json()
+    
+    # Validations
+    if 'safeRadiusMeters' in data:
+        radius = data['safeRadiusMeters']
+        if radius < 100 or radius > 3000:
+            return jsonify({'error': 'Radio seguro debe estar entre 100 y 3000 metros'}), 400
+    
+    if 'homeGeopoint' in data:
+        geo = data['homeGeopoint']
+        if not (-90 <= geo.get('lat', 0) <= 90) or not (-180 <= geo.get('lng', 0) <= 180):
+            return jsonify({'error': 'Coordenadas inválidas'}), 400
+    
+    # TODO: Update families/{familyId}
+    return jsonify({'success': True, 'message': 'Ajustes de familia guardados'})
+
+@app.route('/api/family/switch', methods=['POST'])
+def api_switch_family():
+    """Switch active family"""
+    # TODO: Update members/{uid}.activeFamilyId
+    data = request.get_json()
+    family_id = data.get('familyId')
+    
+    return jsonify({'success': True, 'message': f'Cambiado a familia {family_id}'})
+
+@app.route('/api/notifications/subscribe', methods=['POST'])
+def api_subscribe_notifications():
+    """Subscribe to FCM notifications"""
+    # TODO: Save FCM token to members/{uid}.fcmTokens[]
+    data = request.get_json()
+    fcm_token = data.get('token')
+    
+    return jsonify({'success': True, 'message': 'Suscrito a notificaciones'})
+
+@app.route('/api/notifications/test', methods=['POST'])
+def api_test_notification():
+    """Send test notification"""
+    # TODO: Send FCM test notification
+    return jsonify({'success': True, 'message': 'Notificación de prueba enviada'})
+
+@app.route('/api/invite/code', methods=['GET'])
+def api_get_invite_code():
+    """Generate or get invite code"""
+    # TODO: Create families/{id}/invites/{inviteId} with random code
+    import random
+    import string
+    from datetime import datetime, timedelta
+    
+    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    expires_at = (datetime.now() + timedelta(hours=24)).isoformat()
+    
+    return jsonify({
+        'code': code,
+        'expiresAt': expires_at,
+        'familyName': 'Familia García'
+    })
+
+@app.route('/api/account/export', methods=['POST'])
+def api_export_account():
+    """Export user data (stub)"""
+    # TODO: Generate comprehensive user data export
+    export_data = {
+        'user': {
+            'uid': 'demo-user-123',
+            'displayName': 'María García',
+            'email': 'maria@example.com',
+            'exportedAt': '2025-08-26T10:30:00Z'
+        },
+        'families': ['Familia García'],
+        'memories': 42,
+        'locations': 1523
+    }
+    
+    return jsonify(export_data)
+
+@app.route('/api/account/delete', methods=['POST'])
+def api_delete_account():
+    """Delete user account (stub)"""
+    # TODO: Implement real account deletion flow
+    return jsonify({'message': 'Solicitud de eliminación procesada'}), 202
+
+@app.route('/api/auth/logout', methods=['POST'])
+def api_logout():
+    """Logout user"""
+    # TODO: Clear Firebase Auth session
+    session.clear()
+    return jsonify({'success': True, 'message': 'Sesión cerrada'})
 
 @app.route('/api/location', methods=['POST'])
-def save_location():
-    """Guardar ubicación del usuario"""
-    if not db:
-        return jsonify({'error': 'Firebase no disponible'}), 500
-    
-    try:
-        data = request.get_json()
-        
-        # Validar datos requeridos
-        required_fields = ['familyId', 'uid', 'latitude', 'longitude']
-        if not all(k in data for k in required_fields):
-            return jsonify({'error': 'Faltan campos requeridos'}), 400
-        
-        # Crear documento de ubicación
-        location_ref = db.collection('families').document(data['familyId']).collection('locations').document()
-        location_data = {
-            'uid': data['uid'],
-            'geopoint': GeoPoint(float(data['latitude']), float(data['longitude'])),
-            'accuracy': data.get('accuracy', 0),
-            'deviceInfo': request.headers.get('User-Agent', 'Unknown'),
-            'createdAt': datetime.utcnow(),
-            'isOutsideSafeRadius': data.get('outside', False)
-        }
-        
-        location_ref.set(location_data)
-        
-        # Si está fuera del radio seguro, crear alerta
-        if data.get('outside', False):
-            alert_ref = db.collection('families').document(data['familyId']).collection('alerts').document()
-            alert_data = {
-                'type': 'geofence',
-                'message': f"Usuario fuera del área segura - {datetime.utcnow().strftime('%H:%M')}",
-                'relatedUid': data['uid'],
-                'createdAt': datetime.utcnow(),
-                'acknowledgedBy': []
-            }
-            alert_ref.set(alert_data)
-            
-            # TODO: Enviar notificación push a familiares
-        
-        return jsonify({
-            'success': True,
-            'message': 'Ubicación guardada exitosamente'
-        })
-        
-    except Exception as e:
-        print(f"Error guardando ubicación: {e}")
-        return jsonify({'error': 'Error interno del servidor'}), 500
+def api_update_location():
+    """Update user location"""
+    # TODO: Store location in Firestore
+    data = request.get_json()
+    return jsonify({'success': True, 'message': 'Location updated'})
 
 @app.route('/api/last-location')
-def get_last_location():
-    """Obtener última ubicación conocida"""
-    if not db:
-        # Retornar datos de demo cuando Firebase no está disponible
-        return jsonify({
-            'success': True,
-            'location': {
-                'latitude': 40.4168,  # Madrid centro
-                'longitude': -3.7038,
-                'accuracy': 10,
-                'timestamp': datetime.now().isoformat(),
-                'isDemo': True
-            }
-        })
-    
-    try:
-        family_id = request.args.get('familyId')
-        uid = request.args.get('uid')
-        
-        if not family_id or not uid:
-            return jsonify({'error': 'familyId y uid requeridos'}), 400
-        
-        # Buscar última ubicación
-        locations_ref = (db.collection('families').document(family_id)
-                        .collection('locations')
-                        .where('uid', '==', uid)
-                        .order_by('createdAt', direction=firestore.Query.DESCENDING)
-                        .limit(1))
-        
-        locations = list(locations_ref.stream())
-        
-        if not locations:
-            return jsonify({'success': False, 'message': 'No hay ubicaciones'})
-        
-        location_doc = locations[0]
-        location_data = location_doc.to_dict()
-        
-        return jsonify({
-            'success': True,
-            'location': {
-                'latitude': location_data['geopoint'].latitude,
-                'longitude': location_data['geopoint'].longitude,
-                'accuracy': location_data.get('accuracy', 0),
-                'timestamp': location_data['createdAt'].isoformat(),
-                'isOutsideSafeRadius': location_data.get('isOutsideSafeRadius', False)
-            }
-        })
-        
-    except Exception as e:
-        print(f"Error obteniendo ubicación: {e}")
-        return jsonify({'error': 'Error interno del servidor'}), 500
+def api_get_last_location():
+    """Get last known location of family member"""
+    # TODO: Fetch from Firestore
+    return jsonify({
+        'latitude': 40.7128,
+        'longitude': -74.0060,
+        'timestamp': '2025-08-26T10:30:00Z',
+        'status': 'safe'
+    })
 
 @app.route('/healthz')
 def health_check():
-    """Health check para Render"""
-    return 'ok', 200
-
-# --- HELPERS ---
-
-def mock_session():
-    """Helper para desarrollo - simula sesión autenticada"""
-    if 'user_id' not in session:
-        session['user_id'] = 'demo-user-123'
-        session['family_id'] = 'demo-family-456'
-        session['user_role'] = 'familiar'
-
-# Aplicar mock de sesión en desarrollo
-@app.before_request
-def before_request():
-    # TODO: Reemplazar con autenticación real
-    if app.debug and 'user_id' not in session:
-        mock_session()
+    """Health check endpoint for Render"""
+    return jsonify({'status': 'healthy', 'timestamp': '2025-08-26T10:30:00Z'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Usar puerto 3000 para evitar conflicto con AirPlay en macOS
+    port = int(os.environ.get('PORT', 3000))
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+    
+    print(f"🚀 RecuerdaMe iniciando en http://localhost:{port}")
+    print(f"🔧 Modo debug: {'activado' if debug_mode else 'desactivado'}")
+    
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

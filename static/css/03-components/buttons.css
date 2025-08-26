@@ -1,0 +1,144 @@
+/* Buttons - Primary, Secondary, Pills */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-base);
+  min-height: 48px;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Primary button with gradient */
+.btn-cta {
+  background: var(--cta);
+  color: white;
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-6);
+  min-height: 52px;
+  font-weight: 600;
+}
+
+.btn-cta:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.btn-cta:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Secondary button */
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg);
+  transform: translateY(-1px);
+}
+
+/* Ghost button */
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+/* Small button */
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  min-height: 36px;
+  font-size: var(--fs-sm);
+  border-radius: var(--radius-pill);
+}
+
+/* Icon button */
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.btn-icon:hover:not(:disabled) {
+  background: var(--bg);
+  transform: scale(1.05);
+}
+
+/* Floating action button */
+.btn-fab {
+  position: fixed;
+  bottom: calc(80px + var(--space-5));
+  right: var(--space-5);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--cta);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: var(--z-modal);
+}
+
+.btn-fab:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Pill buttons */
+.btn-pill {
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  min-height: 36px;
+  font-size: var(--fs-sm);
+}
+
+/* Button groups */
+.btn-group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn-group .btn {
+  flex: 1;
+}
+
+/* Icon in button */
+.btn-icon-left {
+  flex-direction: row;
+}
+
+.btn-icon-right {
+  flex-direction: row-reverse;
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}

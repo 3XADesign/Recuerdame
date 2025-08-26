@@ -1,0 +1,192 @@
+/* Chips - Badges, tags, status indicators */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  transition: var(--transition-fast);
+}
+
+/* Chip variants */
+.chip-success {
+  background: var(--ok);
+  color: white;
+  border-color: var(--ok);
+}
+
+.chip-warning {
+  background: var(--warn);
+  color: white;
+  border-color: var(--warn);
+}
+
+.chip-danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+/* Soft variants */
+.chip-soft {
+  background: var(--pastel-3);
+  border: none;
+  color: var(--text);
+}
+
+.chip-soft-success {
+  background: rgba(24, 160, 94, 0.1);
+  color: var(--ok);
+  border: none;
+}
+
+.chip-soft-warning {
+  background: rgba(226, 161, 0, 0.1);
+  color: var(--warn);
+  border: none;
+}
+
+.chip-soft-danger {
+  background: rgba(214, 69, 69, 0.1);
+  color: var(--danger);
+  border: none;
+}
+
+/* Chip sizes */
+.chip-sm {
+  padding: 2px var(--space-2);
+  font-size: 12px;
+}
+
+.chip-lg {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-md);
+}
+
+/* Interactive chips */
+.chip-button {
+  cursor: pointer;
+  user-select: none;
+}
+
+.chip-button:hover {
+  transform: scale(1.05);
+}
+
+.chip-button:active {
+  transform: scale(0.95);
+}
+
+/* Chip with close button */
+.chip-removable {
+  padding-right: var(--space-1);
+}
+
+.chip-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  margin-left: var(--space-1);
+  transition: var(--transition-fast);
+}
+
+.chip-close:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chip-close svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* Status badge (for map) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge-safe {
+  background: var(--ok);
+  color: white;
+  border-color: var(--ok);
+}
+
+.status-badge-warning {
+  background: var(--warn);
+  color: white;
+  border-color: var(--warn);
+}
+
+.status-badge-danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+/* Status indicator dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-weak);
+  display: inline-block;
+}
+
+.status-dot-safe {
+  background: var(--ok);
+}
+
+.status-dot-warning {
+  background: var(--warn);
+}
+
+.status-dot-danger {
+  background: var(--danger);
+}
+
+/* Animated status dot */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-dot-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Chip groups */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip-group-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

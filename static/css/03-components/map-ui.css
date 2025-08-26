@@ -1,0 +1,236 @@
+/* Map UI - Overlays, controls, status indicators */
+
+/* Map container */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Map overlays */
+.map-overlay {
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.map-overlay > * {
+  pointer-events: auto;
+}
+
+/* Top controls */
+.map-controls-top {
+  top: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Bottom controls */
+.map-controls-bottom {
+  bottom: var(--space-4);
+  left: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+/* Map control button */
+.map-control-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.map-control-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.map-control-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+/* Status badge on map */
+.map-status-badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.map-status-badge.safe {
+  background: var(--ok);
+  color: white;
+  border-color: var(--ok);
+}
+
+.map-status-badge.warning {
+  background: var(--warn);
+  color: white;
+  border-color: var(--warn);
+}
+
+.map-status-badge.danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+/* Location marker custom styles */
+.location-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: var(--ok);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.location-marker::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ok);
+  opacity: 0.3;
+  animation: pulse-marker 2s infinite;
+}
+
+@keyframes pulse-marker {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Map info panel */
+.map-info-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--space-5);
+  transform: translateY(calc(100% - 60px));
+  transition: var(--transition-base);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.map-info-panel.expanded {
+  transform: translateY(0);
+}
+
+.map-info-panel-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  margin: 0 auto var(--space-4) auto;
+  cursor: pointer;
+}
+
+.map-info-title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-3) 0;
+}
+
+.map-info-content {
+  color: var(--text-weak);
+  line-height: 1.6;
+}
+
+/* Radius selector */
+.radius-selector {
+  position: absolute;
+  bottom: 100px;
+  right: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 120px;
+}
+
+.radius-option {
+  display: block;
+  width: 100%;
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  text-align: left;
+  border-radius: var(--space-1);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  transition: var(--transition-fast);
+}
+
+.radius-option:hover {
+  background: var(--bg);
+}
+
+.radius-option.active {
+  background: var(--pastel-3);
+  font-weight: 500;
+}
+
+/* Dark theme map adjustments */
+[data-theme="dark"] .map-container {
+  background: var(--surface);
+}
+
+[data-theme="dark"] .map-control-btn,
+[data-theme="dark"] .map-status-badge {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .map-info-panel {
+  border-top-color: var(--line);
+}

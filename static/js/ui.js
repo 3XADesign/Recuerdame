@@ -1,521 +1,471 @@
 /**
- * RecuerdaMe - UI Utilities
- * Common functions for user interface interactions
+ * UI.js - User Interface utilities
+ * Handles toasts, modals, animations, and other UI interactions
  */
 
-// Global app state
-window.RecuerdaMe = {
-    currentTheme: 'light',
-    isHighContrast: false,
-    toastContainer: null,
-    offcanvasMenu: null
-};
-
-/**
- * Initialize UI components and event listeners
- */
-document.addEventListener('DOMContentLoaded', function() {
-    initializeToastContainer();
-    initializeThemeToggle();
-    initializeOffcanvas();
-    initializeAccessibility();
-    
-    console.log('✅ RecuerdaMe UI initialized');
-});
-
-/**
- * Initialize toast container for notifications
- */
-function initializeToastContainer() {
-    const container = document.querySelector('.toast-container');
-    if (container) {
-        RecuerdaMe.toastContainer = container;
+class UI {
+    constructor() {
+        this.toastContainer = null;
+        this.init();
     }
-}
 
-/**
- * Initialize theme toggle functionality
- */
-function initializeThemeToggle() {
-    const toggleBtn = document.getElementById('toggleContrast');
-    if (!toggleBtn) return;
-    
-    // Load saved preference
-    const savedTheme = localStorage.getItem('recuerdame-theme');
-    if (savedTheme === 'high-contrast') {
-        enableHighContrast();
+    init() {
+        this.setupToastContainer();
+        this.setupGlobalListeners();
     }
-    
-    toggleBtn.addEventListener('click', function() {
-        if (RecuerdaMe.isHighContrast) {
-            disableHighContrast();
-        } else {
-            enableHighContrast();
+
+    // Toast System
+    setupToastContainer() {
+        this.toastContainer = document.getElementById('toastContainer');
+        if (!this.toastContainer) {
+            this.toastContainer = document.createElement('div');
+            this.toastContainer.id = 'toastContainer';
+            this.toastContainer.className = 'toast-container';
+            document.body.appendChild(this.toastContainer);
         }
-    });
-}
-
-/**
- * Initialize offcanvas menu
- */
-function initializeOffcanvas() {
-    const offcanvasElement = document.getElementById('mainMenu');
-    if (offcanvasElement) {
-        RecuerdaMe.offcanvasMenu = new bootstrap.Offcanvas(offcanvasElement);
     }
-}
 
-/**
- * Initialize accessibility features
- */
-function initializeAccessibility() {
-    // Enhanced keyboard navigation
-    document.addEventListener('keydown', function(e) {
-        // ESC to close modals/offcanvas
-        if (e.key === 'Escape') {
-            const openModal = document.querySelector('.modal.show');
-            if (openModal) {
-                const modal = bootstrap.Modal.getInstance(openModal);
-                if (modal) modal.hide();
-            }
-            
-            if (RecuerdaMe.offcanvasMenu && RecuerdaMe.offcanvasMenu._isShown) {
-                RecuerdaMe.offcanvasMenu.hide();
-            }
+    showToast(message, type = 'info', options = {}) {
+        const {
+            duration = 5000,
+            action = null,
+            onAction = null,
+            dismissible = true
+        } = options;
+
+        const toast = this.createToast(message, type, action, onAction, dismissible);
+        this.toastContainer.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // Auto dismiss
+        if (duration > 0) {
+            setTimeout(() => {
+                this.dismissToast(toast);
+            }, duration);
         }
+
+        return toast;
+    }
+
+    createToast(message, type, action, onAction, dismissible) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        const icon = this.getToastIcon(type);
         
-        // Alt+M to open menu
-        if (e.altKey && e.key === 'm') {
-            e.preventDefault();
-            if (RecuerdaMe.offcanvasMenu) {
-                RecuerdaMe.offcanvasMenu.toggle();
-            }
+        toast.innerHTML = `
+            <div class="toast-icon toast-icon-${type}">
+                ${icon}
+            </div>
+            <div class="toast-content">
+                <div class="toast-message">${message}</div>
+                ${action ? `<button class="toast-action">${action}</button>` : ''}
+            </div>
+            ${dismissible ? `
+                <button class="toast-close" aria-label="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            ` : ''}
+            <div class="toast-progress"></div>
+        `;
+
+        // Event listeners
+        if (dismissible) {
+            const closeBtn = toast.querySelector('.toast-close');
+            closeBtn.addEventListener('click', () => this.dismissToast(toast));
         }
-    });
-    
-    // Focus management for better accessibility
-    trapFocusInModals();
-    enhanceTouchTargets();
-}
 
-/**
- * Show toast notification
- * @param {string} message - Message to display
- * @param {string} type - Type: success, error, warning, info
- * @param {number} duration - Duration in milliseconds (default: 4000)
- */
-function showToast(message, type = 'info', duration = 4000) {
-    if (!message) return;
-    
-    const toastId = 'toast-' + Date.now();
-    const iconClass = getToastIcon(type);
-    const bgClass = getToastBackground(type);
-    
-    const toastHTML = `
-        <div id="${toastId}" class="toast align-items-center ${bgClass} border-0 mb-2" 
-             role="alert" aria-live="assertive" aria-atomic="true" 
-             data-bs-delay="${duration}">
-            <div class="d-flex">
-                <div class="toast-body d-flex align-items-center text-white">
-                    <i class="bi ${iconClass} me-2"></i>
-                    <span>${escapeHtml(message)}</span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" 
-                        data-bs-dismiss="toast" aria-label="Cerrar"></button>
-            </div>
-        </div>
-    `;
-    
-    // Create or get toast container
-    let container = RecuerdaMe.toastContainer;
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container position-fixed top-0 end-0 p-3';
-        container.style.zIndex = '1100';
-        document.body.appendChild(container);
-        RecuerdaMe.toastContainer = container;
+        if (action && onAction) {
+            const actionBtn = toast.querySelector('.toast-action');
+            actionBtn.addEventListener('click', () => {
+                onAction();
+                this.dismissToast(toast);
+            });
+        }
+
+        // Dismiss on click (except action button)
+        toast.addEventListener('click', (e) => {
+            if (!e.target.closest('.toast-action') && !e.target.closest('.toast-close')) {
+                this.dismissToast(toast);
+            }
+        });
+
+        return toast;
     }
-    
-    // Insert toast
-    container.insertAdjacentHTML('beforeend', toastHTML);
-    
-    // Initialize and show toast
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement);
-    
-    toast.show();
-    
-    // Auto-remove from DOM after hiding
-    toastElement.addEventListener('hidden.bs.toast', function() {
-        this.remove();
-    });
-    
-    // Return toast instance for manual control
-    return toast;
-}
 
-/**
- * Get appropriate icon for toast type
- * @param {string} type 
- * @returns {string}
- */
-function getToastIcon(type) {
-    const icons = {
-        success: 'bi-check-circle-fill',
-        error: 'bi-exclamation-triangle-fill',
-        warning: 'bi-exclamation-circle-fill',
-        info: 'bi-info-circle-fill'
-    };
-    return icons[type] || icons.info;
-}
-
-/**
- * Get appropriate background class for toast type
- * @param {string} type 
- * @returns {string}
- */
-function getToastBackground(type) {
-    const backgrounds = {
-        success: 'bg-success',
-        error: 'bg-danger',
-        warning: 'bg-warning',
-        info: 'bg-primary'
-    };
-    return backgrounds[type] || backgrounds.info;
-}
-
-/**
- * Enable high contrast mode
- */
-function enableHighContrast() {
-    document.body.setAttribute('data-bs-theme', 'high-contrast');
-    document.documentElement.style.setProperty('--bs-primary', '#0066cc');
-    document.documentElement.style.setProperty('--bs-body-bg', '#ffffff');
-    document.documentElement.style.setProperty('--bs-body-color', '#000000');
-    
-    RecuerdaMe.isHighContrast = true;
-    localStorage.setItem('recuerdame-theme', 'high-contrast');
-    
-    const toggleBtn = document.getElementById('toggleContrast');
-    if (toggleBtn) {
-        toggleBtn.innerHTML = '<i class="bi bi-circle"></i>';
-        toggleBtn.setAttribute('title', 'Desactivar alto contraste');
+    getToastIcon(type) {
+        const icons = {
+            success: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>`,
+            danger: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>`,
+            info: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>`
+        };
+        return icons[type] || icons.info;
     }
-    
-    showToast('Modo alto contraste activado', 'info', 2000);
-}
 
-/**
- * Disable high contrast mode
- */
-function disableHighContrast() {
-    document.body.setAttribute('data-bs-theme', 'light');
-    document.documentElement.style.removeProperty('--bs-primary');
-    document.documentElement.style.removeProperty('--bs-body-bg');
-    document.documentElement.style.removeProperty('--bs-body-color');
-    
-    RecuerdaMe.isHighContrast = false;
-    localStorage.setItem('recuerdame-theme', 'light');
-    
-    const toggleBtn = document.getElementById('toggleContrast');
-    if (toggleBtn) {
-        toggleBtn.innerHTML = '<i class="bi bi-circle-half"></i>';
-        toggleBtn.setAttribute('title', 'Activar alto contraste');
+    dismissToast(toast) {
+        toast.classList.add('hide');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
     }
-    
-    showToast('Modo normal activado', 'info', 2000);
-}
 
-/**
- * Show loading state on an element
- * @param {HTMLElement} element 
- * @param {string} message 
- */
-function showLoading(element, message = 'Cargando...') {
-    if (!element) return;
-    
-    const loadingHTML = `
-        <div class="loading-overlay">
-            <div class="d-flex flex-column align-items-center text-primary">
-                <div class="spinner-border mb-3" role="status">
-                    <span class="visually-hidden">${escapeHtml(message)}</span>
-                </div>
-                <p class="mb-0 fw-medium">${escapeHtml(message)}</p>
-            </div>
-        </div>
-    `;
-    
-    element.style.position = 'relative';
-    element.insertAdjacentHTML('beforeend', loadingHTML);
-}
+    // Modal System
+    showModal(content, options = {}) {
+        const {
+            title = '',
+            size = 'medium',
+            dismissible = true,
+            onClose = null
+        } = options;
 
-/**
- * Hide loading state from an element
- * @param {HTMLElement} element 
- */
-function hideLoading(element) {
-    if (!element) return;
-    
-    const loadingOverlay = element.querySelector('.loading-overlay');
-    if (loadingOverlay) {
-        loadingOverlay.remove();
+        const modal = this.createModal(content, title, size, dismissible, onClose);
+        document.body.appendChild(modal);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            modal.classList.add('show');
+        });
+
+        // Focus trap
+        this.trapFocus(modal);
+
+        return modal;
     }
-}
 
-/**
- * Confirm dialog with accessible styling
- * @param {string} message 
- * @param {string} title 
- * @returns {Promise<boolean>}
- */
-function confirmDialog(message, title = 'Confirmar') {
-    return new Promise((resolve) => {
-        const modalId = 'confirm-modal-' + Date.now();
-        const modalHTML = `
-            <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}-label" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="${modalId}-label">
-                                <i class="bi bi-question-circle me-2"></i>
-                                ${escapeHtml(title)}
-                            </h5>
-                        </div>
-                        <div class="modal-body">
-                            <p class="mb-0 fs-5">${escapeHtml(message)}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-lg" data-action="cancel">
-                                <i class="bi bi-x-lg me-2"></i>
-                                Cancelar
+    createModal(content, title, size, dismissible, onClose) {
+        const modal = document.createElement('div');
+        modal.className = `modal modal-${size}`;
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        if (title) modal.setAttribute('aria-labelledby', 'modal-title');
+
+        modal.innerHTML = `
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                ${title ? `
+                    <div class="modal-header">
+                        <h2 id="modal-title" class="modal-title">${title}</h2>
+                        ${dismissible ? `
+                            <button class="modal-close" aria-label="Cerrar">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
-                            <button type="button" class="btn btn-primary btn-lg" data-action="confirm">
-                                <i class="bi bi-check-lg me-2"></i>
-                                Confirmar
-                            </button>
-                        </div>
+                        ` : ''}
                     </div>
+                ` : ''}
+                <div class="modal-body">
+                    ${content}
                 </div>
             </div>
         `;
-        
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        
-        const modalElement = document.getElementById(modalId);
-        const modal = new bootstrap.Modal(modalElement);
-        
-        // Handle button clicks
-        modalElement.addEventListener('click', function(e) {
-            const action = e.target.closest('[data-action]')?.dataset.action;
-            if (action) {
-                modal.hide();
-                resolve(action === 'confirm');
+
+        // Event listeners
+        if (dismissible) {
+            const backdrop = modal.querySelector('.modal-backdrop');
+            const closeBtn = modal.querySelector('.modal-close');
+
+            backdrop.addEventListener('click', () => this.dismissModal(modal, onClose));
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.dismissModal(modal, onClose));
             }
-        });
-        
-        // Handle modal close
-        modalElement.addEventListener('hidden.bs.modal', function() {
-            this.remove();
-        });
-        
-        modal.show();
-        
-        // Focus confirm button
-        modalElement.addEventListener('shown.bs.modal', function() {
-            const confirmBtn = this.querySelector('[data-action="confirm"]');
-            if (confirmBtn) confirmBtn.focus();
-        });
-    });
-}
 
-/**
- * Enhanced form validation with accessibility
- * @param {HTMLFormElement} form 
- * @returns {boolean}
- */
-function validateForm(form) {
-    if (!form) return false;
-    
-    let isValid = true;
-    const errors = [];
-    
-    // Clear previous errors
-    form.querySelectorAll('.is-invalid').forEach(el => {
-        el.classList.remove('is-invalid');
-    });
-    form.querySelectorAll('.invalid-feedback').forEach(el => {
-        el.remove();
-    });
-    
-    // Validate required fields
-    const requiredFields = form.querySelectorAll('[required]');
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            addFieldError(field, 'Este campo es obligatorio');
-            errors.push(field);
-            isValid = false;
+            // Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.dismissModal(modal, onClose);
+                }
+            });
         }
-    });
-    
-    // Validate email fields
-    const emailFields = form.querySelectorAll('input[type="email"]');
-    emailFields.forEach(field => {
-        if (field.value && !isValidEmail(field.value)) {
-            addFieldError(field, 'Por favor ingresa un email válido');
-            errors.push(field);
-            isValid = false;
-        }
-    });
-    
-    // Focus first error
-    if (errors.length > 0) {
-        errors[0].focus();
-        showToast(`Se encontraron ${errors.length} errores en el formulario`, 'error');
+
+        return modal;
     }
-    
-    return isValid;
-}
 
-/**
- * Add error styling and message to a form field
- * @param {HTMLElement} field 
- * @param {string} message 
- */
-function addFieldError(field, message) {
-    field.classList.add('is-invalid');
-    
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'invalid-feedback';
-    errorDiv.textContent = message;
-    
-    field.parentNode.appendChild(errorDiv);
-}
+    dismissModal(modal, onClose) {
+        modal.classList.add('hide');
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+            if (onClose) onClose();
+        }, 300);
+    }
 
-/**
- * Validate email format
- * @param {string} email 
- * @returns {boolean}
- */
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
+    // Confirm Dialog
+    confirmDialog(options = {}) {
+        const {
+            title = 'Confirmar',
+            message = '¿Estás seguro?',
+            confirmText = 'Confirmar',
+            cancelText = 'Cancelar',
+            type = 'default' // 'default', 'danger', 'warning'
+        } = options;
 
-/**
- * Escape HTML to prevent XSS
- * @param {string} text 
- * @returns {string}
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+        return new Promise((resolve) => {
+            const content = `
+                <div class="confirm-dialog">
+                    <div class="confirm-message">${message}</div>
+                    <div class="confirm-actions">
+                        <button class="btn-secondary" data-action="cancel">${cancelText}</button>
+                        <button class="btn-cta ${type === 'danger' ? 'btn-danger' : ''}" data-action="confirm">${confirmText}</button>
+                    </div>
+                </div>
+            `;
 
-/**
- * Format date for display
- * @param {Date|string} date 
- * @param {string} locale 
- * @returns {string}
- */
-function formatDate(date, locale = 'es-ES') {
-    if (!date) return '';
-    
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
+            const modal = this.showModal(content, {
+                title,
+                size: 'small',
+                dismissible: false
+            });
 
-/**
- * Format time for display
- * @param {Date|string} date 
- * @param {string} locale 
- * @returns {string}
- */
-function formatTime(date, locale = 'es-ES') {
-    if (!date) return '';
-    
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleTimeString(locale, {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+            // Handle actions
+            modal.addEventListener('click', (e) => {
+                const action = e.target.dataset.action;
+                if (action === 'confirm') {
+                    this.dismissModal(modal);
+                    resolve(true);
+                } else if (action === 'cancel') {
+                    this.dismissModal(modal);
+                    resolve(false);
+                }
+            });
+        });
+    }
 
-/**
- * Debounce function to limit rapid function calls
- * @param {Function} func 
- * @param {number} wait 
- * @returns {Function}
- */
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-/**
- * Trap focus within modals for accessibility
- */
-function trapFocusInModals() {
-    document.addEventListener('keydown', function(e) {
-        if (e.key !== 'Tab') return;
-        
-        const modal = document.querySelector('.modal.show');
-        if (!modal) return;
-        
-        const focusableElements = modal.querySelectorAll(
+    // Focus Management
+    trapFocus(element) {
+        const focusableElements = element.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
-        
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
+
+        element.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                if (e.shiftKey && document.activeElement === firstElement) {
+                    lastElement.focus();
+                    e.preventDefault();
+                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                    firstElement.focus();
+                    e.preventDefault();
+                }
+            }
+        });
+
+        firstElement?.focus();
+    }
+
+    // Loading States
+    showLoading(element, text = 'Cargando...') {
+        const loader = document.createElement('div');
+        loader.className = 'loading-overlay';
+        loader.innerHTML = `
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <span class="loading-text">${text}</span>
+            </div>
+        `;
+
+        element.style.position = 'relative';
+        element.appendChild(loader);
         
-        if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-            }
-        } else {
-            if (document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-            }
+        return loader;
+    }
+
+    hideLoading(element) {
+        const loader = element.querySelector('.loading-overlay');
+        if (loader) {
+            loader.remove();
         }
-    });
+    }
+
+    // Form Utilities
+    validateForm(form) {
+        const errors = [];
+        const requiredFields = form.querySelectorAll('[required]');
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                errors.push(`${field.name || field.id} es requerido`);
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        return { isValid: errors.length === 0, errors };
+    }
+
+    // Animation Utilities
+    fadeIn(element, duration = 300) {
+        element.style.opacity = 0;
+        element.style.transition = `opacity ${duration}ms ease`;
+        
+        requestAnimationFrame(() => {
+            element.style.opacity = 1;
+        });
+    }
+
+    fadeOut(element, duration = 300) {
+        element.style.transition = `opacity ${duration}ms ease`;
+        element.style.opacity = 0;
+        
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, duration);
+    }
+
+    slideUp(element, duration = 300) {
+        element.style.height = element.offsetHeight + 'px';
+        element.style.transition = `height ${duration}ms ease`;
+        element.style.overflow = 'hidden';
+        
+        requestAnimationFrame(() => {
+            element.style.height = '0px';
+        });
+        
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, duration);
+    }
+
+    slideDown(element, duration = 300) {
+        element.style.display = 'block';
+        const height = element.scrollHeight;
+        element.style.height = '0px';
+        element.style.transition = `height ${duration}ms ease`;
+        element.style.overflow = 'hidden';
+        
+        requestAnimationFrame(() => {
+            element.style.height = height + 'px';
+        });
+        
+        setTimeout(() => {
+            element.style.height = 'auto';
+            element.style.overflow = 'visible';
+        }, duration);
+    }
+
+    // Global Event Listeners
+    setupGlobalListeners() {
+        // Click ripple effect for buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.btn, .btn-cta, .btn-secondary')) {
+                this.createRipple(e);
+            }
+        });
+
+        // Auto-dismiss alerts after interaction
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.alert.auto-dismiss')) {
+                setTimeout(() => {
+                    this.fadeOut(e.target.closest('.alert'));
+                }, 3000);
+            }
+        });
+    }
+
+    createRipple(event) {
+        const button = event.currentTarget;
+        const circle = document.createElement('span');
+        const diameter = Math.max(button.clientWidth, button.clientHeight);
+        const radius = diameter / 2;
+
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+        circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+        circle.classList.add('ripple');
+
+        const ripple = button.getElementsByClassName('ripple')[0];
+        if (ripple) {
+            ripple.remove();
+        }
+
+        button.appendChild(circle);
+    }
 }
 
-/**
- * Enhance touch targets for better accessibility
- */
-function enhanceTouchTargets() {
-    const buttons = document.querySelectorAll('button, .btn, .nav-link');
-    buttons.forEach(button => {
-        const rect = button.getBoundingClientRect();
-        if (rect.height < 44) { // WCAG minimum touch target
-            button.style.minHeight = '44px';
-            button.style.display = 'flex';
-            button.style.alignItems = 'center';
-            button.style.justifyContent = 'center';
-        }
-    });
+// Initialize UI when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.UI = new UI();
+});
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = UI;
 }
 
-// Global utility functions
-window.showToast = showToast;
-window.confirmDialog = confirmDialog;
-window.validateForm = validateForm;
-window.showLoading = showLoading;
-window.hideLoading = hideLoading;
-window.formatDate = formatDate;
-window.formatTime = formatTime;
-window.debounce = debounce;
+// Add ripple effect CSS if not already present
+if (!document.querySelector('#ripple-styles')) {
+    const style = document.createElement('style');
+    style.id = 'ripple-styles';
+    style.textContent = `
+        .btn, .btn-cta, .btn-secondary {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        [data-theme="dark"] .loading-overlay {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .loading-text {
+            color: var(--text);
+            font-size: var(--fs-sm);
+        }
+    `;
+    document.head.appendChild(style);
+}

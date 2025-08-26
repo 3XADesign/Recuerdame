@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Ajustes - RecuerdaMe{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/settings.css') }}">
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/settings.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <!-- Header -->
+    <header class="settings-header">
+        <h1>Ajustes</h1>
+        <button class="btn-close" data-action="close" aria-label="Cerrar ajustes">
+            ✕
+        </button>
+    </header>
+
+    <!-- Perfil Section -->
+    <section class="settings-section">
+        <h2 class="section-title">Perfil</h2>
+        <div class="card-pill" data-tone="primary">
+            <div class="profile-section">
+                <!-- Avatar -->
+                <div class="profile-avatar">
+                    <div class="avatar-container">
+                        <div class="avatar-image" id="avatarDisplay">
+                            {% if user.photoUrl %}
+                                <img src="{{ user.photoUrl }}" alt="Avatar de {{ user.displayName }}">
+                            {% else %}
+                                <div class="avatar-placeholder">👤</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button class="btn-change-avatar" id="changeAvatarBtn">
+                        Cambiar foto
+                    </button>
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Profile Fields -->
+                <div class="profile-fields">
+                    <div class="field-group">
+                        <label class="field-label" for="displayName">Nombre</label>
+                        <input 
+                            type="text" 
+                            id="displayName" 
+                            class="field-input"
+                            value="{{ user.displayName or '' }}"
+                            placeholder="Tu nombre…"
+                            maxlength="60"
+                        >
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label" for="email">Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            class="field-input"
+                            value="{{ user.email or '' }}"
+                            readonly
+                            placeholder="(solo lectura)"
+                        >
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label" for="phone">Teléfono</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            class="field-input"
+                            value="{{ user.phone or '' }}"
+                            placeholder="Tu teléfono…"
+                        >
+                    </div>
+
+                    <button class="btn-cta" id="saveProfileBtn">
+                        Guardar cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preferencias Section -->
+    <section class="settings-section">
+        <h2 class="section-title">Preferencias</h2>
+        <div class="card-pill" data-tone="secondary">
+            <div class="preferences-section">
+                <!-- Dark Mode Toggle -->
+                <div class="pref-item">
+                    <span class="pref-label">Modo oscuro</span>
+                    <div class="toggle-switch" id="darkModeToggle" role="switch" aria-checked="false" tabindex="0">
+                    </div>
+                </div>
+
+                <!-- High Contrast Toggle -->
+                <div class="pref-item">
+                    <span class="pref-label">Alto contraste</span>
+                    <div class="toggle-switch" id="highContrastToggle" role="switch" aria-checked="false" tabindex="0">
+                    </div>
+                </div>
+
+                <!-- Language Select -->
+                <div class="pref-item">
+                    <label class="pref-label" for="languageSelect">Idioma</label>
+                    <select id="languageSelect" class="select-field">
+                        {% for lang in i18n.languages %}
+                        <option value="{{ lang.code }}" {% if lang.code == 'es' %}selected{% endif %}>
+                            {{ lang.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Text Size Select -->
+                <div class="pref-item">
+                    <label class="pref-label" for="textSizeSelect">Tamaño de texto</label>
+                    <select id="textSizeSelect" class="select-field">
+                        <option value="normal">Normal</option>
+                        <option value="large">Grande</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notificaciones Section -->
+    <section class="settings-section">
+        <h2 class="section-title">Notificaciones</h2>
+        <div class="card-pill" data-tone="accent">
+            <div class="notifications-section">
+                <!-- Notification Status -->
+                <div class="notification-status">
+                    <div class="status-dot" id="notificationStatusDot"></div>
+                    <span class="status-text" id="notificationStatusText">No suscrito</span>
+                </div>
+
+                <!-- Notification Actions -->
+                <button class="btn-cta" id="enableNotificationsBtn">
+                    Permitir notificaciones
+                </button>
+
+                <button class="btn-secondary" id="testNotificationBtn">
+                    Probar notificación
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Familia Section -->
+    <section class="settings-section">
+        <h2 class="section-title">Familia</h2>
+        <div class="card-pill" data-tone="primary">
+            <div class="family-section">
+                <!-- Family Selector -->
+                {% if families|length > 1 %}
+                <div class="family-selector">
+                    <label class="field-label" for="familySelect">Familia activa</label>
+                    <select id="familySelect" class="select-field">
+                        {% for family in families %}
+                        <option value="{{ family.id }}" {% if family.id == activeFamilyId %}selected{% endif %}>
+                            {{ family.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                <!-- Home Location -->
+                <div class="field-group">
+                    <label class="field-label">Dirección del hogar</label>
+                    <div class="coordinates-input">
+                        <input 
+                            type="number" 
+                            id="homeLat" 
+                            class="field-input"
+                            value="{{ activeFamily.homeGeopoint.lat }}"
+                            placeholder="Latitud"
+                            step="any"
+                        >
+                        <input 
+                            type="number" 
+                            id="homeLng" 
+                            class="field-input"
+                            value="{{ activeFamily.homeGeopoint.lng }}"
+                            placeholder="Longitud"
+                            step="any"
+                        >
+                        <button class="btn-pick-location" id="pickLocationBtn">
+                            Elegir en mapa
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Safe Radius -->
+                <div class="radius-control">
+                    <label class="field-label" for="safeRadius">Radio seguro</label>
+                    <div class="radius-slider">
+                        <input 
+                            type="range" 
+                            id="safeRadius" 
+                            class="slider-input"
+                            min="100" 
+                            max="3000" 
+                            step="50"
+                            value="{{ activeFamily.safeRadiusMeters }}"
+                        >
+                        <span class="radius-value" id="radiusValue">{{ activeFamily.safeRadiusMeters }}m</span>
+                    </div>
+                </div>
+
+                <!-- Family Actions -->
+                <button class="btn-cta" id="saveFamilySettingsBtn">
+                    Guardar ajustes
+                </button>
+
+                <button class="btn-secondary" id="showInviteCodeBtn">
+                    Mostrar código de invitación
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacidad y datos Section -->
+    <section class="settings-section">
+        <h2 class="section-title">Privacidad y datos</h2>
+        <div class="card-pill" data-tone="warning">
+            <div class="privacy-section">
+                <div class="privacy-actions">
+                    <button class="btn-secondary" id="exportDataBtn">
+                        Exportar datos
+                    </button>
+
+                    <button class="btn-danger" id="deleteAccountBtn">
+                        Borrar cuenta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sesión Section -->
+    <section class="settings-section">
+        <h2 class="section-title">Sesión</h2>
+        <div class="session-section">
+            <button class="btn-danger" id="logoutBtn">
+                Cerrar sesión
+            </button>
+        </div>
+    </section>
+</div>
+
+<!-- Invite Code Modal -->
+<div class="invite-modal hidden" id="inviteModal">
+    <div class="invite-card">
+        <h3>Código de invitación</h3>
+        <div class="invite-code" id="inviteCodeDisplay">------</div>
+        <div class="invite-expires" id="inviteExpiresDisplay">Expira en 24 horas</div>
+        <button class="btn-cta" id="closeInviteModal">Cerrar</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

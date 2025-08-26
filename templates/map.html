@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% set hide_header = true %}
+
+{% block title %}Mapa - RecuerdaMe{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/map.css') }}">
+{% endblock %}
+
+{% block main_class %}map-page{% endblock %}
+
+{% block content %}
+<!-- Map header with back button -->
+<div class="map-header">
+    <button class="map-back-btn" onclick="window.history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+    </button>
+</div>
+
+<!-- Fullscreen map container -->
+<div class="map-fullscreen">
+    <div id="map"></div>
+    
+    <!-- Location status indicator -->
+    <div class="location-status safe" id="locationStatus">
+        <div class="location-status-dot"></div>
+        <span>En zona segura</span>
+    </div>
+    
+    <!-- Map action buttons -->
+    <div class="map-actions">
+        <button class="map-action-btn" id="refreshLocation" title="Actualizar ubicación">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        </button>
+        
+        <button class="map-action-btn" id="toggleRadius" title="Cambiar radio de seguridad">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.871 4A17.926 17.926 0 003 12c0 2.874.673 5.59 1.871 8M15.996 20.142A17.95 17.95 0 0012 21c-2.874 0-5.59-.673-8-1.871M12 3c2.874 0 5.59.673 8 1.871M9.004 3.858A17.95 17.95 0 0112 3c2.874 0 5.59.673 8 1.871" />
+            </svg>
+        </button>
+        
+        <button class="map-action-btn" id="toggleTracking" title="Activar/desactivar seguimiento">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </button>
+    </div>
+    
+    <!-- Radius selector (hidden by default) -->
+    <div class="radius-selector" id="radiusSelector" style="display: none;">
+        <button class="radius-option" data-radius="100">100m</button>
+        <button class="radius-option active" data-radius="200">200m</button>
+        <button class="radius-option" data-radius="500">500m</button>
+        <button class="radius-option" data-radius="1000">1km</button>
+    </div>
+    
+    <!-- Family members overlay -->
+    <div class="family-overlay" id="familyOverlay">
+        <div class="family-overlay-handle" onclick="toggleFamilyOverlay()"></div>
+        <div class="family-overlay-title">
+            <span>Familia (3)</span>
+            <button class="btn-icon" onclick="refreshFamilyLocations()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+        </div>
+        
+        <div class="family-members" id="familyMembers">
+            <!-- Family member template -->
+            <div class="family-member" onclick="focusOnMember('user1')">
+                <img src="https://via.placeholder.com/48x48" alt="Ana" class="family-member-avatar">
+                <div class="family-member-info">
+                    <h4 class="family-member-name">Ana (Hija)</h4>
+                    <p class="family-member-location">Plaza Mayor, 2 min</p>
+                </div>
+                <div class="family-member-status"></div>
+            </div>
+            
+            <div class="family-member" onclick="focusOnMember('user2')">
+                <img src="https://via.placeholder.com/48x48" alt="Carlos" class="family-member-avatar">
+                <div class="family-member-info">
+                    <h4 class="family-member-name">Carlos (Hijo)</h4>
+                    <p class="family-member-location">Trabajo, 15 min</p>
+                </div>
+                <div class="family-member-status warning"></div>
+            </div>
+            
+            <div class="family-member" onclick="focusOnMember('user3')">
+                <img src="https://via.placeholder.com/48x48" alt="Rosa" class="family-member-avatar">
+                <div class="family-member-info">
+                    <h4 class="family-member-name">Rosa (Cuidadora)</h4>
+                    <p class="family-member-location">Casa, 1 min</p>
+                </div>
+                <div class="family-member-status"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/maps.js') }}"></script>
+<script src="{{ url_for('static', filename='js/location.js') }}"></script>
+<script>
+let map;
+let currentRadius = 200; // metros
+let trackingEnabled = true;
+let familyOverlayExpanded = false;
+
+// Initialize map when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMap();
+    startLocationTracking();
+    setupMapControls();
+});
+
+function initializeMap() {
+    // TODO: Initialize Google Maps with appropriate styling
+    console.log('Initializing map...');
+    
+    // Mock location for demo
+    const mockLocation = { lat: 40.7128, lng: -74.0060 };
+    
+    // Initialize with Maps API
+    if (typeof google !== 'undefined' && google.maps) {
+        const mapOptions = {
+            center: mockLocation,
+            zoom: 16,
+            styles: getMapStyles(),
+            disableDefaultUI: true,
+            gestureHandling: 'greedy'
+        };
+        
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        
+        // Add markers for family members
+        addFamilyMarkers();
+        addSafetyRadius();
+    }
+}
+
+function getMapStyles() {
+    // Return different styles based on theme
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    
+    if (isDark) {
+        return [
+            { elementType: 'geometry', stylers: [{ color: '#1a1b20' }] },
+            { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1b20' }] },
+            { elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
+            {
+                featureType: 'road',
+                elementType: 'geometry',
+                stylers: [{ color: '#2a2b30' }]
+            },
+            {
+                featureType: 'water',
+                elementType: 'geometry',
+                stylers: [{ color: '#16bcb8' }]
+            }
+        ];
+    } else {
+        return [
+            {
+                featureType: 'poi',
+                stylers: [{ visibility: 'off' }]
+            },
+            {
+                featureType: 'transit',
+                stylers: [{ visibility: 'off' }]
+            }
+        ];
+    }
+}
+
+function setupMapControls() {
+    // Refresh location
+    document.getElementById('refreshLocation').addEventListener('click', function() {
+        this.classList.add('active');
+        updateCurrentLocation();
+        setTimeout(() => this.classList.remove('active'), 1000);
+    });
+    
+    // Toggle radius selector
+    document.getElementById('toggleRadius').addEventListener('click', function() {
+        const selector = document.getElementById('radiusSelector');
+        selector.style.display = selector.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Toggle tracking
+    document.getElementById('toggleTracking').addEventListener('click', function() {
+        trackingEnabled = !trackingEnabled;
+        this.classList.toggle('active', trackingEnabled);
+        
+        if (trackingEnabled) {
+            startLocationTracking();
+            UI.showToast('Seguimiento activado', 'success');
+        } else {
+            stopLocationTracking();
+            UI.showToast('Seguimiento pausado', 'info');
+        }
+    });
+    
+    // Radius selection
+    document.querySelectorAll('.radius-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelector('.radius-option.active').classList.remove('active');
+            this.classList.add('active');
+            currentRadius = parseInt(this.dataset.radius);
+            updateSafetyRadius();
+            document.getElementById('radiusSelector').style.display = 'none';
+        });
+    });
+}
+
+function addFamilyMarkers() {
+    // TODO: Add real family member markers
+    console.log('Adding family markers...');
+}
+
+function addSafetyRadius() {
+    // TODO: Add safety radius circle to map
+    console.log('Adding safety radius:', currentRadius);
+}
+
+function updateSafetyRadius() {
+    // TODO: Update safety radius circle
+    console.log('Updating safety radius to:', currentRadius);
+}
+
+function updateCurrentLocation() {
+    // TODO: Get and update current location
+    console.log('Updating current location...');
+    
+    // Mock location update
+    setTimeout(() => {
+        updateLocationStatus('safe');
+    }, 1000);
+}
+
+function updateLocationStatus(status) {
+    const statusEl = document.getElementById('locationStatus');
+    statusEl.className = `location-status ${status}`;
+    
+    const messages = {
+        safe: 'En zona segura',
+        warning: 'Cerca del límite',
+        danger: 'Fuera de zona segura'
+    };
+    
+    statusEl.querySelector('span').textContent = messages[status];
+}
+
+function startLocationTracking() {
+    // TODO: Start continuous location tracking
+    console.log('Starting location tracking...');
+}
+
+function stopLocationTracking() {
+    // TODO: Stop location tracking
+    console.log('Stopping location tracking...');
+}
+
+function toggleFamilyOverlay() {
+    const overlay = document.getElementById('familyOverlay');
+    familyOverlayExpanded = !familyOverlayExpanded;
+    overlay.classList.toggle('expanded', familyOverlayExpanded);
+}
+
+function focusOnMember(memberId) {
+    // TODO: Center map on family member location
+    console.log('Focusing on member:', memberId);
+    toggleFamilyOverlay(); // Close overlay
+}
+
+function refreshFamilyLocations() {
+    // TODO: Refresh family member locations
+    console.log('Refreshing family locations...');
+    UI.showToast('Ubicaciones actualizadas', 'success');
+}
+
+// Handle theme changes for map
+document.addEventListener('themeChanged', function(e) {
+    if (map) {
+        map.setOptions({ styles: getMapStyles() });
+    }
+});
+</script>
+
+<!-- Google Maps API -->
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}&callback=initializeMap">
+</script>
+{% endblock %}

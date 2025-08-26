@@ -1,352 +1,463 @@
 /**
- * RecuerdaMe - Maps Module
- * Google Maps integration for family location tracking
+ * Maps.js - Google Maps integration
+ * Handles map initialization, styling, and location features
  */
 
-// Global map variables
-let map;
-let userMarker;
-let accuracyCircle;
-let homeMarker;
-let safeCircle;
-let followTimer;
-let familyData;
-
-// Store marker classes
-let AdvancedMarkerElement = null;
-let PinElement = null;
-
-// Map configuration
-const MAP_CONFIG = {
-    defaultZoom: 15,
-    followZoom: 17,
-    styles: [
-        {
-            featureType: 'poi',
-            elementType: 'labels',
-            stylers: [{ visibility: 'off' }]
-        }
-    ],
-    options: {
-        streetViewControl: false,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        zoomControl: true,
-        gestureHandling: 'cooperative'
+class Maps {
+    constructor() {
+        this.map = null;
+        this.markers = new Map();
+        this.circles = new Map();
+        this.isInitialized = false;
+        this.currentTheme = 'light';
+        this.userMarker = null;
+        this.infoWindow = null;
     }
+
+    // Initialize Google Maps
+    async initialize(containerId = 'map', options = {}) {
+        if (!window.google || !window.google.maps) {
+            throw new Error('Google Maps API not loaded');
+        }
+
+        const container = document.getElementById(containerId);
+        if (!container) {
+            throw new Error(`Map container '${containerId}' not found`);
+        }
+
+        const defaultOptions = {
+            center: { lat: 40.7128, lng: -74.0060 },
+            zoom: 16,
+            styles: this.getMapStyles(),
+            disableDefaultUI: true,
+            gestureHandling: 'greedy',
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: false,
+            fullscreenControl: false
+        };
+
+        this.map = new google.maps.Map(container, { ...defaultOptions, ...options });
+        this.infoWindow = new google.maps.InfoWindow();
+        this.isInitialized = true;
+
+        this.setupEventListeners();
+        console.log('Google Maps initialized');
+
+        return this.map;
+    }
+
+    // Map styles for light/dark themes
+    getMapStyles(theme = null) {
+        const currentTheme = theme || this.getCurrentTheme();
+        
+        if (currentTheme === 'dark') {
+            return [
+                { elementType: 'geometry', stylers: [{ color: '#1a1b20' }] },
+                { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1b20' }] },
+                { elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
+                {
+                    featureType: 'administrative.locality',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#d59563' }]
+                },
+                {
+                    featureType: 'poi',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#d59563' }]
+                },
+                {
+                    featureType: 'poi.park',
+                    elementType: 'geometry',
+                    stylers: [{ color: '#263c3f' }]
+                },
+                {
+                    featureType: 'poi.park',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#6b9a76' }]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'geometry',
+                    stylers: [{ color: '#2a2b30' }]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'geometry.stroke',
+                    stylers: [{ color: '#212a37' }]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#9ca5b3' }]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'geometry',
+                    stylers: [{ color: '#746855' }]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'geometry.stroke',
+                    stylers: [{ color: '#1f2835' }]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#f3d19c' }]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'geometry',
+                    stylers: [{ color: '#2f3948' }]
+                },
+                {
+                    featureType: 'transit.station',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#d59563' }]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'geometry',
+                    stylers: [{ color: '#16bcb8' }]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#515c6d' }]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'labels.text.stroke',
+                    stylers: [{ color: '#17263c' }]
+                }
+            ];
+        } else {
+            return [
+                {
+                    featureType: 'poi.business',
+                    stylers: [{ visibility: 'off' }]
+                },
+                {
+                    featureType: 'poi.medical',
+                    stylers: [{ visibility: 'on' }]
+                },
+                {
+                    featureType: 'poi.school',
+                    stylers: [{ visibility: 'on' }]
+                },
+                {
+                    featureType: 'poi.government',
+                    stylers: [{ visibility: 'on' }]
+                },
+                {
+                    featureType: 'transit.station',
+                    stylers: [{ visibility: 'simplified' }]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'geometry',
+                    stylers: [{ color: '#16bcb8' }]
+                }
+            ];
+        }
+    }
+
+    // Update map theme
+    updateTheme(theme) {
+        if (!this.isInitialized) return;
+        
+        this.currentTheme = theme;
+        this.map.setOptions({ styles: this.getMapStyles(theme) });
+    }
+
+    // Get current theme
+    getCurrentTheme() {
+        return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+
+    // Add marker
+    addMarker(id, position, options = {}) {
+        const defaultOptions = {
+            position,
+            map: this.map,
+            icon: this.getMarkerIcon(options.type || 'default'),
+            title: options.title || '',
+            animation: google.maps.Animation.DROP
+        };
+
+        const marker = new google.maps.Marker({ ...defaultOptions, ...options });
+        this.markers.set(id, marker);
+
+        // Add click listener
+        if (options.onClick || options.infoContent) {
+            marker.addListener('click', () => {
+                if (options.onClick) {
+                    options.onClick(marker);
+                }
+                if (options.infoContent) {
+                    this.showInfoWindow(marker, options.infoContent);
+                }
+            });
+        }
+
+        return marker;
+    }
+
+    // Remove marker
+    removeMarker(id) {
+        const marker = this.markers.get(id);
+        if (marker) {
+            marker.setMap(null);
+            this.markers.delete(id);
+        }
+    }
+
+    // Update marker position
+    updateMarker(id, position, animate = true) {
+        const marker = this.markers.get(id);
+        if (marker) {
+            if (animate) {
+                this.animateMarkerTo(marker, position);
+            } else {
+                marker.setPosition(position);
+            }
+        }
+    }
+
+    // Animate marker movement
+    animateMarkerTo(marker, newPosition) {
+        const start = marker.getPosition();
+        const end = new google.maps.LatLng(newPosition.lat, newPosition.lng);
+        
+        let step = 0;
+        const numSteps = 50;
+        const stepLat = (end.lat() - start.lat()) / numSteps;
+        const stepLng = (end.lng() - start.lng()) / numSteps;
+
+        const animate = () => {
+            step++;
+            const lat = start.lat() + (stepLat * step);
+            const lng = start.lng() + (stepLng * step);
+            
+            marker.setPosition(new google.maps.LatLng(lat, lng));
+            
+            if (step < numSteps) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        animate();
+    }
+
+    // Get marker icons
+    getMarkerIcon(type) {
+        const icons = {
+            user: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                fillColor: '#16bcb8',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 3
+            },
+            family: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 6,
+                fillColor: '#4c5377',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            },
+            safe: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 6,
+                fillColor: '#18a05e',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            },
+            warning: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 6,
+                fillColor: '#e2a100',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            },
+            danger: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 6,
+                fillColor: '#d64545',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            }
+        };
+        
+        return icons[type] || icons.user;
+    }
+
+    // Add safety circle
+    addSafetyCircle(id, center, radius, options = {}) {
+        const defaultOptions = {
+            center,
+            radius,
+            map: this.map,
+            fillColor: '#18a05e',
+            fillOpacity: 0.1,
+            strokeColor: '#18a05e',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            strokeDasharray: [10, 5]
+        };
+
+        const circle = new google.maps.Circle({ ...defaultOptions, ...options });
+        this.circles.set(id, circle);
+        
+        return circle;
+    }
+
+    // Remove circle
+    removeCircle(id) {
+        const circle = this.circles.get(id);
+        if (circle) {
+            circle.setMap(null);
+            this.circles.delete(id);
+        }
+    }
+
+    // Update circle
+    updateCircle(id, options) {
+        const circle = this.circles.get(id);
+        if (circle) {
+            circle.setOptions(options);
+        }
+    }
+
+    // Show info window
+    showInfoWindow(marker, content) {
+        this.infoWindow.setContent(content);
+        this.infoWindow.open(this.map, marker);
+    }
+
+    // Hide info window
+    hideInfoWindow() {
+        this.infoWindow.close();
+    }
+
+    // Center map on location
+    centerOn(position, zoom = null) {
+        if (!this.isInitialized) return;
+        
+        this.map.setCenter(position);
+        if (zoom !== null) {
+            this.map.setZoom(zoom);
+        }
+    }
+
+    // Fit bounds to include all markers
+    fitToMarkers() {
+        if (this.markers.size === 0) return;
+        
+        const bounds = new google.maps.LatLngBounds();
+        this.markers.forEach(marker => {
+            bounds.extend(marker.getPosition());
+        });
+        
+        this.map.fitBounds(bounds);
+    }
+
+    // Get current map bounds
+    getBounds() {
+        return this.map.getBounds();
+    }
+
+    // Get current map center
+    getCenter() {
+        return this.map.getCenter();
+    }
+
+    // Get current zoom level
+    getZoom() {
+        return this.map.getZoom();
+    }
+
+    // Setup event listeners
+    setupEventListeners() {
+        // Theme change listener
+        document.addEventListener('themeChanged', (e) => {
+            this.updateTheme(e.detail.theme);
+        });
+
+        // Map click listener
+        this.map.addListener('click', (event) => {
+            this.hideInfoWindow();
+            this.onMapClick(event);
+        });
+
+        // Map bounds change listener
+        this.map.addListener('bounds_changed', () => {
+            this.onBoundsChanged();
+        });
+    }
+
+    // Event handlers (can be overridden)
+    onMapClick(event) {
+        console.log('Map clicked at:', event.latLng.lat(), event.latLng.lng());
+    }
+
+    onBoundsChanged() {
+        // Handle bounds change
+    }
+
+    // Utility methods
+    distanceBetween(pos1, pos2) {
+        const R = 6371; // Earth's radius in km
+        const dLat = this.degreesToRadians(pos2.lat - pos1.lat);
+        const dLng = this.degreesToRadians(pos2.lng - pos1.lng);
+        
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(this.degreesToRadians(pos1.lat)) * 
+                  Math.cos(this.degreesToRadians(pos2.lat)) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c * 1000; // Distance in meters
+    }
+
+    degreesToRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+
+    // Cleanup
+    destroy() {
+        this.markers.forEach(marker => marker.setMap(null));
+        this.circles.forEach(circle => circle.setMap(null));
+        this.markers.clear();
+        this.circles.clear();
+        
+        if (this.infoWindow) {
+            this.infoWindow.close();
+        }
+        
+        this.map = null;
+        this.isInitialized = false;
+    }
+}
+
+// Global map instance
+window.Maps = new Maps();
+
+// Global initialization function for Google Maps callback
+window.initializeMap = function() {
+    console.log('Google Maps API loaded');
+    // Maps will be initialized when needed
 };
 
-/**
- * Initialize Google Maps
- * Called by Google Maps API callback
- */
-async function initializeGoogleMaps() {
-    console.log('🗺️ Inicializando Google Maps...');
-    
-    try {
-        // Load required libraries
-        const { Map } = await google.maps.importLibrary("maps");
-        const { AdvancedMarkerElement: AMarker, PinElement: Pin } = await google.maps.importLibrary("marker");
-        
-        // Store classes globally
-        AdvancedMarkerElement = AMarker;
-        PinElement = Pin;
-        
-        // Initialize map
-        initializeMap();
-        
-    } catch (error) {
-        console.error('❌ Error cargando Google Maps:', error);
-        showMapError('Error cargando el mapa. Verifica la configuración de la API.');
-    }
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Maps;
 }
-
-/**
- * Initialize the map with basic configuration
- */
-function initializeMap() {
-
-/**
- * Refresh user location from server
- */
-async function refreshUserLocation() {
-    if (!familyData) return;
-    
-    const refreshBtn = document.getElementById('btnRefresh');
-    if (refreshBtn) {
-        refreshBtn.disabled = true;
-        refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise spin me-2"></i>Actualizando...';
-    }
-    
-    try {
-        const response = await fetch(`/api/last-location?familyId=${familyData.familyId}&uid=demo-user-123`);
-        const data = await response.json();
-        
-        if (data.success && data.location) {
-            const { latitude, longitude, accuracy, timestamp, isOutsideSafeRadius } = data.location;
-            
-            // Update user marker
-            await renderUserLocation(latitude, longitude, accuracy);
-            
-            // Update status badge
-            updateLocationStatus(isOutsideSafeRadius, timestamp);
-            
-            showToast('Ubicación actualizada', 'success', 2000);
-        } else {
-            updateLocationStatus(null, null);
-            showToast('No hay ubicación disponible', 'info');
-        }
-        
-    } catch (error) {
-        console.error('Error refreshing location:', error);
-        showToast('Error actualizando ubicación', 'error');
-    } finally {
-        if (refreshBtn) {
-            refreshBtn.disabled = false;
-            refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Refrescar';
-        }
-    }
-}
-
-/**
- * Render user location on map
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @param {number} accuracy - GPS accuracy in meters
- */
-async function renderUserLocation(lat, lng, accuracy) {
-    const position = { lat, lng };
-    
-    // Create or update user marker
-    if (!userMarker && AdvancedMarkerElement) {
-        // Create custom pin
-        const pin = new PinElement({
-            background: '#dc2626',
-            glyphColor: '#ffffff',
-            borderColor: '#ffffff',
-            scale: 1.2
-        });
-        
-        userMarker = new AdvancedMarkerElement({
-            position: position,
-            map: map,
-            title: familyData.userName || 'Usuario',
-            content: pin.element,
-            zIndex: 2000
-        });
-        
-        // Add info window (fallback for older browsers)
-        const infoWindow = new google.maps.InfoWindow({
-            content: `
-                <div class="text-center">
-                    <h6 class="mb-1">${familyData.userName || 'Usuario'}</h6>
-                    <small class="text-muted">Última ubicación conocida</small>
-                </div>
-            `
-        });
-        
-        userMarker.addListener('click', () => {
-            infoWindow.open(map, userMarker);
-        });
-    } else {
-        userMarker.setPosition(position);
-    }
-    
-    // Create or update accuracy circle
-    const accuracyRadius = Math.max(accuracy || 30, 10);
-    if (!accuracyCircle) {
-        accuracyCircle = new google.maps.Circle({
-            map: map,
-            center: position,
-            radius: accuracyRadius,
-            strokeColor: '#dc2626',
-            strokeOpacity: 0.5,
-            strokeWeight: 1,
-            fillColor: '#dc2626',
-            fillOpacity: 0.1,
-            clickable: false
-        });
-    } else {
-        accuracyCircle.setCenter(position);
-        accuracyCircle.setRadius(accuracyRadius);
-    }
-    
-    // Center map on user location
-    map.panTo(position);
-    
-    // Adjust zoom if needed
-    const bounds = new google.maps.LatLngBounds();
-    bounds.extend(position);
-    bounds.extend(homeMarker.getPosition());
-    
-    if (!map.getBounds() || !map.getBounds().contains(position)) {
-        map.fitBounds(bounds, { padding: 50 });
-    }
-}
-
-/**
- * Toggle safe radius circle visibility
- */
-function toggleSafeRadius() {
-    if (!safeCircle) return;
-    
-    const isVisible = safeCircle.getVisible();
-    safeCircle.setVisible(!isVisible);
-    
-    const toggleBtn = document.getElementById('btnToggleRadius');
-    if (toggleBtn) {
-        if (isVisible) {
-            toggleBtn.classList.remove('btn-outline-secondary');
-            toggleBtn.classList.add('btn-secondary');
-            toggleBtn.innerHTML = '<i class="bi bi-shield-slash me-2"></i>Radio Oculto';
-        } else {
-            toggleBtn.classList.remove('btn-secondary');
-            toggleBtn.classList.add('btn-outline-secondary');
-            toggleBtn.innerHTML = '<i class="bi bi-shield-check me-2"></i>Radio Seguro';
-        }
-    }
-    
-    showToast(isVisible ? 'Radio seguro oculto' : 'Radio seguro visible', 'info', 1500);
-}
-
-/**
- * Toggle follow mode (real-time location tracking)
- */
-function toggleFollowMode() {
-    const followBtn = document.getElementById('btnFollow');
-    if (!followBtn) return;
-    
-    if (followTimer) {
-        // Stop following
-        clearInterval(followTimer);
-        followTimer = null;
-        
-        followBtn.classList.remove('btn-success');
-        followBtn.classList.add('btn-outline-secondary');
-        followBtn.innerHTML = '<i class="bi bi-crosshair me-2"></i><span class="follow-text">Seguir</span>';
-        
-        showToast('Seguimiento en tiempo real desactivado', 'info');
-    } else {
-        // Start following
-        followTimer = setInterval(refreshUserLocation, 10000); // Every 10 seconds
-        
-        followBtn.classList.remove('btn-outline-secondary');
-        followBtn.classList.add('btn-success');
-        followBtn.innerHTML = '<i class="bi bi-stop-circle me-2"></i><span class="follow-text">Detener</span>';
-        
-        showToast('Seguimiento en tiempo real activado', 'success');
-        
-        // Initial refresh
-        refreshUserLocation();
-    }
-}
-
-/**
- * Update location status badge
- * @param {boolean|null} isOutside - Whether user is outside safe area
- * @param {string|null} timestamp - Last update timestamp
- */
-function updateLocationStatus(isOutside, timestamp) {
-    const statusBadge = document.getElementById('statusBadge');
-    const lastUpdate = document.getElementById('lastUpdate');
-    
-    if (!statusBadge || !lastUpdate) return;
-    
-    if (isOutside === null) {
-        // No location data
-        statusBadge.className = 'badge text-bg-secondary';
-        statusBadge.innerHTML = '<i class="bi bi-question-circle me-1"></i>Sin ubicación';
-        lastUpdate.textContent = 'Actualizado: --:--';
-    } else if (isOutside) {
-        // Outside safe area
-        statusBadge.className = 'badge text-bg-warning';
-        statusBadge.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Fuera del área segura';
-        lastUpdate.textContent = `Actualizado: ${formatTime(timestamp)}`;
-        
-        // Pulse animation for attention
-        statusBadge.classList.add('animate-pulse');
-        setTimeout(() => statusBadge.classList.remove('animate-pulse'), 3000);
-    } else {
-        // Inside safe area
-        statusBadge.className = 'badge text-bg-success';
-        statusBadge.innerHTML = '<i class="bi bi-shield-check me-1"></i>Dentro del área segura';
-        lastUpdate.textContent = `Actualizado: ${formatTime(timestamp)}`;
-    }
-}
-
-/**
- * Show map error message
- * @param {string} message - Error message
- */
-function showMapError(message) {
-    const mapContainer = document.getElementById('map');
-    if (!mapContainer) return;
-    
-    mapContainer.innerHTML = `
-        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-4">
-            <i class="bi bi-exclamation-triangle text-warning mb-3" style="font-size: 3rem;"></i>
-            <h4 class="text-muted mb-2">Error en el Mapa</h4>
-            <p class="text-muted mb-3">${message}</p>
-            <button class="btn btn-primary" onclick="location.reload()">
-                <i class="bi bi-arrow-clockwise me-2"></i>
-                Recargar Página
-            </button>
-        </div>
-    `;
-}
-
-/**
- * Get current map bounds for server queries
- * @returns {Object|null} Bounds object
- */
-function getCurrentMapBounds() {
-    if (!map) return null;
-    
-    const bounds = map.getBounds();
-    if (!bounds) return null;
-    
-    const ne = bounds.getNorthEast();
-    const sw = bounds.getSouthWest();
-    
-    return {
-        north: ne.lat(),
-        east: ne.lng(),
-        south: sw.lat(),
-        west: sw.lng()
-    };
-}
-
-/**
- * Cleanup function for page unload
- */
-function cleanupMap() {
-    if (followTimer) {
-        clearInterval(followTimer);
-        followTimer = null;
-    }
-}
-
-// Cleanup on page unload
-window.addEventListener('beforeunload', cleanupMap);
-
-// CSS for spinning refresh icon
-const style = document.createElement('style');
-style.textContent = `
-    .spin {
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-`;
-document.head.appendChild(style);
-
-// Export functions for global use
-window.initializeGoogleMaps = initializeGoogleMaps;
-window.initializeMap = initializeMap;
-window.refreshUserLocation = refreshUserLocation;
-window.renderUserLocation = renderUserLocation;
-window.toggleSafeRadius = toggleSafeRadius;
-window.toggleFollowMode = toggleFollowMode;

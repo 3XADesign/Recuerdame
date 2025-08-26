@@ -1,499 +1,631 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Recordatorios - RecuerdaMe{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="h2 mb-1">
-                        <i class="bi bi-alarm-fill text-primary me-2"></i>
-                        Recordatorios
-                    </h1>
-                    <p class="text-muted mb-0">Programa recordatorios para medicación, citas y actividades</p>
-                </div>
-                <button class="btn btn-primary btn-lg" id="addReminderBtn">
-                    <i class="bi bi-plus-lg me-2"></i>
-                    Nuevo Recordatorio
-                </button>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="card border-primary text-center quick-action" data-type="medication">
-                        <div class="card-body py-3">
-                            <i class="bi bi-capsule text-primary mb-2" style="font-size: 2rem;"></i>
-                            <h6 class="card-title mb-0">Medicación</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-info text-center quick-action" data-type="appointment">
-                        <div class="card-body py-3">
-                            <i class="bi bi-calendar-check text-info mb-2" style="font-size: 2rem;"></i>
-                            <h6 class="card-title mb-0">Cita Médica</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-success text-center quick-action" data-type="meal">
-                        <div class="card-body py-3">
-                            <i class="bi bi-cup-hot text-success mb-2" style="font-size: 2rem;"></i>
-                            <h6 class="card-title mb-0">Comida</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-warning text-center quick-action" data-type="activity">
-                        <div class="card-body py-3">
-                            <i class="bi bi-person-walking text-warning mb-2" style="font-size: 2rem;"></i>
-                            <h6 class="card-title mb-0">Actividad</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Active Reminders -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock me-2"></i>
-                        Próximos Recordatorios
-                    </h5>
-                    <span class="badge bg-primary">3 activos</span>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        <!-- Active Reminder 1 -->
-                        <div class="list-group-item d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
-                                     style="width: 48px; height: 48px;">
-                                    <i class="bi bi-capsule"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 class="mb-1">Donepezilo 10mg</h6>
-                                        <p class="mb-1 text-muted">Medicación para el Alzheimer</p>
-                                        <small class="text-primary fw-bold">
-                                            <i class="bi bi-clock me-1"></i>
-                                            Próximo: Hoy a las 20:00
-                                        </small>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="editReminder('med-1')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="reminder1" checked>
-                                            <label class="form-check-label visually-hidden" for="reminder1">Activar</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Active Reminder 2 -->
-                        <div class="list-group-item d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" 
-                                     style="width: 48px; height: 48px;">
-                                    <i class="bi bi-calendar-check"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 class="mb-1">Cita con Dr. González</h6>
-                                        <p class="mb-1 text-muted">Revisión mensual - Neurología</p>
-                                        <small class="text-info fw-bold">
-                                            <i class="bi bi-clock me-1"></i>
-                                            Próximo: Mañana a las 10:30
-                                        </small>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-info" onclick="editReminder('apt-1')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="reminder2" checked>
-                                            <label class="form-check-label visually-hidden" for="reminder2">Activar</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Active Reminder 3 -->
-                        <div class="list-group-item d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" 
-                                     style="width: 48px; height: 48px;">
-                                    <i class="bi bi-cup-hot"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 class="mb-1">Desayuno</h6>
-                                        <p class="mb-1 text-muted">Recordatorio diario de alimentación</p>
-                                        <small class="text-success fw-bold">
-                                            <i class="bi bi-clock me-1"></i>
-                                            Próximo: Mañana a las 08:00
-                                        </small>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-success" onclick="editReminder('meal-1')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="reminder3" checked>
-                                            <label class="form-check-label visually-hidden" for="reminder3">Activar</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Recent Activity -->
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock-history me-2"></i>
-                        Historial Reciente
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        <!-- Timeline Item 1 -->
-                        <div class="timeline-item d-flex align-items-start mb-3">
-                            <div class="timeline-marker bg-success me-3"></div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-1">Medicación tomada</h6>
-                                    <small class="text-muted">Hace 2 horas</small>
-                                </div>
-                                <p class="mb-0 text-muted">Donepezilo 10mg - Confirmado por Carmen</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Timeline Item 2 -->
-                        <div class="timeline-item d-flex align-items-start mb-3">
-                            <div class="timeline-marker bg-warning me-3"></div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-1">Recordatorio perdido</h6>
-                                    <small class="text-muted">Ayer 14:00</small>
-                                </div>
-                                <p class="mb-0 text-muted">Almuerzo - Sin confirmación</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Timeline Item 3 -->
-                        <div class="timeline-item d-flex align-items-start mb-3">
-                            <div class="timeline-marker bg-info me-3"></div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-1">Cita completada</h6>
-                                    <small class="text-muted">Ayer 10:30</small>
-                                </div>
-                                <p class="mb-0 text-muted">Dr. González - Revisión completada exitosamente</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="page-container">
+    <!-- Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">Recordatorios</h1>
+            <button class="btn-primary" onclick="addReminder()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Nuevo
+            </button>
         </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                Todos
+                <span class="count">{{ reminders|length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="active">
+                Activos
+                <span class="count">{{ reminders|selectattr('is_active')|list|length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="inactive">
+                Inactivos
+                <span class="count">{{ reminders|rejectattr('is_active')|list|length }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Lista de recordatorios -->
+    <div class="reminders-container">
+        {% if reminders %}
+            {% for reminder in reminders %}
+            <div class="reminder-card {% if not reminder.is_active %}inactive{% endif %}" data-filter-type="{% if reminder.is_active %}active{% else %}inactive{% endif %}">
+                <div class="reminder-header">
+                    <div class="reminder-icon">
+                        {% if reminder.type == 'anniversary' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        {% elif reminder.type == 'birthday' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 17.5l-.15.15a2.5 2.5 0 0 1-3.54 0l-.86-.86a11 11 0 0 1 0-15.58l.86-.86a2.5 2.5 0 0 1 3.54 0l.15.15.15-.15a2.5 2.5 0 0 1 3.54 0l.86.86a11 11 0 0 1 0 15.58l-.86.86a2.5 2.5 0 0 1-3.54 0L12 17.5z"></path>
+                        </svg>
+                        {% elif reminder.type == 'location' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        {% else %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12,6 12,12 16,14"></polyline>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    <div class="reminder-info">
+                        <h3 class="reminder-title">{{ reminder.title or reminder.memory.title }}</h3>
+                        <div class="reminder-meta">
+                            <span class="reminder-type">{{ reminder.type_display }}</span>
+                            <span class="reminder-schedule">{{ reminder.schedule_display }}</span>
+                        </div>
+                    </div>
+                    <div class="reminder-actions">
+                        <button class="btn-icon" onclick="toggleReminder('{{ reminder.id }}')" 
+                                aria-label="{% if reminder.is_active %}Desactivar{% else %}Activar{% endif %} recordatorio">
+                            {% if reminder.is_active %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9,11 12,14 22,4"></polyline>
+                                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"></path>
+                            </svg>
+                            {% else %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                            </svg>
+                            {% endif %}
+                        </button>
+                        <button class="btn-icon" onclick="editReminder('{{ reminder.id }}')" aria-label="Editar recordatorio">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button class="btn-icon" onclick="deleteReminder('{{ reminder.id }}')" aria-label="Eliminar recordatorio">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {% if reminder.memory %}
+                <div class="reminder-memory" onclick="viewMemory('{{ reminder.memory.id }}')">
+                    {% if reminder.memory.image_url %}
+                    <img src="{{ reminder.memory.image_url }}" alt="{{ reminder.memory.title }}" class="memory-thumbnail">
+                    {% endif %}
+                    <div class="memory-info">
+                        <h4 class="memory-title">{{ reminder.memory.title }}</h4>
+                        {% if reminder.memory.person %}
+                        <span class="memory-person">{{ reminder.memory.person.name }}</span>
+                        {% endif %}
+                        <span class="memory-date">{{ reminder.memory.date_formatted }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="reminder-details">
+                    <div class="reminder-time">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12,6 12,12 16,14"></polyline>
+                        </svg>
+                        <span>{{ reminder.time_display }}</span>
+                    </div>
+                    
+                    {% if reminder.next_execution %}
+                    <div class="reminder-next">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>Próximo: {{ reminder.next_execution_display }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if reminder.is_active %}
+                <div class="reminder-status active">
+                    <span class="status-indicator"></span>
+                    Activo
+                </div>
+                {% else %}
+                <div class="reminder-status inactive">
+                    <span class="status-indicator"></span>
+                    Inactivo
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12,6 12,12 16,14"></polyline>
+                </svg>
+            </div>
+            <h3>No tienes recordatorios</h3>
+            <p>Crea recordatorios para no olvidar momentos importantes.</p>
+            <button class="btn-primary" onclick="addReminder()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Crear primer recordatorio
+            </button>
+        </div>
+        {% endif %}
     </div>
 </div>
 
-<!-- Add/Edit Reminder Modal -->
-<div class="modal fade" id="reminderModal" tabindex="-1" aria-labelledby="reminderModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reminderModalLabel">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Nuevo Recordatorio
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <form id="reminderForm">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="reminderTitle" class="form-label">Título del recordatorio *</label>
-                            <input type="text" class="form-control form-control-lg" 
-                                   id="reminderTitle" placeholder="Ej: Tomar medicación" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="reminderType" class="form-label">Tipo *</label>
-                            <select class="form-select form-select-lg" id="reminderType" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="medication">💊 Medicación</option>
-                                <option value="appointment">📅 Cita médica</option>
-                                <option value="meal">🍽️ Comida</option>
-                                <option value="activity">🚶 Actividad</option>
-                                <option value="other">📋 Otro</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="reminderDescription" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="reminderDescription" rows="2" 
-                                  placeholder="Información adicional sobre el recordatorio..."></textarea>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="reminderDate" class="form-label">Fecha *</label>
-                            <input type="date" class="form-control form-control-lg" id="reminderDate" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="reminderTime" class="form-label">Hora *</label>
-                            <input type="time" class="form-control form-control-lg" id="reminderTime" required>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="reminderRepeat" class="form-label">Repetir</label>
-                            <select class="form-select form-select-lg" id="reminderRepeat">
-                                <option value="once">Una vez</option>
-                                <option value="daily">Diariamente</option>
-                                <option value="weekly">Semanalmente</option>
-                                <option value="monthly">Mensualmente</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="reminderTarget" class="form-label">Destinatario</label>
-                            <select class="form-select form-select-lg" id="reminderTarget">
-                                <option value="usuario">Solo usuario</option>
-                                <option value="familia">Toda la familia</option>
-                                <option value="cuidadores">Solo cuidadores</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="reminderNotification" checked>
-                            <label class="form-check-label" for="reminderNotification">
-                                Enviar notificación push
-                            </label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger d-none" id="deleteReminderBtn">
-                    <i class="bi bi-trash me-2"></i>
-                    Eliminar
-                </button>
-                <button type="button" class="btn btn-primary btn-lg" id="saveReminderBtn">
-                    <i class="bi bi-check-lg me-2"></i>
-                    Guardar Recordatorio
-                </button>
-            </div>
+<!-- Modal para crear/editar recordatorio -->
+<div class="modal" id="reminderModal">
+    <div class="modal-overlay" onclick="closeReminderModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="reminderModalTitle">Nuevo recordatorio</h2>
+            <button class="modal-close" onclick="closeReminderModal()" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
         </div>
+        <form id="reminderForm" class="modal-body">
+            <input type="hidden" id="reminderId" name="id">
+            
+            <div class="form-group">
+                <label for="reminderMemory">Recuerdo asociado</label>
+                <select id="reminderMemory" name="memory_id" required>
+                    <option value="">Seleccionar recuerdo</option>
+                    {% for memory in memories %}
+                    <option value="{{ memory.id }}">{{ memory.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderType">Tipo de recordatorio</label>
+                <select id="reminderType" name="type" required>
+                    <option value="">Seleccionar tipo</option>
+                    <option value="anniversary">Aniversario</option>
+                    <option value="birthday">Cumpleaños</option>
+                    <option value="location">Ubicación</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderTitle">Título (opcional)</label>
+                <input type="text" id="reminderTitle" name="title" placeholder="Título personalizado">
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderSchedule">Frecuencia</label>
+                <select id="reminderSchedule" name="schedule" required>
+                    <option value="">Seleccionar frecuencia</option>
+                    <option value="daily">Diario</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="monthly">Mensual</option>
+                    <option value="yearly">Anual</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderTime">Hora</label>
+                <input type="time" id="reminderTime" name="time" value="09:00" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="reminderActive" name="is_active" checked>
+                    <span class="checkbox-custom"></span>
+                    Activar recordatorio
+                </label>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeReminderModal()">Cancelar</button>
+                <button type="submit" class="btn-primary" id="reminderSubmitBtn">Crear recordatorio</button>
+            </div>
+        </form>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
-// TODO: Implementar funcionalidad completa de recordatorios
+let editingReminderId = null;
+
+// Inicialización
 document.addEventListener('DOMContentLoaded', function() {
-    const addReminderBtn = document.getElementById('addReminderBtn');
-    const reminderModal = new bootstrap.Modal(document.getElementById('reminderModal'));
-    const quickActions = document.querySelectorAll('.quick-action');
-    const reminderForm = document.getElementById('reminderForm');
-    
-    // Configurar fecha mínima a hoy
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('reminderDate').min = today;
-    document.getElementById('reminderDate').value = today;
-    
-    // Configurar hora por defecto
-    const now = new Date();
-    const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
-                       now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('reminderTime').value = currentTime;
-    
-    // Abrir modal para nuevo recordatorio
-    addReminderBtn.addEventListener('click', function() {
-        resetForm();
-        document.getElementById('reminderModalLabel').innerHTML = 
-            '<i class="bi bi-plus-circle me-2"></i>Nuevo Recordatorio';
-        reminderModal.show();
-    });
-    
-    // Quick actions
-    quickActions.forEach(action => {
-        action.addEventListener('click', function() {
-            const type = this.dataset.type;
-            resetForm();
-            setQuickActionDefaults(type);
-            reminderModal.show();
-        });
-    });
-    
-    // Guardar recordatorio
-    document.getElementById('saveReminderBtn').addEventListener('click', function() {
-        if (validateForm()) {
-            const formData = getFormData();
-            showToast(`Recordatorio "${formData.title}" creado exitosamente`, 'success');
-            reminderModal.hide();
-            // TODO: Enviar datos al servidor
-        }
-    });
-    
-    // Switches de activar/desactivar
-    document.querySelectorAll('.form-check-input[type="checkbox"]').forEach(toggle => {
-        toggle.addEventListener('change', function() {
-            const isActive = this.checked;
-            const status = isActive ? 'activado' : 'desactivado';
-            showToast(`Recordatorio ${status}`, 'info');
-        });
-    });
-    
-    showToast('Vista de recordatorios cargada. Funcionalidad completa próximamente.', 'info');
+    setupFilters();
+    setupReminderForm();
 });
 
-function resetForm() {
-    document.getElementById('reminderForm').reset();
-    document.getElementById('deleteReminderBtn').classList.add('d-none');
+// Configurar filtros
+function setupFilters() {
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const reminderCards = document.querySelectorAll('.reminder-card');
     
-    // Restaurar valores por defecto
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('reminderDate').value = today;
-    
-    const now = new Date();
-    const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
-                       now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('reminderTime').value = currentTime;
-    
-    document.getElementById('reminderNotification').checked = true;
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Actualizar tabs activos
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filtrar cards
+            reminderCards.forEach(card => {
+                const cardFilter = card.dataset.filterType;
+                
+                if (filter === 'all' || filter === cardFilter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
 }
 
-function setQuickActionDefaults(type) {
-    const defaults = {
-        medication: {
-            title: 'Tomar medicación',
-            type: 'medication',
-            description: 'Recordatorio para tomar la medicación',
-            repeat: 'daily'
-        },
-        appointment: {
-            title: 'Cita médica',
-            type: 'appointment',
-            description: 'Recordatorio de cita médica',
-            repeat: 'once'
-        },
-        meal: {
-            title: 'Hora de comer',
-            type: 'meal',
-            description: 'Recordatorio de comida',
-            repeat: 'daily'
-        },
-        activity: {
-            title: 'Actividad física',
-            type: 'activity',
-            description: 'Recordatorio de ejercicio o actividad',
-            repeat: 'daily'
+// Configurar formulario
+function setupReminderForm() {
+    document.getElementById('reminderForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = {
+            memory_id: formData.get('memory_id'),
+            type: formData.get('type'),
+            title: formData.get('title'),
+            schedule: formData.get('schedule'),
+            time: formData.get('time'),
+            is_active: formData.has('is_active')
+        };
+        
+        try {
+            UI.showLoading(editingReminderId ? 'Actualizando...' : 'Creando recordatorio...');
+            
+            let response;
+            if (editingReminderId) {
+                response = await API.put(`/reminders/${editingReminderId}`, data);
+            } else {
+                response = await API.post('/reminders', data);
+            }
+            
+            if (response.success) {
+                UI.showToast(editingReminderId ? 'Recordatorio actualizado' : 'Recordatorio creado', 'success');
+                closeReminderModal();
+                location.reload();
+            }
+        } catch (error) {
+            UI.showToast('Error al guardar recordatorio', 'error');
+        } finally {
+            UI.hideLoading();
         }
-    };
-    
-    const preset = defaults[type];
-    if (preset) {
-        document.getElementById('reminderTitle').value = preset.title;
-        document.getElementById('reminderType').value = preset.type;
-        document.getElementById('reminderDescription').value = preset.description;
-        document.getElementById('reminderRepeat').value = preset.repeat;
+    });
+}
+
+// Agregar recordatorio
+function addReminder() {
+    editingReminderId = null;
+    document.getElementById('reminderModalTitle').textContent = 'Nuevo recordatorio';
+    document.getElementById('reminderSubmitBtn').textContent = 'Crear recordatorio';
+    document.getElementById('reminderForm').reset();
+    document.getElementById('reminderModal').classList.add('active');
+}
+
+// Editar recordatorio
+async function editReminder(reminderId) {
+    try {
+        const response = await API.get(`/reminders/${reminderId}`);
+        if (response.success) {
+            const reminder = response.data;
+            
+            editingReminderId = reminderId;
+            document.getElementById('reminderModalTitle').textContent = 'Editar recordatorio';
+            document.getElementById('reminderSubmitBtn').textContent = 'Actualizar recordatorio';
+            
+            // Llenar formulario
+            document.getElementById('reminderId').value = reminder.id;
+            document.getElementById('reminderMemory').value = reminder.memory_id;
+            document.getElementById('reminderType').value = reminder.type;
+            document.getElementById('reminderTitle').value = reminder.title || '';
+            document.getElementById('reminderSchedule').value = reminder.schedule;
+            document.getElementById('reminderTime').value = reminder.time;
+            document.getElementById('reminderActive').checked = reminder.is_active;
+            
+            document.getElementById('reminderModal').classList.add('active');
+        }
+    } catch (error) {
+        UI.showToast('Error al cargar recordatorio', 'error');
     }
 }
 
-function validateForm() {
-    const title = document.getElementById('reminderTitle').value.trim();
-    const type = document.getElementById('reminderType').value;
-    const date = document.getElementById('reminderDate').value;
-    const time = document.getElementById('reminderTime').value;
-    
-    if (!title || !type || !date || !time) {
-        showToast('Por favor completa todos los campos obligatorios', 'error');
-        return false;
+// Cerrar modal
+function closeReminderModal() {
+    document.getElementById('reminderModal').classList.remove('active');
+    editingReminderId = null;
+}
+
+// Alternar estado del recordatorio
+async function toggleReminder(reminderId) {
+    try {
+        const response = await API.post(`/reminders/${reminderId}/toggle`);
+        if (response.success) {
+            location.reload();
+        }
+    } catch (error) {
+        UI.showToast('Error al cambiar recordatorio', 'error');
+    }
+}
+
+// Eliminar recordatorio
+async function deleteReminder(reminderId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este recordatorio?')) {
+        return;
     }
     
-    return true;
+    try {
+        UI.showLoading('Eliminando recordatorio...');
+        const response = await API.delete(`/reminders/${reminderId}`);
+        
+        if (response.success) {
+            UI.showToast('Recordatorio eliminado', 'success');
+            location.reload();
+        }
+    } catch (error) {
+        UI.showToast('Error al eliminar recordatorio', 'error');
+    } finally {
+        UI.hideLoading();
+    }
 }
 
-function getFormData() {
-    return {
-        title: document.getElementById('reminderTitle').value.trim(),
-        type: document.getElementById('reminderType').value,
-        description: document.getElementById('reminderDescription').value.trim(),
-        date: document.getElementById('reminderDate').value,
-        time: document.getElementById('reminderTime').value,
-        repeat: document.getElementById('reminderRepeat').value,
-        target: document.getElementById('reminderTarget').value,
-        notification: document.getElementById('reminderNotification').checked
-    };
-}
-
-function editReminder(reminderId) {
-    // TODO: Cargar datos del recordatorio existente
-    document.getElementById('reminderModalLabel').innerHTML = 
-        '<i class="bi bi-pencil me-2"></i>Editar Recordatorio';
-    document.getElementById('deleteReminderBtn').classList.remove('d-none');
-    
-    const reminderModal = new bootstrap.Modal(document.getElementById('reminderModal'));
-    reminderModal.show();
-    
-    showToast(`Editando recordatorio ${reminderId}. Funcionalidad próximamente.`, 'info');
+// Ver recuerdo asociado
+function viewMemory(memoryId) {
+    window.location.href = `/memory/${memoryId}`;
 }
 </script>
+{% endblock %}
 
+{% block styles %}
 <style>
-.quick-action {
+.filters-section {
+    margin-bottom: var(--space-lg);
+    padding: 0 var(--space-lg);
+}
+
+.filter-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+}
+
+.filter-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-tab.active {
+    background: var(--color-primary);
+    color: white;
+}
+
+.filter-tab .count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: 600;
+}
+
+.filter-tab.active .count {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.reminders-container {
+    padding: 0 var(--space-lg) var(--space-lg);
+}
+
+.reminder-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
     transition: all 0.2s ease;
 }
 
-.quick-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.reminder-card.inactive {
+    opacity: 0.6;
 }
 
-.timeline-marker {
-    width: 12px;
-    height: 12px;
+.reminder-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.reminder-icon {
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.reminder-info {
+    flex: 1;
+}
+
+.reminder-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.reminder-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.reminder-type,
+.reminder-schedule {
+    font-size: var(--font-sm);
+    color: var(--color-text-secondary);
+}
+
+.reminder-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.reminder-memory {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-background);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-md);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.reminder-memory:hover {
+    background: var(--color-surface-hover);
+}
+
+.memory-thumbnail {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+}
+
+.memory-info {
+    flex: 1;
+}
+
+.memory-title {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.memory-person,
+.memory-date {
+    font-size: var(--font-sm);
+    color: var(--color-text-secondary);
+}
+
+.reminder-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.reminder-time,
+.reminder-next {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-sm);
+    color: var(--color-text-secondary);
+}
+
+.reminder-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-sm);
+    font-weight: 500;
+}
+
+.reminder-status.active {
+    color: var(--color-success);
+}
+
+.reminder-status.inactive {
+    color: var(--color-text-secondary);
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    margin-top: 6px;
+    background: currentColor;
 }
 
-.timeline {
-    position: relative;
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    font-weight: 500;
 }
 
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #e9ecef;
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+@media (min-width: 768px) {
+    .reminder-meta {
+        flex-direction: row;
+        gap: var(--space-md);
+    }
+    
+    .reminder-details {
+        flex-direction: row;
+        gap: var(--space-lg);
+    }
 }
 </style>
 {% endblock %}

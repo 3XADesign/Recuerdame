@@ -1,0 +1,294 @@
+/* Map page styles */
+
+.map-page {
+  padding: 0;
+  overflow: hidden;
+}
+
+.map-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: transparent;
+  border: none;
+  padding: var(--space-4);
+}
+
+.map-back-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.map-back-btn:hover {
+  transform: scale(1.05);
+}
+
+.map-back-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.map-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: var(--bg);
+}
+
+.map-fullscreen #map {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Map action buttons */
+.map-actions {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 150;
+}
+
+.map-action-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.map-action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.map-action-btn.active {
+  background: var(--ok);
+  color: white;
+  border-color: var(--ok);
+}
+
+.map-action-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+/* Location status */
+.location-status {
+  position: absolute;
+  bottom: var(--space-6);
+  left: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 150;
+}
+
+.location-status.safe {
+  background: var(--ok);
+  color: white;
+  border-color: var(--ok);
+}
+
+.location-status.warning {
+  background: var(--warn);
+  color: white;
+  border-color: var(--warn);
+}
+
+.location-status.danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.location-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+/* Family members list overlay */
+.family-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--space-5);
+  transform: translateY(calc(100% - 80px));
+  transition: var(--transition-base);
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 150;
+}
+
+.family-overlay.expanded {
+  transform: translateY(0);
+}
+
+.family-overlay-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  margin: 0 auto var(--space-4) auto;
+  cursor: pointer;
+}
+
+.family-overlay-title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-4) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.family-member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.family-member:hover {
+  background: var(--line);
+}
+
+.family-member:last-child {
+  margin-bottom: 0;
+}
+
+.family-member-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.family-member-info {
+  flex: 1;
+}
+
+.family-member-name {
+  font-weight: 600;
+  margin: 0 0 2px 0;
+  font-size: var(--fs-md);
+}
+
+.family-member-location {
+  color: var(--text-weak);
+  font-size: var(--fs-sm);
+  margin: 0;
+}
+
+.family-member-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  flex-shrink: 0;
+}
+
+.family-member-status.warning {
+  background: var(--warn);
+}
+
+.family-member-status.danger {
+  background: var(--danger);
+}
+
+/* Safety zone visualization */
+.safety-zone {
+  stroke: var(--ok);
+  stroke-width: 2;
+  stroke-dasharray: 10, 5;
+  fill: rgba(24, 160, 94, 0.1);
+}
+
+.safety-zone.warning {
+  stroke: var(--warn);
+  fill: rgba(226, 161, 0, 0.1);
+}
+
+.safety-zone.danger {
+  stroke: var(--danger);
+  fill: rgba(214, 69, 69, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .map-actions {
+    top: var(--space-5);
+    right: var(--space-3);
+  }
+  
+  .map-action-btn {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .location-status {
+    bottom: var(--space-5);
+    left: var(--space-3);
+  }
+  
+  .family-overlay {
+    transform: translateY(calc(100% - 60px));
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .map-fullscreen {
+  background: var(--surface);
+}
+
+[data-theme="dark"] .map-action-btn,
+[data-theme="dark"] .location-status,
+[data-theme="dark"] .map-back-btn {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}

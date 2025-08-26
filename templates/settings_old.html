@@ -1,0 +1,941 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">Configuración</h1>
+        </div>
+    </header>
+
+    <!-- Perfil de usuario -->
+    <div class="settings-section">
+        <h2 class="section-title">Perfil</h2>
+        <div class="settings-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {% if current_user.photo_url %}
+                    <img src="{{ current_user.photo_url }}" alt="{{ current_user.name }}" id="profileImage">
+                    {% else %}
+                    <div class="avatar-placeholder" id="profilePlaceholder">
+                        {{ current_user.name[0]|upper }}
+                    </div>
+                    {% endif %}
+                    <button class="avatar-change-btn" onclick="changeProfilePhoto()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2v11z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </button>
+                    <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                </div>
+                <div class="profile-info">
+                    <h3 id="userName">{{ current_user.name }}</h3>
+                    <p id="userEmail">{{ current_user.email }}</p>
+                </div>
+                <button class="btn-outline" onclick="editProfile()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Editar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Familia -->
+    <div class="settings-section">
+        <h2 class="section-title">Familia</h2>
+        <div class="settings-card">
+            {% if current_user.family %}
+            <div class="family-info">
+                <div class="family-details">
+                    <h3>{{ current_user.family.name }}</h3>
+                    <p>{{ current_user.family.members_count }} miembros</p>
+                    {% if current_user.is_family_admin %}
+                    <span class="admin-badge">Administrador</span>
+                    {% endif %}
+                </div>
+                <div class="family-actions">
+                    <button class="btn-outline" onclick="manageFamilyMembers()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Gestionar
+                    </button>
+                    {% if current_user.is_family_admin %}
+                    <button class="btn-outline" onclick="inviteMembers()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                        Invitar
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="no-family">
+                <div class="no-family-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <h3>No tienes familia</h3>
+                <p>Crea una familia o únete a una existente para compartir recuerdos.</p>
+                <div class="family-options">
+                    <button class="btn-primary" onclick="location.href='/family/create'">
+                        Crear familia
+                    </button>
+                    <button class="btn-outline" onclick="location.href='/family/join'">
+                        Unirse a familia
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div class="settings-section">
+        <h2 class="section-title">Notificaciones</h2>
+        <div class="settings-card">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Notificaciones push</h4>
+                    <p>Recibir notificaciones en tu dispositivo</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="pushNotifications" {% if settings.push_notifications %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Recordatorios</h4>
+                    <p>Notificaciones de recordatorios programados</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="reminderNotifications" {% if settings.reminder_notifications %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Alertas de ubicación</h4>
+                    <p>Notificaciones sobre zonas de seguridad</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="locationAlerts" {% if settings.location_alerts %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Actividad familiar</h4>
+                    <p>Notificaciones sobre nuevos recuerdos familiares</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="familyActivity" {% if settings.family_activity %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <button class="btn-secondary" onclick="testNotifications()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                Probar notificaciones
+            </button>
+        </div>
+    </div>
+
+    <!-- Privacidad y seguridad -->
+    <div class="settings-section">
+        <h2 class="section-title">Privacidad y Seguridad</h2>
+        <div class="settings-card">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Compartir ubicación</h4>
+                    <p>Permitir que la familia vea tu ubicación</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="shareLocation" {% if settings.share_location %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Perfil público</h4>
+                    <p>Otros miembros pueden ver tu información básica</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="publicProfile" {% if settings.public_profile %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <button class="btn-outline" onclick="changePassword()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <circle cx="12" cy="16" r="1"></circle>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Cambiar contraseña
+            </button>
+        </div>
+    </div>
+
+    <!-- Aplicación -->
+    <div class="settings-section">
+        <h2 class="section-title">Aplicación</h2>
+        <div class="settings-card">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Tema</h4>
+                    <p>Apariencia de la aplicación</p>
+                </div>
+                <select id="themeSelect" class="setting-select">
+                    <option value="auto">Automático</option>
+                    <option value="light">Claro</option>
+                    <option value="dark">Oscuro</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Calidad de imágenes</h4>
+                    <p>Calidad para subir y mostrar fotos</p>
+                </div>
+                <select id="imageQuality" class="setting-select">
+                    <option value="high">Alta</option>
+                    <option value="medium">Media</option>
+                    <option value="low">Baja</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Uso de datos</h4>
+                    <p>Optimizar para datos móviles</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="dataOptimization" {% if settings.data_optimization %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Almacenamiento -->
+    <div class="settings-section">
+        <h2 class="section-title">Almacenamiento</h2>
+        <div class="settings-card">
+            <div class="storage-info">
+                <div class="storage-item">
+                    <span>Recuerdos guardados</span>
+                    <span>{{ storage.memories_count }} recuerdos</span>
+                </div>
+                <div class="storage-item">
+                    <span>Fotos almacenadas</span>
+                    <span>{{ storage.photos_size }}</span>
+                </div>
+                <div class="storage-item">
+                    <span>Caché de la app</span>
+                    <span>{{ storage.cache_size }}</span>
+                </div>
+            </div>
+            <button class="btn-outline" onclick="clearCache()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Limpiar caché
+            </button>
+        </div>
+    </div>
+
+    <!-- Información -->
+    <div class="settings-section">
+        <h2 class="section-title">Información</h2>
+        <div class="settings-card">
+            <div class="app-info">
+                <div class="info-item">
+                    <span>Versión</span>
+                    <span>1.0.0</span>
+                </div>
+                <div class="info-item">
+                    <span>Última actualización</span>
+                    <span>{{ last_update_date }}</span>
+                </div>
+            </div>
+            <div class="app-links">
+                <button class="btn-outline" onclick="showPrivacyPolicy()">
+                    Política de privacidad
+                </button>
+                <button class="btn-outline" onclick="showTermsOfService()">
+                    Términos de servicio
+                </button>
+                <button class="btn-outline" onclick="contactSupport()">
+                    Contactar soporte
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cerrar sesión -->
+    <div class="settings-section">
+        <div class="settings-card">
+            <button class="btn-danger full-width" onclick="confirmLogout()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16,17 21,12 16,7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Cerrar sesión
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modales -->
+<div class="modal" id="editProfileModal">
+    <div class="modal-overlay" onclick="closeModal('editProfileModal')"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Editar perfil</h2>
+            <button class="modal-close" onclick="closeModal('editProfileModal')" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form id="editProfileForm" class="modal-body">
+            <div class="form-group">
+                <label for="editName">Nombre completo</label>
+                <input type="text" id="editName" name="name" required value="{{ current_user.name }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="editEmail">Correo electrónico</label>
+                <input type="email" id="editEmail" name="email" required value="{{ current_user.email }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="editPhone">Teléfono (opcional)</label>
+                <input type="tel" id="editPhone" name="phone" value="{{ current_user.phone or '' }}">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('editProfileModal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary">
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="changePasswordModal">
+    <div class="modal-overlay" onclick="closeModal('changePasswordModal')"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Cambiar contraseña</h2>
+            <button class="modal-close" onclick="closeModal('changePasswordModal')" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form id="changePasswordForm" class="modal-body">
+            <div class="form-group">
+                <label for="currentPassword">Contraseña actual</label>
+                <input type="password" id="currentPassword" name="current_password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="newPassword">Nueva contraseña</label>
+                <input type="password" id="newPassword" name="new_password" required minlength="8">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar nueva contraseña</label>
+                <input type="password" id="confirmPassword" name="confirm_password" required minlength="8">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('changePasswordModal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary">
+                    Cambiar contraseña
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    setupSettingsListeners();
+    loadCurrentSettings();
+});
+
+// Configurar listeners para los ajustes
+function setupSettingsListeners() {
+    // Toggles de configuración
+    const toggles = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            updateSetting(this.id, this.checked);
+        });
+    });
+    
+    // Selects de configuración
+    const selects = document.querySelectorAll('.setting-select');
+    selects.forEach(select => {
+        select.addEventListener('change', function() {
+            updateSetting(this.id, this.value);
+        });
+    });
+    
+    // Formularios
+    setupForms();
+}
+
+// Cargar configuración actual
+function loadCurrentSettings() {
+    // Aplicar tema actual
+    const currentTheme = localStorage.getItem('theme') || 'auto';
+    document.getElementById('themeSelect').value = currentTheme;
+}
+
+// Actualizar configuración
+async function updateSetting(settingName, value) {
+    try {
+        const response = await API.put('/settings', {
+            [settingName]: value
+        });
+        
+        if (response.success) {
+            // Aplicar configuración localmente si es necesario
+            if (settingName === 'themeSelect') {
+                App.setTheme(value);
+            }
+            
+            console.log('Setting updated:', settingName, value);
+        }
+    } catch (error) {
+        console.error('Error updating setting:', error);
+        UI.showToast('Error al guardar configuración', 'error');
+    }
+}
+
+// Configurar formularios
+function setupForms() {
+    // Formulario de editar perfil
+    document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        try {
+            UI.showLoading('Actualizando perfil...');
+            
+            const response = await Auth.updateProfile(data);
+            
+            if (response.success) {
+                // Actualizar UI
+                document.getElementById('userName').textContent = data.name;
+                document.getElementById('userEmail').textContent = data.email;
+                
+                closeModal('editProfileModal');
+                UI.showToast('Perfil actualizado', 'success');
+            }
+        } catch (error) {
+            UI.showToast('Error al actualizar perfil', 'error');
+        } finally {
+            UI.hideLoading();
+        }
+    });
+    
+    // Formulario de cambio de contraseña
+    document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        // Validar que las contraseñas coincidan
+        if (data.new_password !== data.confirm_password) {
+            UI.showToast('Las contraseñas no coinciden', 'warning');
+            return;
+        }
+        
+        try {
+            UI.showLoading('Cambiando contraseña...');
+            
+            const response = await Auth.changePassword(data.current_password, data.new_password);
+            
+            if (response.success) {
+                closeModal('changePasswordModal');
+                UI.showToast('Contraseña actualizada', 'success');
+                e.target.reset();
+            }
+        } catch (error) {
+            UI.showToast('Error al cambiar contraseña', 'error');
+        } finally {
+            UI.hideLoading();
+        }
+    });
+}
+
+// Funciones de interfaz
+function editProfile() {
+    document.getElementById('editProfileModal').classList.add('active');
+}
+
+function changePassword() {
+    document.getElementById('changePasswordModal').classList.add('active');
+}
+
+function changeProfilePhoto() {
+    document.getElementById('photoInput').click();
+}
+
+function manageFamilyMembers() {
+    // TODO: Implementar gestión de miembros
+    UI.showToast('Próximamente: Gestión de miembros', 'info');
+}
+
+function inviteMembers() {
+    // TODO: Implementar invitaciones
+    UI.showToast('Próximamente: Invitar miembros', 'info');
+}
+
+async function testNotifications() {
+    try {
+        if (window.FCM) {
+            const success = await window.FCM.testNotification();
+            if (success) {
+                UI.showToast('Notificación de prueba enviada', 'success');
+            } else {
+                UI.showToast('No se pudo enviar notificación', 'warning');
+            }
+        } else {
+            UI.showToast('Notificaciones no disponibles', 'warning');
+        }
+    } catch (error) {
+        UI.showToast('Error al probar notificaciones', 'error');
+    }
+}
+
+async function clearCache() {
+    if (!confirm('¿Estás seguro de que quieres limpiar la caché? Esto puede hacer que la app se cargue más lento temporalmente.')) {
+        return;
+    }
+    
+    try {
+        UI.showLoading('Limpiando caché...');
+        
+        // Limpiar caché del navegador
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(
+                cacheNames.map(cacheName => caches.delete(cacheName))
+            );
+        }
+        
+        // Limpiar localStorage parcialmente (mantener configuraciones importantes)
+        const keysToKeep = ['theme', 'recuerdame_auth'];
+        const keysToRemove = [];
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!keysToKeep.includes(key)) {
+                keysToRemove.push(key);
+            }
+        }
+        
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        UI.showToast('Caché limpiada correctamente', 'success');
+        
+    } catch (error) {
+        console.error('Error clearing cache:', error);
+        UI.showToast('Error al limpiar caché', 'error');
+    } finally {
+        UI.hideLoading();
+    }
+}
+
+function showPrivacyPolicy() {
+    window.open('/privacy-policy', '_blank');
+}
+
+function showTermsOfService() {
+    window.open('/terms-of-service', '_blank');
+}
+
+function contactSupport() {
+    window.open('mailto:soporte@recuerdame.app?subject=Soporte RecuerdaMe', '_blank');
+}
+
+function confirmLogout() {
+    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+        Auth.logout();
+    }
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// Upload de foto de perfil
+document.getElementById('photoInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+        UI.showToast('Por favor selecciona una imagen válida', 'warning');
+        return;
+    }
+    
+    // Validar tamaño (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        UI.showToast('La imagen no puede superar los 5MB', 'warning');
+        return;
+    }
+    
+    try {
+        UI.showLoading('Subiendo foto...');
+        
+        const formData = new FormData();
+        formData.append('photo', file);
+        
+        const response = await API.post('/user/upload-photo', formData);
+        
+        if (response.success) {
+            // Actualizar imagen en la UI
+            const profileImage = document.getElementById('profileImage');
+            const profilePlaceholder = document.getElementById('profilePlaceholder');
+            
+            if (profileImage) {
+                profileImage.src = response.data.photo_url;
+            } else if (profilePlaceholder) {
+                profilePlaceholder.outerHTML = `<img src="${response.data.photo_url}" alt="Perfil" id="profileImage">`;
+            }
+            
+            UI.showToast('Foto de perfil actualizada', 'success');
+        }
+    } catch (error) {
+        console.error('Error uploading photo:', error);
+        UI.showToast('Error al subir la foto', 'error');
+    } finally {
+        UI.hideLoading();
+    }
+});
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+.settings-section {
+    margin-bottom: var(--space-xl);
+    padding: 0 var(--space-lg);
+}
+
+.section-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-text);
+}
+
+.settings-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.profile-avatar {
+    position: relative;
+}
+
+.profile-avatar img,
+.avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-xl);
+    font-weight: 600;
+}
+
+.avatar-change-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-surface);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h3 {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.profile-info p {
+    color: var(--color-text-secondary);
+}
+
+.family-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+}
+
+.family-details h3 {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.family-details p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.admin-badge {
+    background: var(--color-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: 600;
+}
+
+.family-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.no-family {
+    text-align: center;
+}
+
+.no-family-icon {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.no-family h3 {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+}
+
+.no-family p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.family-options {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-info h4 {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.setting-info p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-sm);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-border);
+    transition: 0.3s;
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--color-primary);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.setting-select {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--color-text);
+    min-width: 120px;
+}
+
+.storage-info,
+.app-info {
+    margin-bottom: var(--space-lg);
+}
+
+.storage-item,
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.storage-item:last-child,
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.app-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.full-width {
+    width: 100%;
+}
+
+@media (max-width: 767px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .family-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .family-actions {
+        justify-content: center;
+    }
+    
+    .family-options {
+        flex-direction: column;
+    }
+    
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+    
+    .app-links button {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

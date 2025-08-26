@@ -1,331 +1,305 @@
-# RecuerdaMe 📱
+# RecuerdaMe
 
-Una aplicación web progresiva (PWA) diseñada para ayudar a las familias de personas con Alzheimer a mantener la conexión, seguridad y bienestar de sus seres queridos.
+Una aplicación web familiar para compartir recuerdos y mantenerse conectados.
 
-## 🎯 Objetivo
+## Características
 
-RecuerdaMe está diseñada con principios de **diseño centrado en personas mayores**, ofreciendo una interfaz simple, accesible y funcional que permite:
+- **Recuerdos familiares**: Crea y comparte recuerdos con fotos, ubicaciones y personas
+- **Mapa familiar**: Ve la ubicación en tiempo real de los miembros de tu familia
+- **Recordatorios inteligentes**: Configura recordatorios automáticos para fechas importantes
+- **Alertas de ubicación**: Recibe notificaciones cuando los miembros entren o salgan de zonas específicas
+- **PWA**: Funciona como una app nativa en dispositivos móviles
+- **Notificaciones push**: Mantente informado con notificaciones en tiempo real
+- **Modo offline**: Funciona sin conexión a internet
+- **Tema claro/oscuro**: Personaliza la apariencia según tus preferencias
 
-- **Seguimiento de ubicación en tiempo real** con geovallas de seguridad
-- **Gestión familiar colaborativa** con invitaciones y permisos
-- **Recordatorios inteligentes** para medicamentos y actividades
-- **Archivo de memorias** para preservar momentos importantes
-- **Sistema de alertas** para situaciones de emergencia
-- **Comunicación familiar** centralizada
+## Tecnologías
 
-## 🛠️ Tecnologías
+- **Backend**: Flask 3.0.0 con Python
+- **Base de datos**: Firebase Firestore
+- **Autenticación**: Firebase Auth
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **PWA**: Service Worker, Web App Manifest
+- **Mapas**: Google Maps API
+- **Notificaciones**: Firebase Cloud Messaging
+- **Despliegue**: Gunicorn + Docker
 
-### Backend
-- **Python Flask** - Framework web ligero y flexible
-- **Firebase Admin SDK** - Autenticación y base de datos
-- **Google Cloud Firestore** - Base de datos NoSQL en tiempo real
-- **Firebase Cloud Messaging** - Notificaciones push
+## Instalación
 
-### Frontend
-- **HTML5 + CSS3** - Estructura y estilos
-- **Bootstrap 5** - Framework CSS responsivo
-- **JavaScript Vanilla** - Sin dependencias pesadas
-- **Google Maps JavaScript API** - Mapas y geolocalización
-- **Progressive Web App (PWA)** - Instalable en dispositivos
+### Requisitos previos
 
-### Despliegue
-- **Render** - Plataforma de hosting
-- **Gunicorn** - Servidor WSGI para producción
+- Python 3.8+
+- Node.js 16+ (para herramientas de desarrollo)
+- Cuenta de Firebase
+- Google Maps API Key
 
-## 📁 Estructura del Proyecto
+### Configuración
+
+1. **Clona el repositorio**
+   ```bash
+   git clone https://github.com/tu-usuario/recuerdame.git
+   cd recuerdame
+   ```
+
+2. **Instala las dependencias**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configura Firebase**
+   - Crea un proyecto en [Firebase Console](https://console.firebase.google.com)
+   - Habilita Authentication, Firestore y Cloud Messaging
+   - Descarga el archivo `firebase-admin-key.json` y colócalo en la raíz del proyecto
+   - Actualiza `firebase.json` con tu configuración
+
+4. **Configura variables de entorno**
+   ```bash
+   cp .env.example .env
+   # Edita .env con tus claves y configuración
+   ```
+
+5. **Ejecuta la aplicación**
+   ```bash
+   python app.py
+   ```
+
+   O con Gunicorn:
+   ```bash
+   gunicorn -c gunicorn.conf.py app:app
+   ```
+
+## Estructura del proyecto
 
 ```
-RecuerdaMe/
-├── app.py                    # Aplicación Flask principal
-├── requirements.txt          # Dependencias Python
-├── render.yaml              # Configuración de Render
-├── manifest.json            # Manifiesto PWA
-├── service-worker.js        # Service Worker PWA
-├── templates/               # Plantillas Jinja2
-│   ├── base.html           # Plantilla base
-│   ├── dashboard.html      # Panel principal con mapa
-│   ├── family.html         # Gestión familiar
-│   ├── memories.html       # Archivo de memorias
-│   ├── reminders.html      # Recordatorios
-│   ├── alerts.html         # Centro de alertas
-│   ├── settings.html       # Configuración
-│   ├── login.html          # Inicio de sesión
-│   └── onboarding.html     # Proceso de incorporación
-└── static/
-    ├── css/
-    │   └── styles.css      # Estilos personalizados
-    ├── js/
-    │   ├── app.js          # Lógica principal
-    │   ├── maps.js         # Integración Google Maps
-    │   ├── location.js     # Geolocalización y seguimiento
-    │   └── fcm.js          # Notificaciones push
-    └── img/
-        ├── icon.png        # Icono PWA 192x192
-        └── icon-512.png    # Icono PWA 512x512
+recuerdame/
+├── app.py                          # Aplicación Flask principal
+├── requirements.txt                # Dependencias Python
+├── gunicorn.conf.py               # Configuración Gunicorn
+├── firebase.json                  # Configuración Firebase
+├── static/                        # Archivos estáticos
+│   ├── css/                       # Estilos CSS modulares
+│   │   ├── 00-tokens.css         # Variables CSS
+│   │   ├── 01-base.css           # Estilos base
+│   │   ├── 02-layout.css         # Layout y grid
+│   │   ├── 03-components/        # Componentes UI
+│   │   ├── 04-pages/             # Estilos específicos de página
+│   │   └── dark.css              # Tema oscuro
+│   ├── js/                       # JavaScript modular
+│   │   ├── app.js                # App principal y PWA
+│   │   ├── ui.js                 # Utilidades de interfaz
+│   │   ├── api.js                # Cliente HTTP y API
+│   │   ├── auth.js               # Gestión de autenticación
+│   │   ├── location.js           # Geolocalización y GPS
+│   │   ├── maps.js               # Integración Google Maps
+│   │   └── fcm.js                # Notificaciones push
+│   ├── icons/                    # Iconos de la PWA
+│   ├── manifest.json             # Web App Manifest
+│   └── service-worker.js         # Service Worker
+└── templates/                     # Templates Jinja2
+    ├── base.html                 # Template base
+    ├── onboarding.html           # Pantalla de bienvenida
+    ├── home.html                 # Página principal
+    ├── map.html                  # Mapa familiar
+    ├── memories_list.html        # Lista de recuerdos
+    ├── memory_person.html        # Detalle de recuerdo
+    ├── reminders.html            # Gestión de recordatorios
+    ├── alerts.html               # Alertas de ubicación
+    ├── family_create.html        # Crear familia
+    ├── family_join.html          # Unirse a familia
+    └── settings.html             # Configuración
 ```
 
-## ⚡ Características Principales
+## Arquitectura
 
-### 🗺️ Dashboard con Mapa Interactivo
-- Visualización en tiempo real de ubicaciones familiares
-- Geovallas de seguridad configurables
+### CSS Modular
+El proyecto utiliza una arquitectura CSS modular basada en tokens de diseño:
+
+- **Tokens (00-tokens.css)**: Variables CSS para colores, espaciado, tipografía
+- **Base (01-base.css)**: Reset CSS y estilos fundamentales
+- **Layout (02-layout.css)**: Sistema de grid y layouts
+- **Components (03-components/)**: Componentes reutilizables (botones, cards, forms)
+- **Pages (04-pages/)**: Estilos específicos de cada página
+- **Dark theme (dark.css)**: Sobrescribe variables para tema oscuro
+
+### JavaScript Modular
+- **app.js**: Inicialización de la app, PWA, gestión de temas
+- **ui.js**: Utilidades de interfaz (toasts, modales, animaciones)
+- **api.js**: Cliente HTTP con retry, caché y manejo de errores
+- **auth.js**: Gestión completa de autenticación y sesiones
+- **location.js**: Geolocalización, GPS y zonas de seguridad
+- **maps.js**: Integración con Google Maps y temas
+- **fcm.js**: Notificaciones push y mensajería
+
+### Backend Flask
+- Arquitectura MVC con rutas organizadas
+- Integración completa con Firebase
+- API RESTful para el frontend
+- Manejo de sesiones y autenticación
+- Validación de datos y manejo de errores
+
+## Funcionalidades principales
+
+### 👨‍👩‍👧‍👦 Gestión familiar
+- Crear y administrar grupos familiares
+- Invitar miembros por código o email
+- Permisos y roles (administrador, miembro)
+
+### 📸 Recuerdos
+- Crear recuerdos con fotos, título, descripción
+- Asociar personas y ubicaciones
+- Organizar por fechas y categorías
+- Búsqueda y filtrado avanzado
+
+### 🗺️ Mapa familiar
+- Ubicación en tiempo real de los miembros
+- Zonas de seguridad personalizables
 - Historial de ubicaciones
-- Alertas automáticas por proximidad
+- Integración con Google Maps
 
-### 👨‍👩‍👧‍👦 Gestión Familiar
-- Sistema de invitaciones por código
-- Roles y permisos diferenciados
-- Perfil de la persona con Alzheimer
-- Contactos de emergencia
+### ⏰ Recordatorios
+- Recordatorios automáticos para cumpleaños
+- Aniversarios y fechas importantes
+- Recordatorios basados en ubicación
+- Notificaciones personalizables
 
-### 🔔 Sistema de Recordatorios
-- Medicamentos con horarios específicos
-- Actividades diarias
-- Citas médicas
-- Notificaciones push inteligentes
+### 🔔 Notificaciones
+- Push notifications en tiempo real
+- Alertas de seguridad y ubicación
+- Notificaciones familiares
+- Configuración granular
 
-### 📸 Archivo de Memorias
-- Fotos con descripciones
-- Momentos importantes
-- Compartir con la familia
-- Estímulo para la memoria
+### 📱 PWA
+- Instalable como app nativa
+- Funciona offline
+- Sincronización en background
+- Optimizada para móviles
 
-### 🚨 Centro de Alertas
-- Notificaciones de geovalla
-- Alertas de emergencia
-- Estado de medicamentos
-- Comunicación familiar
+## Configuración avanzada
 
-## 🚀 Instalación y Configuración
-
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/tu-usuario/RecuerdaMe.git
-cd RecuerdaMe
+### Firebase
+```javascript
+// firebase.json
+{
+  "projectId": "tu-proyecto-id",
+  "apiKey": "tu-api-key",
+  "authDomain": "tu-proyecto.firebaseapp.com",
+  "storageBucket": "tu-proyecto.appspot.com",
+  "messagingSenderId": "123456789"
+}
 ```
 
-### 2. Configurar entorno virtual
-```bash
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+### Google Maps
+```python
+# En app.py
+GOOGLE_MAPS_API_KEY = "tu-google-maps-api-key"
 ```
 
-### 3. Instalar dependencias
+### Variables de entorno
 ```bash
-pip install -r requirements.txt
+# .env
+FLASK_ENV=development
+SECRET_KEY=tu-clave-secreta-muy-segura
+FIREBASE_PROJECT_ID=tu-proyecto-firebase
+GOOGLE_MAPS_API_KEY=tu-clave-google-maps
+VAPID_KEY=tu-clave-vapid-para-push
 ```
 
-### 4. Configurar Firebase
+## Despliegue
 
-#### A. Crear proyecto Firebase
-1. Ve a [Firebase Console](https://console.firebase.google.com/)
-2. Crea un nuevo proyecto
-3. Habilita Authentication, Firestore y Cloud Messaging
+### Docker
+```dockerfile
+FROM python:3.9-slim
 
-#### B. Configurar variables de entorno
-Crea un archivo `.env` en la raíz del proyecto:
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-```env
-# Firebase Configuration
-FIREBASE_PROJECT_ID=tu-project-id
-FIREBASE_PRIVATE_KEY_ID=tu-private-key-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\ntu-private-key\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=tu-service-account@tu-project.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=tu-client-id
-FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
-FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+COPY . .
 
-# Google Maps API
-GOOGLE_MAPS_API_KEY=tu-google-maps-api-key
-
-# App Configuration
-SECRET_KEY=tu-secret-key-super-segura
+EXPOSE 8000
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]
 ```
 
-### 5. Configurar Google Maps API
-1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
-2. Habilita la Google Maps JavaScript API
-3. Crea una clave API y configúrala en las variables de entorno
-
-### 6. Ejecutar la aplicación
+### Heroku
 ```bash
+# Instalar Heroku CLI y ejecutar:
+heroku create tu-app-name
+heroku config:set SECRET_KEY=tu-clave-secreta
+heroku config:set FIREBASE_PROJECT_ID=tu-proyecto
+git push heroku main
+```
+
+### Servidor tradicional
+```bash
+# Con Gunicorn
+gunicorn -c gunicorn.conf.py app:app
+
+# Con systemd (crear servicio)
+sudo systemctl enable recuerdame
+sudo systemctl start recuerdame
+```
+
+## Desarrollo
+
+### Ejecutar en modo desarrollo
+```bash
+export FLASK_ENV=development
 python app.py
 ```
 
-La aplicación estará disponible en `http://localhost:5000`
+### Comandos útiles
+```bash
+# Instalar dependencias
+pip install -r requirements.txt
 
-## 🌐 Despliegue en Render
+# Crear requirements.txt
+pip freeze > requirements.txt
 
-### 1. Conectar repositorio
-1. Ve a [Render](https://render.com/)
-2. Conecta tu repositorio de GitHub
-3. Selecciona "Web Service"
+# Ejecutar con hot reload
+python app.py
 
-### 2. Configurar variables de entorno
-En el dashboard de Render, configura todas las variables del archivo `.env`
-
-### 3. Despliegue automático
-El archivo `render.yaml` ya está configurado para el despliegue automático.
-
-## 📱 Características PWA
-
-### Instalación
-- **Android**: "Agregar a pantalla de inicio"
-- **iOS**: "Agregar a pantalla de inicio" desde Safari
-- **Desktop**: Icono de instalación en la barra de direcciones
-
-### Funcionalidad Offline
-- Caché de recursos estáticos
-- Página offline personalizada
-- Sincronización en segundo plano (próximamente)
-
-### Notificaciones Push
-- Alertas de geovalla
-- Recordatorios de medicamentos
-- Notificaciones familiares
-
-## 🎨 Diseño Centrado en Personas Mayores
-
-### Principios de Accesibilidad
-- **Fuentes grandes** (mínimo 18px)
-- **Alto contraste** para mejor visibilidad
-- **Botones grandes** fáciles de tocar
-- **Navegación simple** e intuitiva
-- **Iconos claros** con texto descriptivo
-
-### Características Específicas
-- Modo alto contraste
-- Tamaño de fuente ajustable
-- Confirmaciones claras para acciones importantes
-- Mensajes de error comprensibles
-- Ayuda contextual disponible
-
-## 🔐 Seguridad y Privacidad
-
-### Datos Protegidos
-- Autenticación Firebase segura
-- Cifrado de datos en tránsito y reposo
-- Acceso basado en roles familiares
-- Logs de actividad para auditoría
-
-### Privacidad
-- Datos de ubicación solo para familia autorizada
-- Configuración granular de privacidad
-- Eliminación de datos bajo solicitud
-- Cumplimiento con regulaciones de privacidad
-
-## 📊 Base de Datos (Firestore)
-
-### Colecciones Principales
-
-#### `families`
-```javascript
-{
-  id: "family_id",
-  name: "Familia García",
-  created_at: timestamp,
-  settings: {
-    emergency_contacts: [],
-    notification_preferences: {}
-  }
-}
+# Ejecutar con Gunicorn
+gunicorn --reload app:app
 ```
 
-#### `members`
-```javascript
-{
-  id: "member_id",
-  family_id: "family_id",
-  email: "usuario@email.com",
-  name: "Juan García",
-  role: "admin|caregiver|viewer",
-  created_at: timestamp
-}
-```
+## Contribuir
 
-#### `persons`
-```javascript
-{
-  id: "person_id",
-  family_id: "family_id",
-  name: "María García",
-  birth_date: "1945-03-15",
-  medical_info: {},
-  emergency_contacts: [],
-  geofences: []
-}
-```
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
+3. Commit tus cambios (`git commit -am 'Agrega nueva característica'`)
+4. Push a la rama (`git push origin feature/nueva-caracteristica`)
+5. Abre un Pull Request
 
-#### `locations`
-```javascript
-{
-  id: "location_id",
-  person_id: "person_id",
-  latitude: 40.7128,
-  longitude: -74.0060,
-  accuracy: 10,
-  timestamp: timestamp,
-  is_inside_geofence: true
-}
-```
+## Licencia
 
-## 🤝 Contribuir
+Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
 
-### Reportar Problemas
-1. Verifica que el problema no exista ya
-2. Crea un issue detallado
-3. Incluye pasos para reproducir
+## Soporte
 
-### Desarrollo
-1. Fork el repositorio
-2. Crea una rama feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -am 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crea un Pull Request
+- 📧 Email: soporte@recuerdame.app
+- 🐛 Issues: [GitHub Issues](https://github.com/tu-usuario/recuerdame/issues)
+- 📖 Documentación: [Wiki del proyecto](https://github.com/tu-usuario/recuerdame/wiki)
 
-## 📋 TODO / Roadmap
+## Roadmap
 
-### MVP1 (Actual)
-- [x] ✅ Estructura básica Flask + Firebase
-- [x] ✅ Autenticación de usuarios
-- [x] ✅ Dashboard con Google Maps
-- [x] ✅ Gestión familiar básica
-- [x] ✅ PWA con service worker
-- [ ] 🔄 Despliegue en Render
-- [ ] 🔄 Pruebas de integración
+### v1.1.0 (Próximo)
+- [ ] Chat familiar en tiempo real
+- [ ] Álbumes compartidos
+- [ ] Exportar recuerdos a PDF
+- [ ] Integración con redes sociales
 
-### MVP2 (Próximo)
-- [ ] 📱 Chat familiar en tiempo real
-- [ ] 🔔 Sistema de recordatorios completo
-- [ ] 📊 Dashboard de estadísticas
-- [ ] 🎯 Geofencing avanzado
-- [ ] 📞 Integración con llamadas de emergencia
+### v1.2.0 (Futuro)
+- [ ] Reconocimiento facial automático
+- [ ] Timeline familiar interactivo
+- [ ] Widgets para pantalla de inicio
+- [ ] Modo familia extendida
 
-### Futuro
-- [ ] 🤖 IA para detección de patrones
-- [ ] 📈 Análisis predictivo de comportamiento
-- [ ] 🩺 Integración con dispositivos médicos
-- [ ] 🌍 Soporte multi-idioma
-- [ ] 📱 Apps nativas móviles
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 🙏 Agradecimientos
-
-- Familias que inspiraron este proyecto
-- Comunidad de cuidadores de Alzheimer
-- Desarrolladores de las tecnologías open source utilizadas
-- Equipo de diseño UX especializado en accesibilidad
-
-## 📞 Soporte
-
-Para soporte técnico o consultas:
-- **Email**: soporte@recuerdame.app
-- **Issues**: [GitHub Issues](https://github.com/tu-usuario/RecuerdaMe/issues)
-- **Documentación**: [Wiki del proyecto](https://github.com/tu-usuario/RecuerdaMe/wiki)
+### v2.0.0 (Largo plazo)
+- [ ] IA para sugerencias de recuerdos
+- [ ] Realidad aumentada
+- [ ] Integración con dispositivos IoT
+- [ ] Red familiar extendida
 
 ---
 
-**RecuerdaMe** - *Mantén a tu familia unida y segura* 💙
+**RecuerdaMe** - Mantén viva la historia de tu familia 💜

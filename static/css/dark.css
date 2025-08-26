@@ -1,0 +1,183 @@
+/* Dark theme overrides */
+
+[data-theme="dark"] {
+  /* Override specific components for better dark mode */
+  
+  /* Enhanced contrast for readability */
+  --text: #f8f8f8;
+  --text-weak: #b8b8b8;
+  
+  /* Improve card contrast */
+  --surface: #1a1b20;
+  --bg: #0f1014;
+  --line: #2a2b30;
+  
+  /* Softer pastels for dark mode */
+  --pastel-1: #2a2422;
+  --pastel-2: #1f2523;
+  --pastel-3: #1f252e;
+  --pastel-4: #252230;
+  --pastel-5: #1e242e;
+}
+
+/* Improve button visibility in dark mode */
+[data-theme="dark"] .btn-secondary {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .btn-ghost:hover {
+  background: var(--surface);
+}
+
+/* Enhanced card visibility */
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-pill,
+[data-theme="dark"] .tile {
+  border-color: var(--line);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] .card-pill:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Form elements in dark mode */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+[data-theme="dark"] .form-input:focus {
+  box-shadow: 0 0 0 2px var(--ok);
+}
+
+[data-theme="dark"] .form-input::placeholder {
+  color: var(--text-weak);
+}
+
+/* Navigation in dark mode */
+[data-theme="dark"] .bottom-nav {
+  background: var(--surface);
+  border-top-color: var(--line);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .nav-item:hover {
+  background: var(--bg);
+}
+
+/* Toast adjustments */
+[data-theme="dark"] .toast {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Chip improvements */
+[data-theme="dark"] .chip {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .chip-soft {
+  background: var(--pastel-3);
+}
+
+/* Action cards with better contrast */
+[data-theme="dark"] .action-card-icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .action-card-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Memory cards */
+[data-theme="dark"] .memory-tag {
+  background: var(--pastel-3);
+  color: var(--text);
+}
+
+/* Alert timeline */
+[data-theme="dark"] .alerts-timeline::before {
+  background: var(--line);
+}
+
+[data-theme="dark"] .alert-item::before {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+/* Reminder cards */
+[data-theme="dark"] .reminder-checkbox {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .reminder-icon {
+  background: var(--pastel-3);
+}
+
+/* Map overlays */
+[data-theme="dark"] .map-control-btn,
+[data-theme="dark"] .map-status-badge {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Settings toggles */
+[data-theme="dark"] .toggle-slider {
+  background: var(--line);
+}
+
+[data-theme="dark"] .toggle-slider:before {
+  background: var(--text);
+}
+
+/* Scrollbar styling for dark mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-weak);
+}
+
+/* Selection styling */
+[data-theme="dark"] ::selection {
+  background: rgba(24, 160, 94, 0.3);
+  color: var(--text);
+}
+
+/* Focus improvements for dark mode */
+[data-theme="dark"] :focus-visible {
+  outline-color: var(--ok);
+}
+
+/* Hero text gradient in dark mode */
+[data-theme="dark"] .hero-title,
+[data-theme="dark"] .home-greeting {
+  background: var(--cta);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

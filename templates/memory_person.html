@@ -1,314 +1,656 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}{{ person_id | title }} - Recuerdos{% endblock %}
+{% block title %}{{ memory.title }} - RecuerdaMe{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Back Button -->
-    <div class="mb-3">
-        <a href="{{ url_for('memories_list') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>
-            Volver a Recuerdos
-        </a>
-    </div>
-    
-    <!-- Person Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-2 text-center mb-3 mb-md-0">
-                            <div class="position-relative d-inline-block">
-                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" 
-                                     style="width: 80px; height: 80px;">
-                                    <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <h1 class="h2 mb-1">María José García</h1>
-                            <p class="text-muted mb-2">
-                                <i class="bi bi-people me-1"></i>
-                                Hija mayor
-                            </p>
-                            <p class="mb-0">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar-plus me-1"></i>
-                                    Agregada el 15 de agosto, 2025
-                                </small>
-                            </p>
-                        </div>
-                        <div class="col-md-3 text-md-end">
-                            <div class="d-flex flex-column gap-2">
-                                <button class="btn btn-primary" id="editPersonBtn">
-                                    <i class="bi bi-pencil me-2"></i>
-                                    Editar Información
-                                </button>
-                                <button class="btn btn-outline-success" id="addPhotosBtn">
-                                    <i class="bi bi-camera-fill me-2"></i>
-                                    Agregar Fotos
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Notes Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-heart me-2"></i>
-                        Notas y Recuerdos
-                    </h5>
-                    <button class="btn btn-sm btn-outline-primary" id="editNotesBtn">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div id="notesDisplay">
-                        <p class="mb-0 fs-5 lh-base">
-                            María José es mi hija mayor. Siempre me trae flores los domingos y me ayuda con las compras. 
-                            Es doctora en el Hospital San Carlos. Tiene dos hijos: Pablo y Carmen, mis nietos favoritos. 
-                            Le encanta cocinar paella como yo le enseñé cuando era pequeña.
-                        </p>
-                    </div>
-                    <div id="notesEdit" class="d-none">
-                        <textarea class="form-control form-control-lg" rows="4" id="notesTextarea">María José es mi hija mayor. Siempre me trae flores los domingos y me ayuda con las compras. Es doctora en el Hospital San Carlos. Tiene dos hijos: Pablo y Carmen, mis nietos favoritos. Le encanta cocinar paella como yo le enseñé cuando era pequeña.</textarea>
-                        <div class="mt-2">
-                            <button class="btn btn-success btn-sm me-2" id="saveNotesBtn">
-                                <i class="bi bi-check-lg me-1"></i>
-                                Guardar
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="cancelNotesBtn">
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Photos Gallery -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-images me-2"></i>
-                        Galería de Fotos
-                        <span class="badge bg-primary ms-2">6 fotos</span>
-                    </h5>
-                    <button class="btn btn-sm btn-primary" id="uploadPhotosBtn">
-                        <i class="bi bi-plus-lg me-1"></i>
-                        Subir Fotos
-                    </button>
-                </div>
-                <div class="card-body">
-                    <!-- Photo Grid -->
-                    <div class="row g-3" id="photosGrid">
-                        <!-- Demo Photos -->
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="position-relative photo-item">
-                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
-                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
-                                        style="width: 28px; height: 28px;" title="Ver en grande">
-                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="position-relative photo-item">
-                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
-                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
-                                        style="width: 28px; height: 28px;" title="Ver en grande">
-                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="position-relative photo-item">
-                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
-                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
-                                        style="width: 28px; height: 28px;" title="Ver en grande">
-                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="position-relative photo-item">
-                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
-                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
-                                        style="width: 28px; height: 28px;" title="Ver en grande">
-                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="position-relative photo-item">
-                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
-                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
-                                        style="width: 28px; height: 28px;" title="Ver en grande">
-                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="position-relative photo-item">
-                                <div class="rounded shadow-sm overflow-hidden" style="aspect-ratio: 1; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-white">
-                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-1 rounded-circle" 
-                                        style="width: 28px; height: 28px;" title="Ver en grande">
-                                    <i class="bi bi-eye" style="font-size: 0.75rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Empty State -->
-                    <div class="text-center py-4 d-none" id="emptyPhotos">
-                        <i class="bi bi-camera text-muted mb-3" style="font-size: 3rem;"></i>
-                        <h5 class="text-muted">No hay fotos aún</h5>
-                        <p class="text-muted mb-3">Agrega fotos para crear recuerdos visuales</p>
-                        <button class="btn btn-primary">
-                            <i class="bi bi-camera-fill me-2"></i>
-                            Subir Primera Foto
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Hidden File Input -->
-<input type="file" id="photoInput" class="d-none" multiple accept="image/*" max="6">
-
-<!-- Modal: Photo Viewer -->
-<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="photoModalLabel">Foto de María José</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body text-center p-0">
-                <div id="photoCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <!-- Dynamic content -->
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="deletePhotoBtn">
-                    <i class="bi bi-trash me-2"></i>
-                    Eliminar Foto
+<div class="page-container">
+    <!-- Header con botón de regreso -->
+    <header class="page-header">
+        <div class="header-content">
+            <button class="btn-icon" onclick="history.back()" aria-label="Volver">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5"></path>
+                    <path d="M12 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <h1 class="page-title">Recuerdo</h1>
+            <div class="header-actions">
+                <button class="btn-icon" onclick="shareMemory()" aria-label="Compartir">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16,6 12,2 8,6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                    </svg>
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button class="btn-icon" onclick="editMemory()" aria-label="Editar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Imagen principal del recuerdo -->
+    {% if memory.image_url %}
+    <div class="memory-image">
+        <img src="{{ memory.image_url }}" alt="{{ memory.title }}" loading="lazy">
+        <div class="image-overlay">
+            <div class="memory-meta">
+                <span class="memory-date">{{ memory.date_formatted }}</span>
+                {% if memory.location %}
+                <span class="memory-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ memory.location.name }}
+                </span>
+                {% endif %}
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endif %}
 
-{% block scripts %}
+    <!-- Contenido del recuerdo -->
+    <div class="memory-content">
+        <div class="memory-header">
+            <h1 class="memory-title">{{ memory.title }}</h1>
+            {% if not memory.image_url %}
+            <div class="memory-meta">
+                <span class="memory-date">{{ memory.date_formatted }}</span>
+                {% if memory.location %}
+                <span class="memory-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ memory.location.name }}
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if memory.description %}
+        <div class="memory-description">
+            <p>{{ memory.description|nl2br }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Información de la persona -->
+        {% if memory.person %}
+        <div class="memory-person">
+            <div class="person-card">
+                {% if memory.person.photo_url %}
+                <img src="{{ memory.person.photo_url }}" alt="{{ memory.person.name }}" class="person-avatar">
+                {% else %}
+                <div class="person-avatar-placeholder">
+                    {{ memory.person.name[0]|upper }}
+                </div>
+                {% endif %}
+                <div class="person-info">
+                    <h3 class="person-name">{{ memory.person.name }}</h3>
+                    {% if memory.person.relationship %}
+                    <span class="person-relationship">{{ memory.person.relationship }}</span>
+                    {% endif %}
+                </div>
+                <button class="btn-icon" onclick="viewPerson('{{ memory.person.id }}')" aria-label="Ver perfil">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ubicación en mapa -->
+        {% if memory.location and memory.location.lat and memory.location.lng %}
+        <div class="memory-location-map">
+            <h3 class="section-title">Ubicación</h3>
+            <div class="map-container" id="memoryMap" data-lat="{{ memory.location.lat }}" data-lng="{{ memory.location.lng }}">
+                <div class="map-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <p>Cargando mapa...</p>
+                </div>
+            </div>
+            <div class="location-info">
+                <h4>{{ memory.location.name }}</h4>
+                {% if memory.location.address %}
+                <p class="location-address">{{ memory.location.address }}</p>
+                {% endif %}
+                <button class="btn-secondary" onclick="openInMaps()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15,3 21,3 21,9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Abrir en Maps
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recordatorios activos -->
+        {% if memory.reminders %}
+        <div class="memory-reminders">
+            <h3 class="section-title">Recordatorios</h3>
+            <div class="reminders-list">
+                {% for reminder in memory.reminders %}
+                <div class="reminder-item {% if reminder.is_active %}active{% endif %}">
+                    <div class="reminder-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12,6 12,12 16,14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="reminder-info">
+                        <span class="reminder-type">{{ reminder.type_display }}</span>
+                        <span class="reminder-schedule">{{ reminder.schedule_display }}</span>
+                    </div>
+                    <button class="btn-icon" onclick="toggleReminder('{{ reminder.id }}')" aria-label="{% if reminder.is_active %}Desactivar{% else %}Activar{% endif %} recordatorio">
+                        {% if reminder.is_active %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9,11 12,14 22,4"></polyline>
+                            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"></path>
+                        </svg>
+                        {% else %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        {% endif %}
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="btn-secondary" onclick="addReminder()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Agregar recordatorio
+            </button>
+        </div>
+        {% endif %}
+
+        <!-- Galería de fotos adicionales -->
+        {% if memory.additional_photos %}
+        <div class="memory-gallery">
+            <h3 class="section-title">Más fotos</h3>
+            <div class="gallery-grid">
+                {% for photo in memory.additional_photos %}
+                <div class="gallery-item" onclick="openPhotoViewer('{{ photo.url }}')">
+                    <img src="{{ photo.thumbnail_url or photo.url }}" alt="Foto del recuerdo" loading="lazy">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Acciones principales -->
+        <div class="memory-actions">
+            <button class="btn-primary" onclick="editMemory()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Editar recuerdo
+            </button>
+            
+            <button class="btn-secondary" onclick="shareMemory()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                    <polyline points="16,6 12,2 8,6"></polyline>
+                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                </svg>
+                Compartir
+            </button>
+            
+            <button class="btn-outline btn-danger" onclick="confirmDeleteMemory()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para visor de fotos -->
+<div class="modal" id="photoViewerModal">
+    <div class="modal-overlay" onclick="closePhotoViewer()"></div>
+    <div class="modal-content photo-viewer">
+        <button class="modal-close" onclick="closePhotoViewer()" aria-label="Cerrar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <img id="photoViewerImage" src="" alt="Vista de foto">
+    </div>
+</div>
+
+<!-- Modal para agregar recordatorio -->
+<div class="modal" id="addReminderModal">
+    <div class="modal-overlay" onclick="closeAddReminderModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Agregar recordatorio</h2>
+            <button class="modal-close" onclick="closeAddReminderModal()" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form id="addReminderForm" class="modal-body">
+            <div class="form-group">
+                <label for="reminderType">Tipo de recordatorio</label>
+                <select id="reminderType" name="type" required>
+                    <option value="">Seleccionar tipo</option>
+                    <option value="anniversary">Aniversario</option>
+                    <option value="birthday">Cumpleaños</option>
+                    <option value="location">Ubicación</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderSchedule">Frecuencia</label>
+                <select id="reminderSchedule" name="schedule" required>
+                    <option value="">Seleccionar frecuencia</option>
+                    <option value="daily">Diario</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="monthly">Mensual</option>
+                    <option value="yearly">Anual</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderTime">Hora</label>
+                <input type="time" id="reminderTime" name="time" value="09:00">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeAddReminderModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Crear recordatorio</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-// TODO: Implementar funcionalidad completa de persona individual
+// Variables globales
+const memoryData = {{ memory|tojson }};
+
+// Inicializar mapa si hay ubicación
 document.addEventListener('DOMContentLoaded', function() {
-    const editNotesBtn = document.getElementById('editNotesBtn');
-    const saveNotesBtn = document.getElementById('saveNotesBtn');
-    const cancelNotesBtn = document.getElementById('cancelNotesBtn');
-    const notesDisplay = document.getElementById('notesDisplay');
-    const notesEdit = document.getElementById('notesEdit');
-    const notesTextarea = document.getElementById('notesTextarea');
-    
-    const photoInput = document.getElementById('photoInput');
-    const uploadPhotosBtn = document.getElementById('uploadPhotosBtn');
-    const addPhotosBtn = document.getElementById('addPhotosBtn');
-    
-    // Editar notas
-    editNotesBtn.addEventListener('click', function() {
-        notesDisplay.classList.add('d-none');
-        notesEdit.classList.remove('d-none');
-        notesTextarea.focus();
-    });
-    
-    saveNotesBtn.addEventListener('click', function() {
-        const newNotes = notesTextarea.value;
-        notesDisplay.querySelector('p').textContent = newNotes;
-        notesDisplay.classList.remove('d-none');
-        notesEdit.classList.add('d-none');
-        showToast('Notas guardadas correctamente', 'success');
-    });
-    
-    cancelNotesBtn.addEventListener('click', function() {
-        notesDisplay.classList.remove('d-none');
-        notesEdit.classList.add('d-none');
-    });
-    
-    // Subir fotos
-    [uploadPhotosBtn, addPhotosBtn].forEach(btn => {
-        btn.addEventListener('click', () => photoInput.click());
-    });
-    
-    photoInput.addEventListener('change', function(e) {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            showToast(`${files.length} foto(s) seleccionada(s). Funcionalidad de subida próximamente.`, 'info');
+    const mapContainer = document.getElementById('memoryMap');
+    if (mapContainer && window.Maps) {
+        const lat = parseFloat(mapContainer.dataset.lat);
+        const lng = parseFloat(mapContainer.dataset.lng);
+        
+        Maps.initMap('memoryMap', { lat, lng }, 15);
+        Maps.addMarker({ lat, lng }, memoryData.title);
+    }
+});
+
+// Funciones de interacción
+function shareMemory() {
+    if (navigator.share) {
+        navigator.share({
+            title: memoryData.title,
+            text: memoryData.description,
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        // Fallback: copiar URL
+        navigator.clipboard.writeText(window.location.href)
+            .then(() => UI.showToast('URL copiada al portapapeles', 'success'))
+            .catch(() => UI.showToast('Error al compartir', 'error'));
+    }
+}
+
+function editMemory() {
+    window.location.href = `/memory/${memoryData.id}/edit`;
+}
+
+function viewPerson(personId) {
+    window.location.href = `/person/${personId}`;
+}
+
+function openInMaps() {
+    const lat = memoryData.location.lat;
+    const lng = memoryData.location.lng;
+    const url = `https://maps.google.com/?q=${lat},${lng}`;
+    window.open(url, '_blank');
+}
+
+function openPhotoViewer(photoUrl) {
+    const modal = document.getElementById('photoViewerModal');
+    const image = document.getElementById('photoViewerImage');
+    image.src = photoUrl;
+    modal.classList.add('active');
+}
+
+function closePhotoViewer() {
+    document.getElementById('photoViewerModal').classList.remove('active');
+}
+
+function addReminder() {
+    document.getElementById('addReminderModal').classList.add('active');
+}
+
+function closeAddReminderModal() {
+    document.getElementById('addReminderModal').classList.remove('active');
+}
+
+async function toggleReminder(reminderId) {
+    try {
+        const response = await API.post(`/reminders/${reminderId}/toggle`);
+        if (response.success) {
+            location.reload(); // Recargar para actualizar estado
         }
-    });
+    } catch (error) {
+        UI.showToast('Error al cambiar recordatorio', 'error');
+    }
+}
+
+function confirmDeleteMemory() {
+    if (confirm('¿Estás seguro de que quieres eliminar este recuerdo? Esta acción no se puede deshacer.')) {
+        deleteMemory();
+    }
+}
+
+async function deleteMemory() {
+    try {
+        UI.showLoading('Eliminando recuerdo...');
+        const response = await API.delete(`/memories/${memoryData.id}`);
+        
+        if (response.success) {
+            UI.showToast('Recuerdo eliminado', 'success');
+            window.location.href = '/memories';
+        }
+    } catch (error) {
+        UI.showToast('Error al eliminar recuerdo', 'error');
+    } finally {
+        UI.hideLoading();
+    }
+}
+
+// Formulario de recordatorio
+document.getElementById('addReminderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
     
-    // Ver fotos en modal
-    document.querySelectorAll('.photo-item button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const photoModal = new bootstrap.Modal(document.getElementById('photoModal'));
-            photoModal.show();
-        });
-    });
+    const formData = new FormData(e.target);
+    const data = {
+        memory_id: memoryData.id,
+        type: formData.get('type'),
+        schedule: formData.get('schedule'),
+        time: formData.get('time')
+    };
     
-    showToast('Vista de persona cargada. Funcionalidad completa próximamente.', 'info');
+    try {
+        UI.showLoading('Creando recordatorio...');
+        const response = await API.post('/reminders', data);
+        
+        if (response.success) {
+            UI.showToast('Recordatorio creado', 'success');
+            closeAddReminderModal();
+            location.reload();
+        }
+    } catch (error) {
+        UI.showToast('Error al crear recordatorio', 'error');
+    } finally {
+        UI.hideLoading();
+    }
 });
 </script>
+{% endblock %}
+
+{% block styles %}
+<style>
+.memory-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+}
+
+.memory-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: var(--space-lg);
+}
+
+.memory-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    color: white;
+}
+
+.memory-date {
+    font-size: var(--font-sm);
+    font-weight: 500;
+}
+
+.memory-location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-sm);
+}
+
+.memory-content {
+    padding: 0 var(--space-lg) var(--space-lg);
+}
+
+.memory-title {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-text);
+}
+
+.memory-description {
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+}
+
+.person-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.person-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.person-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.person-info {
+    flex: 1;
+}
+
+.person-name {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.person-relationship {
+    color: var(--color-text-secondary);
+    font-size: var(--font-sm);
+}
+
+.memory-location-map {
+    margin-bottom: var(--space-lg);
+}
+
+.map-container {
+    height: 200px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+    background: var(--color-surface);
+}
+
+.map-placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+}
+
+.location-info h4 {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.location-address {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.section-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-text);
+}
+
+.reminders-list {
+    margin-bottom: var(--space-md);
+}
+
+.reminder-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.reminder-item.active {
+    background: var(--color-success-light);
+}
+
+.reminder-icon {
+    color: var(--color-text-secondary);
+}
+
+.reminder-item.active .reminder-icon {
+    color: var(--color-success);
+}
+
+.reminder-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.reminder-type {
+    font-weight: 500;
+}
+
+.reminder-schedule {
+    font-size: var(--font-sm);
+    color: var(--color-text-secondary);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.gallery-item {
+    aspect-ratio: 1;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.memory-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+}
+
+.photo-viewer {
+    max-width: 90vw;
+    max-height: 90vh;
+    padding: 0;
+    background: transparent;
+}
+
+.photo-viewer img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .memory-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+</style>
 {% endblock %}

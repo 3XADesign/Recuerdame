@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - RecuerdaMe{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="home-hero">
+    <h1 class="home-greeting">
+        {% if user and user.name %}
+            Hola, {{ user.name }}
+        {% else %}
+            Bienvenido
+        {% endif %}
+    </h1>
+    <p class="home-subtitle">
+        Todo está bien. Tu familia está contigo y cuidamos de ti en cada momento.
+    </p>
+    <a href="{{ url_for('map_view') }}" class="home-quick-action">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Compartir mi ubicación
+    </a>
+</section>
+
+<!-- Action Cards -->
+<section class="home-actions">
+    <!-- Mapa -->
+    <a href="{{ url_for('map_view') }}" class="action-card" data-tone="1">
+        <div class="action-card-header">
+            <div class="action-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0V7" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="action-card-title">Mapa Familiar</h3>
+            </div>
+        </div>
+        <p class="action-card-description">
+            Ve dónde están tus seres queridos y comparte tu ubicación de forma segura.
+        </p>
+        <div class="action-card-meta">
+            <span class="action-card-badge">En zona segura</span>
+            <svg class="action-card-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </div>
+    </a>
+
+    <!-- Recuerdos -->
+    <a href="{{ url_for('memories_list') }}" class="action-card" data-tone="2">
+        <div class="action-card-header">
+            <div class="action-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="action-card-title">Recuerdos</h3>
+            </div>
+        </div>
+        <p class="action-card-description">
+            Revive momentos especiales y comparte fotos con tu familia.
+        </p>
+        <div class="action-card-meta">
+            <span class="action-card-badge">12 nuevos</span>
+            <svg class="action-card-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </div>
+    </a>
+
+    <!-- Recordatorios -->
+    <a href="{{ url_for('reminders') }}" class="action-card" data-tone="3">
+        <div class="action-card-header">
+            <div class="action-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="action-card-title">Recordatorios</h3>
+            </div>
+        </div>
+        <p class="action-card-description">
+            Medicamentos, citas y actividades importantes organizadas para ti.
+        </p>
+        <div class="action-card-meta">
+            <span class="action-card-badge">3 próximos</span>
+            <svg class="action-card-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </div>
+    </a>
+
+    <!-- Alertas -->
+    <a href="{{ url_for('alerts') }}" class="action-card" data-tone="4">
+        <div class="action-card-header">
+            <div class="action-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.343 2.343l.707.707L3.636 4.464l-.707-.707L4.343 2.343zM9 5v2.07a3.001 3.001 0 010 5.86V15a3 3 0 106 0v-2.07a3.001 3.001 0 010-5.86V5a3 3 0 10-6 0z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="action-card-title">Alertas</h3>
+            </div>
+        </div>
+        <p class="action-card-description">
+            Notificaciones importantes sobre seguridad y bienestar.
+        </p>
+        <div class="action-card-meta">
+            <span class="action-card-badge">Todo bien</span>
+            <svg class="action-card-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </div>
+    </a>
+
+    <!-- Familia -->
+    <a href="{{ url_for('family_create') }}" class="action-card" data-tone="5">
+        <div class="action-card-header">
+            <div class="action-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="action-card-title">Mi Familia</h3>
+            </div>
+        </div>
+        <p class="action-card-description">
+            Invita a familiares y gestiona el círculo de cuidado.
+        </p>
+        <div class="action-card-meta">
+            <span class="action-card-badge">3 miembros</span>
+            <svg class="action-card-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </div>
+    </a>
+
+    <!-- Información -->
+    <a href="#" class="action-card" data-tone="1">
+        <div class="action-card-header">
+            <div class="action-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="action-card-title">Información</h3>
+            </div>
+        </div>
+        <p class="action-card-description">
+            Recursos útiles sobre Alzheimer y consejos de cuidado.
+        </p>
+        <div class="action-card-meta">
+            <span class="action-card-badge">Nuevo artículo</span>
+            <svg class="action-card-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </div>
+    </a>
+</section>
+
+<!-- Recent Activity -->
+<section class="home-recent">
+    <div class="home-section-title">
+        <span>Actividad Reciente</span>
+        <a href="{{ url_for('alerts') }}" class="home-section-link">
+            Ver todo
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </a>
+    </div>
+    
+    <div class="recent-items">
+        <a href="#" class="recent-item">
+            <div class="recent-item-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <div class="recent-item-content">
+                <h4 class="recent-item-title">Ubicación compartida</h4>
+                <p class="recent-item-time">Hace 15 minutos</p>
+            </div>
+        </a>
+        
+        <a href="#" class="recent-item">
+            <div class="recent-item-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+            </div>
+            <div class="recent-item-content">
+                <h4 class="recent-item-title">Foto agregada por Ana</h4>
+                <p class="recent-item-time">Hace 2 horas</p>
+            </div>
+        </a>
+        
+        <a href="#" class="recent-item">
+            <div class="recent-item-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="recent-item-content">
+                <h4 class="recent-item-title">Recordatorio de medicamento</h4>
+                <p class="recent-item-time">Completado a las 14:00</p>
+            </div>
+        </a>
+    </div>
+</section>
+{% endblock %}

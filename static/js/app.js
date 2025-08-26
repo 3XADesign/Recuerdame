@@ -1,184 +1,246 @@
 /**
- * RecuerdaMe - Main App Module
- * Application initialization and global utilities
+ * App.js - Core application logic
+ * Handles theme management, routing, and app initialization
  */
 
-// Global app state
-window.RecuerdaMe = {
-    isInitialized: false,
-    user: null,
-    family: null,
-    settings: {
-        debug: true,
-        enableNotifications: false,
-        theme: 'light'
+class App {
+    constructor() {
+        this.currentTheme = 'light';
+        this.isOnline = navigator.onLine;
+        this.init();
     }
-};
 
-/**
- * Initialize RecuerdaMe application
- */
-function initRecuerdaMe() {
-    console.log('🚀 Inicializando RecuerdaMe...');
-    
-    // Set app as initialized
-    window.RecuerdaMe.isInitialized = true;
-    
-    // Initialize components based on current page
-    const currentPage = window.location.pathname;
-    
-    if (currentPage === '/dashboard' || currentPage === '/') {
-        // Dashboard-specific initialization
-        initDashboard();
+    init() {
+        this.setupTheme();
+        this.setupNavigation();
+        this.setupServiceWorker();
+        this.setupOnlineStatus();
+        this.checkOnboarding();
+        
+        console.log('RecuerdaMe app initialized');
     }
-    
-    // Initialize common components
-    initServiceWorker();
-    initNotifications();
-    
-    console.log('✅ RecuerdaMe inicializado correctamente');
-}
 
-/**
- * Initialize dashboard-specific functionality
- */
-function initDashboard() {
-    console.log('📊 Inicializando Dashboard...');
-    
-    // Map will be initialized by Google Maps callback
-    // Location tracking will be initialized by location.js
-}
-
-/**
- * Initialize Service Worker for PWA functionality
- */
-function initServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(function(registration) {
-                console.log('✅ Service Worker registrado:', registration.scope);
-            })
-            .catch(function(error) {
-                console.log('❌ Error registrando Service Worker:', error);
-            });
-    }
-}
-
-/**
- * Initialize notifications
- */
-function initNotifications() {
-    // Check if notifications are already permitted
-    if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-            window.RecuerdaMe.settings.enableNotifications = true;
-            console.log('✅ Notificaciones ya están permitidas');
+    // Theme Management
+    setupTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        this.setTheme(savedTheme);
+        
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
         }
     }
-}
 
-/**
- * Show toast notification
- * @param {string} message - Message to show
- * @param {string} type - Type: success, error, warning, info
- * @param {number} duration - Duration in ms (default: 4000)
- */
-function showToast(message, type = 'info', duration = 4000) {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
-    toast.style.cssText = `
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        max-width: 500px;
-    `;
-    
-    toast.innerHTML = `
-        <strong>${type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️'}</strong>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    // Add to document
-    document.body.appendChild(toast);
-    
-    // Auto remove after duration
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.remove();
-        }
-    }, duration);
-}
-
-/**
- * Utility function to format dates for seniors
- * @param {Date|string} date - Date to format
- * @returns {string} Formatted date string
- */
-function formatFriendlyDate(date) {
-    const d = new Date(date);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    if (d.toDateString() === today.toDateString()) {
-        return `Hoy ${d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (d.toDateString() === yesterday.toDateString()) {
-        return `Ayer ${d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
-    } else {
-        return d.toLocaleDateString('es-ES', { 
-            weekday: 'long', 
-            day: 'numeric', 
-            month: 'long',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-}
-
-/**
- * Check if app is running as PWA
- * @returns {boolean}
- */
-function isPWA() {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true;
-}
-
-/**
- * Show PWA install prompt
- */
-function showPWAInstallPrompt() {
-    if (window.deferredPrompt) {
-        window.deferredPrompt.prompt();
-        window.deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('✅ Usuario aceptó instalar la PWA');
-                showToast('¡RecuerdaMe se está instalando!', 'success');
+    setTheme(theme) {
+        this.currentTheme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        
+        // Update theme toggle icons
+        const lightIcon = document.querySelector('.theme-icon-light');
+        const darkIcon = document.querySelector('.theme-icon-dark');
+        
+        if (lightIcon && darkIcon) {
+            if (theme === 'dark') {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            } else {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
             }
-            window.deferredPrompt = null;
+        }
+
+        // Dispatch theme change event
+        document.dispatchEvent(new CustomEvent('themeChanged', { 
+            detail: { theme } 
+        }));
+    }
+
+    toggleTheme() {
+        const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+        
+        // Show feedback
+        if (window.UI) {
+            UI.showToast(`Tema ${newTheme === 'dark' ? 'oscuro' : 'claro'} activado`, 'info');
+        }
+    }
+
+    // Theme and accessibility initialization for settings
+    initThemeToggle() {
+        // Esta función es llamada desde settings.js
+        // El manejo real del tema está en setTheme()
+        console.log('🎨 Theme toggle inicializado desde settings');
+    }
+
+    initA11yPrefs() {
+        // Aplicar preferencias de accesibilidad guardadas
+        const highContrast = localStorage.getItem('highContrast') === 'true';
+        const textSize = localStorage.getItem('textSize') || 'normal';
+
+        if (highContrast) {
+            document.documentElement.classList.add('high-contrast');
+        }
+
+        if (textSize === 'large') {
+            document.documentElement.classList.add('text-lg');
+        }
+
+        console.log('♿ Preferencias de accesibilidad aplicadas');
+    }
+
+    // Navigation
+    setupNavigation() {
+        // Active nav state
+        this.updateActiveNav();
+        
+        // Handle nav clicks
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                this.handleNavClick(e, item);
+            });
         });
-    } else {
-        showToast('Para instalar, usa el menú de tu navegador: "Agregar a pantalla de inicio"', 'info', 6000);
+
+        // Handle back button
+        window.addEventListener('popstate', () => {
+            this.updateActiveNav();
+        });
+    }
+
+    updateActiveNav() {
+        const currentPath = window.location.pathname;
+        
+        document.querySelectorAll('.nav-item').forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath || (currentPath === '/' && href === '/')) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    handleNavClick(e, item) {
+        // Add click animation
+        item.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            item.style.transform = '';
+        }, 150);
+    }
+
+    // Service Worker
+    setupServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('SW registered:', registration);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                this.showUpdatePrompt();
+                            }
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.log('SW registration failed:', error);
+                });
+        }
+    }
+
+    showUpdatePrompt() {
+        if (window.UI) {
+            UI.showToast('Nueva versión disponible', 'info', {
+                action: 'Actualizar',
+                onAction: () => window.location.reload()
+            });
+        }
+    }
+
+    // Online/Offline Status
+    setupOnlineStatus() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            if (window.UI) {
+                UI.showToast('Conexión restaurada', 'success');
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            if (window.UI) {
+                UI.showToast('Sin conexión - modo offline', 'warning');
+            }
+        });
+    }
+
+    // Onboarding
+    checkOnboarding() {
+        const onboardingCompleted = localStorage.getItem('onboarding_completed');
+        const currentPath = window.location.pathname;
+        
+        if (!onboardingCompleted && currentPath !== '/onboarding') {
+            // Redirect to onboarding
+            window.location.href = '/onboarding';
+        }
+    }
+
+    // Utility methods
+    getTheme() {
+        return this.currentTheme;
+    }
+
+    isOffline() {
+        return !this.isOnline;
+    }
+
+    // Route helpers (simple client-side routing for SPA-like behavior)
+    navigate(path) {
+        history.pushState(null, '', path);
+        this.updateActiveNav();
+    }
+
+    // Error handling
+    handleError(error, context = 'App') {
+        console.error(`[${context}] Error:`, error);
+        
+        if (window.UI) {
+            UI.showToast('Algo salió mal. Inténtalo de nuevo.', 'danger');
+        }
+    }
+
+    // App state management
+    setState(key, value) {
+        localStorage.setItem(`app_${key}`, JSON.stringify(value));
+    }
+
+    getState(key, defaultValue = null) {
+        try {
+            const stored = localStorage.getItem(`app_${key}`);
+            return stored ? JSON.parse(stored) : defaultValue;
+        } catch (e) {
+            return defaultValue;
+        }
+    }
+
+    // Performance monitoring
+    trackPerformance(name, startTime) {
+        if (performance && performance.mark) {
+            performance.mark(`${name}-end`);
+            performance.measure(name, `${name}-start`, `${name}-end`);
+        }
     }
 }
 
-// Listen for PWA install prompt
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    window.deferredPrompt = e;
-    console.log('📱 PWA install prompt disponible');
+// Initialize app when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.App = new App();
 });
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    initRecuerdaMe();
-});
-
-// Export global functions
-window.showToast = showToast;
-window.formatFriendlyDate = formatFriendlyDate;
-window.isPWA = isPWA;
-window.showPWAInstallPrompt = showPWAInstallPrompt;
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = App;
+}

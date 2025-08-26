@@ -1,0 +1,350 @@
+/* Alerts page styles */
+
+.alerts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.alerts-title {
+  font-size: var(--fs-xxl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.alerts-filter {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.alert-filter-btn {
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  color: var(--text);
+}
+
+.alert-filter-btn:hover {
+  background: var(--line);
+}
+
+.alert-filter-btn.active {
+  background: var(--pastel-3);
+  border-color: transparent;
+}
+
+/* Timeline */
+.alerts-timeline {
+  position: relative;
+  padding-left: var(--space-5);
+}
+
+.alerts-timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.alert-item {
+  position: relative;
+  margin-bottom: var(--space-5);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  padding: var(--space-5);
+  transition: var(--transition-base);
+}
+
+.alert-item:hover {
+  transform: translateX(4px);
+}
+
+.alert-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Timeline dot */
+.alert-item::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: var(--space-5);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--line);
+}
+
+.alert-item.safe::before {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+
+.alert-item.warning::before {
+  border-color: var(--warn);
+  background: var(--warn);
+}
+
+.alert-item.danger::before {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+/* Alert content */
+.alert-header {
+  display: flex;
+  align-items: start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.alert-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--bg);
+  color: var(--text-weak);
+}
+
+.alert-item.safe .alert-icon {
+  background: var(--ok);
+  color: white;
+}
+
+.alert-item.warning .alert-icon {
+  background: var(--warn);
+  color: white;
+}
+
+.alert-item.danger .alert-icon {
+  background: var(--danger);
+  color: white;
+}
+
+.alert-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.alert-time {
+  color: var(--text-weak);
+  font-size: var(--fs-sm);
+  margin: 0 0 var(--space-3) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.alert-description {
+  color: var(--text-weak);
+  margin: 0 0 var(--space-3) 0;
+  line-height: 1.5;
+}
+
+.alert-location {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-weak);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.alert-location svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Alert status chip */
+.alert-status {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.alert-item.safe .alert-status {
+  background: rgba(24, 160, 94, 0.1);
+  color: var(--ok);
+}
+
+.alert-item.warning .alert-status {
+  background: rgba(226, 161, 0, 0.1);
+  color: var(--warn);
+}
+
+.alert-item.danger .alert-status {
+  background: rgba(214, 69, 69, 0.1);
+  color: var(--danger);
+}
+
+/* Alert actions */
+.alert-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.alert-action-btn {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  color: var(--text);
+}
+
+.alert-action-btn:hover {
+  background: var(--line);
+}
+
+.alert-action-btn.primary {
+  background: var(--cta);
+  border-color: transparent;
+  color: white;
+}
+
+.alert-action-btn.primary:hover {
+  transform: translateY(-1px);
+}
+
+/* Empty state */
+.alerts-empty {
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.alerts-empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-4) auto;
+  color: var(--text-weak);
+}
+
+.alerts-empty-title {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin: 0 0 var(--space-2) 0;
+}
+
+.alerts-empty-description {
+  color: var(--text-weak);
+  margin: 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Summary stats */
+.alerts-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.alert-stat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.alert-stat-number {
+  font-size: var(--fs-xxl);
+  font-weight: 700;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.alert-stat-number.safe {
+  color: var(--ok);
+}
+
+.alert-stat-number.warning {
+  color: var(--warn);
+}
+
+.alert-stat-number.danger {
+  color: var(--danger);
+}
+
+.alert-stat-label {
+  color: var(--text-weak);
+  font-size: var(--fs-sm);
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .alerts-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  
+  .alerts-filter {
+    justify-content: center;
+  }
+  
+  .alerts-timeline {
+    padding-left: var(--space-4);
+  }
+  
+  .alerts-timeline::before {
+    left: 16px;
+  }
+  
+  .alert-item::before {
+    left: -28px;
+  }
+  
+  .alert-item {
+    padding: var(--space-4);
+  }
+  
+  .alert-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .alert-status {
+    position: static;
+    align-self: flex-start;
+    margin-bottom: var(--space-2);
+  }
+}
