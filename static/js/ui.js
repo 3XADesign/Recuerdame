@@ -469,3 +469,6 @@ if (!document.querySelector('#ripple-styles')) {
     `;
     document.head.appendChild(style);
 }
+
+// Initialize global UI instance
+window.UI = new UI();

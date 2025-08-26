@@ -13,6 +13,7 @@
     
     <!-- PWA Meta tags -->
     <meta name="theme-color" content="#4c5377">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="RecuerdaMe">
@@ -22,18 +23,19 @@
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icon-192.png') }}">
     
     <!-- CSS - Orden específico para cascada correcta -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/00-tokens.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/01-base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/02-layout.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/buttons.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/cards.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/form.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/chips.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/toast.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/map-ui.css') }}">
+    {% set css_version = "20250826" %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/00-tokens.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/01-base.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/02-layout.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/buttons.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/cards.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/form.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/chips.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/nav.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/toast.css') }}?v={{ css_version }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/03-components/map-ui.css') }}?v={{ css_version }}">
     {% block page_css %}{% endblock %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}?v={{ css_version }}">
     
     {% block head %}{% endblock %}
 </head>

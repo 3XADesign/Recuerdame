@@ -3,294 +3,243 @@
 {% block title %}Recuerdos - RecuerdaMe{% endblock %}
 
 {% block page_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/memories.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/memories.css') }}?v=20250826">
 {% endblock %}
 
 {% block content %}
-<!-- Header with add button -->
-<div class="memories-header">
-    <h1 class="memories-title">Recuerdos</h1>
-    <button class="memories-add-btn" onclick="addMemory()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+<div class="memories-page">
+    <!-- Header -->
+    <header class="memories-header">
+        <h1>Recuerdos</h1>
+        <button class="btn-cta" id="addPersonBtn" aria-label="Añadir nueva persona">
+            <span>Añadir persona</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Search and Filters -->
+    <div class="search-section">
+        <div class="search-bar">
+            <input 
+                type="search" 
+                id="searchInput" 
+                placeholder="Buscar por nombre o relación..."
+                class="search-input"
+                aria-label="Buscar personas"
+            >
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+            </svg>
+        </div>
+        
+        <div class="filter-chips" role="radiogroup" aria-label="Filtros de personas">
+            <button class="chip active" data-filter="all" role="radio" aria-checked="true">
+                Todos
+            </button>
+            <button class="chip" data-filter="favorites" role="radio" aria-checked="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" fill="currentColor"/>
+                </svg>
+                Favoritos
+            </button>
+            <button class="chip" data-filter="recent" role="radio" aria-checked="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Recientes
+            </button>
+            <button class="chip" data-filter="family" role="radio" aria-checked="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="8.5" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                    <path d="M20 8v6M23 11h-6" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Familia
+            </button>
+        </div>
+    </div>
+
+    <!-- Persons Grid -->
+    <div class="persons-grid" id="personsGrid">
+        <!-- Sample person cards (will be replaced by JavaScript) -->
+        <article class="person-card" data-person-id="1" data-tags="family favorite">
+            <div class="person-avatar">
+                <img src="{{ url_for('static', filename='img/placeholder-80x80.svg') }}" 
+                     alt="Foto de Ana García" 
+                     loading="lazy">
+                <button class="favorite-btn active" title="Favorito" aria-label="Marcar como favorito">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="person-info">
+                <h3 class="person-name">Ana García</h3>
+                <span class="person-relation">Madre</span>
+                <div class="person-stats">
+                    <span class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        4 fotos
+                    </span>
+                    <span class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Hace 2 días
+                    </span>
+                </div>
+            </div>
+        </article>
+
+        <article class="person-card" data-person-id="2" data-tags="family">
+            <div class="person-avatar">
+                <img src="{{ url_for('static', filename='img/placeholder-80x80.svg') }}" 
+                     alt="Foto de Carlos Mendoza" 
+                     loading="lazy">
+                <button class="favorite-btn" title="Favorito" aria-label="Marcar como favorito">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="person-info">
+                <h3 class="person-name">Carlos Mendoza</h3>
+                <span class="person-relation">Padre</span>
+                <div class="person-stats">
+                    <span class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        2 fotos
+                    </span>
+                    <span class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Hace 1 semana
+                    </span>
+                </div>
+            </div>
+        </article>
+
+        <article class="person-card" data-person-id="3" data-tags="family recent">
+            <div class="person-avatar">
+                <img src="{{ url_for('static', filename='img/placeholder-80x80.svg') }}" 
+                     alt="Foto de María López" 
+                     loading="lazy">
+                <button class="favorite-btn" title="Favorito" aria-label="Marcar como favorito">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="person-info">
+                <h3 class="person-name">María López</h3>
+                <span class="person-relation">Abuela</span>
+                <div class="person-stats">
+                    <span class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        6 fotos
+                    </span>
+                    <span class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Hace 3 días
+                    </span>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Empty state (will be shown when no persons match filters) -->
+    <div class="memories-empty" id="emptyState" style="display: none;">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="60" r="40" stroke="#E5E7EB" stroke-width="2" stroke-dasharray="8 8"/>
+            <circle cx="50" cy="50" r="8" fill="#9CA3AF"/>
+            <circle cx="70" cy="50" r="8" fill="#9CA3AF"/>
+            <path d="M45 75c5 5 15 5 20 0" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        Agregar
-    </button>
+        <h2 class="memories-empty-title">No hay recuerdos aún</h2>
+        <p class="memories-empty-description">
+            Comienza a crear momentos especiales y compártelos con tu familia. Cada recuerdo cuenta una historia única.
+        </p>
+        <button class="btn btn-cta" onclick="addMemory()">Crear mi primer recuerdo</button>
+    </div>
 </div>
 
-<!-- Filters -->
-<div class="memories-filters">
-    <button class="filter-chip active" data-filter="all">Todos</button>
-    <button class="filter-chip" data-filter="family">Familia</button>
-    <button class="filter-chip" data-filter="events">Eventos</button>
-    <button class="filter-chip" data-filter="daily">Diario</button>
-    <button class="filter-chip" data-filter="favorites">Favoritos</button>
-</div>
-
-<!-- Memories grid -->
-<div class="memories-grid" id="memoriesGrid">
-    <!-- Memory Card 1 -->
-    <article class="memory-card">
-        <div class="memory-card-header">
-            <img src="https://via.placeholder.com/80x80" alt="Abuela María" class="memory-avatar">
-            <div class="memory-info">
-                <h2 class="memory-person-name">Abuela María</h2>
-                <p class="memory-relation">Tu abuela materna</p>
-                <div class="memory-tags">
-                    <span class="memory-tag">Familia</span>
-                    <span class="memory-tag">Cocina</span>
-                </div>
+<!-- Add Person Modal -->
+<div class="modal" id="addPersonModal" style="display: none;">
+    <div class="modal-overlay" onclick="closeModal('addPersonModal')"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Añadir nueva persona</h3>
+            <button class="modal-close" onclick="closeModal('addPersonModal')" aria-label="Cerrar modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        <form class="modal-form" id="addPersonForm">
+            <div class="form-group">
+                <label for="personName">Nombre completo</label>
+                <input type="text" id="personName" name="name" required placeholder="Ej: Ana García Mendoza">
             </div>
-        </div>
-        
-        <div class="memory-gallery">
-            <img src="https://via.placeholder.com/200x200" alt="Cocinando juntos" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Receta" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Resultado" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Familia comiendo" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Sonrisas" class="memory-photo">
-        </div>
-        
-        <div class="memory-content">
-            <h3 class="memory-title">Domingos cocinando juntos</h3>
-            <p class="memory-description">
-                Recuerdo perfectamente cómo la abuela María me enseñaba a hacer sus famosas croquetas los domingos por la mañana. El aroma de su cocina y sus historias mientras cocinábamos eran momentos mágicos que atesoraré para siempre.
-            </p>
-            
-            <div class="memory-meta">
-                <div class="memory-date">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Hace 3 días
-                </div>
-                <div class="memory-actions">
-                    <button class="memory-action-btn" title="Me gusta">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
-                    <button class="memory-action-btn" title="Comentar">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                    </button>
-                    <button class="memory-action-btn" title="Compartir">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                        </svg>
-                    </button>
-                </div>
+            <div class="form-group">
+                <label for="personRelation">Relación familiar</label>
+                <select id="personRelation" name="relation" required>
+                    <option value="">Selecciona una relación</option>
+                    <option value="Madre">Madre</option>
+                    <option value="Padre">Padre</option>
+                    <option value="Hijo/a">Hijo/a</option>
+                    <option value="Hermano/a">Hermano/a</option>
+                    <option value="Abuelo/a">Abuelo/a</option>
+                    <option value="Tío/a">Tío/a</option>
+                    <option value="Primo/a">Primo/a</option>
+                    <option value="Sobrino/a">Sobrino/a</option>
+                    <option value="Amigo/a">Amigo/a</option>
+                    <option value="Otro">Otro</option>
+                </select>
             </div>
-        </div>
-    </article>
-
-    <!-- Memory Card 2 -->
-    <article class="memory-card">
-        <div class="memory-card-header">
-            <img src="https://via.placeholder.com/80x80" alt="Papá Luis" class="memory-avatar">
-            <div class="memory-info">
-                <h2 class="memory-person-name">Papá Luis</h2>
-                <p class="memory-relation">Tu esposo</p>
-                <div class="memory-tags">
-                    <span class="memory-tag">Pareja</span>
-                    <span class="memory-tag">Viajes</span>
-                </div>
+            <div class="form-group">
+                <label for="personNotes">Notas adicionales (opcional)</label>
+                <textarea id="personNotes" name="notes" placeholder="Información adicional sobre esta persona..."></textarea>
             </div>
-        </div>
-        
-        <div class="memory-gallery">
-            <img src="https://via.placeholder.com/200x200" alt="Luna de miel" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Playa" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Atardecer" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Cena romántica" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Bailando" class="memory-photo">
-        </div>
-        
-        <div class="memory-content">
-            <h3 class="memory-title">Luna de miel en Santorini</h3>
-            <p class="memory-description">
-                Nuestro viaje de luna de miel en 1985 fue como un sueño. Recorrer las islas griegas de la mano, ver los atardeceres más hermosos y prometearnos amor eterno frente al mar azul.
-            </p>
-            
-            <div class="memory-meta">
-                <div class="memory-date">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Hace 1 semana
-                </div>
-                <div class="memory-actions">
-                    <button class="memory-action-btn" title="Me gusta">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
-                    <button class="memory-action-btn" title="Comentar">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                    </button>
-                    <button class="memory-action-btn" title="Compartir">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                        </svg>
-                    </button>
-                </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addPersonModal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-cta">
+                    Añadir persona
+                </button>
             </div>
-        </div>
-    </article>
-
-    <!-- Memory Card 3 -->
-    <article class="memory-card">
-        <div class="memory-card-header">
-            <img src="https://via.placeholder.com/80x80" alt="Ana y Carlos" class="memory-avatar">
-            <div class="memory-info">
-                <h2 class="memory-person-name">Ana y Carlos</h2>
-                <p class="memory-relation">Tus hijos</p>
-                <div class="memory-tags">
-                    <span class="memory-tag">Hijos</span>
-                    <span class="memory-tag">Celebración</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="memory-gallery">
-            <img src="https://via.placeholder.com/200x200" alt="Cumpleaños" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Pastel" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Regalos" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Familia" class="memory-photo">
-            <img src="https://via.placeholder.com/100x100" alt="Abrazos" class="memory-photo">
-        </div>
-        
-        <div class="memory-content">
-            <h3 class="memory-title">Tu cumpleaños número 70</h3>
-            <p class="memory-description">
-                Una celebración inolvidable rodeada de toda la familia. Ana y Carlos organizaron una fiesta sorpresa hermosa, con todas tus comidas favoritas y muchas risas.
-            </p>
-            
-            <div class="memory-meta">
-                <div class="memory-date">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Hace 2 semanas
-                </div>
-                <div class="memory-actions">
-                    <button class="memory-action-btn" title="Me gusta">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-                    </button>
-                    <button class="memory-action-btn" title="Comentar">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                    </button>
-                    <button class="memory-action-btn" title="Compartir">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </article>
-</div>
-
-<!-- Empty state (hidden when there are memories) -->
-<div class="memories-empty" style="display: none;" id="memoriesEmpty">
-    <svg class="memories-empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-    </svg>
-    <h2 class="memories-empty-title">No hay recuerdos aún</h2>
-    <p class="memories-empty-description">
-        Comienza a crear momentos especiales y compártelos con tu familia. Cada recuerdo cuenta una historia única.
-    </p>
-    <button class="btn btn-cta" onclick="addMemory()">Crear mi primer recuerdo</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-// Filter functionality
-document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', function() {
-        // Update active filter
-        document.querySelector('.filter-chip.active').classList.remove('active');
-        this.classList.add('active');
-        
-        // Filter memories (mock implementation)
-        filterMemories(this.dataset.filter);
-    });
-});
-
-function filterMemories(filter) {
-    console.log('Filtering memories by:', filter);
-    // TODO: Implement actual filtering logic
-    UI.showToast(`Mostrando ${filter === 'all' ? 'todos los' : ''} recuerdos`, 'info');
+{% block page_js %}
+<script type="application/json" id="pageData">
+{
+    "familyId": "{{ family_id }}"
 }
-
-function addMemory() {
-    // TODO: Open memory creation modal/page
-    console.log('Adding new memory...');
-    UI.showToast('Función de agregar recuerdo en desarrollo', 'info');
-}
-
-// Photo gallery interaction
-document.querySelectorAll('.memory-photo').forEach(photo => {
-    photo.addEventListener('click', function() {
-        // TODO: Open photo in lightbox/modal
-        console.log('Opening photo viewer...');
-    });
-});
-
-// Memory action buttons
-document.querySelectorAll('.memory-action-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        
-        const action = this.title.toLowerCase();
-        console.log('Memory action:', action);
-        
-        // Visual feedback
-        this.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-            this.style.transform = '';
-        }, 150);
-        
-        // TODO: Implement actual actions
-        switch(action) {
-            case 'me gusta':
-                UI.showToast('¡Te gusta este recuerdo!', 'success');
-                break;
-            case 'comentar':
-                UI.showToast('Función de comentarios próximamente', 'info');
-                break;
-            case 'compartir':
-                UI.showToast('Recuerdo compartido', 'success');
-                break;
-        }
-    });
-});
-
-// Lazy loading for images
-document.addEventListener('DOMContentLoaded', function() {
-    const images = document.querySelectorAll('.memory-photo, .memory-avatar');
-    
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    // TODO: Implement lazy loading
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        images.forEach(img => imageObserver.observe(img));
-    }
-});
 </script>
+<script src="{{ url_for('static', filename='js/memories_list.js') }}"></script>
 {% endblock %}

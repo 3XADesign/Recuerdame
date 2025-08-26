@@ -1,0 +1,8 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="96" height="96" rx="12" fill="#6366F1"/>
+  <rect x="12" y="12" width="72" height="72" rx="8" fill="white" fill-opacity="0.1"/>
+  <path d="M48 32C39.7157 32 33 38.7157 33 47C33 55.2843 39.7157 62 48 62C56.2843 62 63 55.2843 63 47C63 38.7157 56.2843 32 48 32Z" fill="white"/>
+  <circle cx="48" cy="44" r="4" fill="#6366F1"/>
+  <path d="M42 51H54C54 54.3137 51.3137 57 48 57C44.6863 57 42 54.3137 42 51Z" fill="#6366F1"/>
+  <text x="48" y="76" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="7" font-weight="bold">RecuerdaMe</text>
+</svg>

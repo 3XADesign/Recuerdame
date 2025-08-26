@@ -1,656 +1,380 @@
 {% extends "base.html" %}
 
-{% block title %}{{ memory.title }} - RecuerdaMe{% endblock %}
+{% block title %}{{ person.name }} - Recuerdos - RecuerdaMe{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/04-pages/memories.css') }}">
+{% endblock %}
 
 {% block content %}
-<div class="page-container">
-    <!-- Header con botón de regreso -->
-    <header class="page-header">
-        <div class="header-content">
-            <button class="btn-icon" onclick="history.back()" aria-label="Volver">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5"></path>
-                    <path d="M12 19l-7-7 7-7"></path>
-                </svg>
-            </button>
-            <h1 class="page-title">Recuerdo</h1>
-            <div class="header-actions">
-                <button class="btn-icon" onclick="shareMemory()" aria-label="Compartir">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                        <polyline points="16,6 12,2 8,6"></polyline>
-                        <line x1="12" y1="2" x2="12" y2="15"></line>
-                    </svg>
-                </button>
-                <button class="btn-icon" onclick="editMemory()" aria-label="Editar">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                </button>
+<div class="memory-person-page">
+    <!-- Back Navigation -->
+    <nav class="back-nav">
+        <a href="/memories" class="back-link" aria-label="Volver a la lista de recuerdos">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M19 12H5m7-7l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Recuerdos</span>
+        </a>
+    </nav>
+
+    <!-- Person Header -->
+    <header class="person-header">
+        <div class="person-info">
+            <div class="person-avatar-large">
+                {% if person.photoUrl %}
+                    <img src="{{ person.photoUrl }}" alt="{{ person.name }}" loading="lazy">
+                {% else %}
+                    <div class="person-avatar-initial-large">{{ person.name[0].upper() }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="person-details">
+                <h1 class="person-name-large">{{ person.name }}</h1>
+                {% if person.relationship %}
+                    <p class="person-relationship-large">{{ person.relationship }}</p>
+                {% endif %}
+                
+                <div class="person-meta">
+                    <button class="person-favorite-btn {{ 'active' if person.favorite else '' }}" 
+                            data-person-id="{{ person.id }}"
+                            aria-label="{{ 'Quitar de' if person.favorite else 'Agregar a' }} favoritos">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" 
+                                     stroke="currentColor" stroke-width="2" {{ 'fill="currentColor"' if person.favorite else '' }}/>
+                        </svg>
+                        <span>{{ 'Favorito' if person.favorite else 'Marcar favorito' }}</span>
+                    </button>
+                    
+                    <button class="btn-secondary" id="editPersonBtn" data-person-id="{{ person.id }}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
+                            <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Editar</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Imagen principal del recuerdo -->
-    {% if memory.image_url %}
-    <div class="memory-image">
-        <img src="{{ memory.image_url }}" alt="{{ memory.title }}" loading="lazy">
-        <div class="image-overlay">
-            <div class="memory-meta">
-                <span class="memory-date">{{ memory.date_formatted }}</span>
-                {% if memory.location %}
-                <span class="memory-location">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    {{ memory.location.name }}
-                </span>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Contenido del recuerdo -->
-    <div class="memory-content">
-        <div class="memory-header">
-            <h1 class="memory-title">{{ memory.title }}</h1>
-            {% if not memory.image_url %}
-            <div class="memory-meta">
-                <span class="memory-date">{{ memory.date_formatted }}</span>
-                {% if memory.location %}
-                <span class="memory-location">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    {{ memory.location.name }}
-                </span>
-                {% endif %}
-            </div>
+    <!-- Photos Section -->
+    <section class="photos-section">
+        <div class="section-header">
+            <h2>Fotos 
+                <span class="photo-count">({{ photos|length }}/6)</span>
+            </h2>
+            
+            {% if photos|length < 6 %}
+                <div class="upload-actions">
+                    <input type="file" 
+                           id="photoUpload" 
+                           multiple 
+                           accept="image/*" 
+                           class="hidden"
+                           aria-label="Seleccionar fotos para subir">
+                    
+                    <button class="btn-cta" id="uploadBtn" 
+                            {% if photos|length >= 6 %}disabled{% endif %}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Subir fotos</span>
+                    </button>
+                </div>
             {% endif %}
         </div>
 
-        {% if memory.description %}
-        <div class="memory-description">
-            <p>{{ memory.description|nl2br }}</p>
-        </div>
-        {% endif %}
-
-        <!-- Información de la persona -->
-        {% if memory.person %}
-        <div class="memory-person">
-            <div class="person-card">
-                {% if memory.person.photo_url %}
-                <img src="{{ memory.person.photo_url }}" alt="{{ memory.person.name }}" class="person-avatar">
-                {% else %}
-                <div class="person-avatar-placeholder">
-                    {{ memory.person.name[0]|upper }}
-                </div>
-                {% endif %}
-                <div class="person-info">
-                    <h3 class="person-name">{{ memory.person.name }}</h3>
-                    {% if memory.person.relationship %}
-                    <span class="person-relationship">{{ memory.person.relationship }}</span>
-                    {% endif %}
-                </div>
-                <button class="btn-icon" onclick="viewPerson('{{ memory.person.id }}')" aria-label="Ver perfil">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 18l6-6-6-6"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Ubicación en mapa -->
-        {% if memory.location and memory.location.lat and memory.location.lng %}
-        <div class="memory-location-map">
-            <h3 class="section-title">Ubicación</h3>
-            <div class="map-container" id="memoryMap" data-lat="{{ memory.location.lat }}" data-lng="{{ memory.location.lng }}">
-                <div class="map-placeholder">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    <p>Cargando mapa...</p>
-                </div>
-            </div>
-            <div class="location-info">
-                <h4>{{ memory.location.name }}</h4>
-                {% if memory.location.address %}
-                <p class="location-address">{{ memory.location.address }}</p>
-                {% endif %}
-                <button class="btn-secondary" onclick="openInMaps()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15,3 21,3 21,9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                    Abrir en Maps
-                </button>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Recordatorios activos -->
-        {% if memory.reminders %}
-        <div class="memory-reminders">
-            <h3 class="section-title">Recordatorios</h3>
-            <div class="reminders-list">
-                {% for reminder in memory.reminders %}
-                <div class="reminder-item {% if reminder.is_active %}active{% endif %}">
-                    <div class="reminder-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12,6 12,12 16,14"></polyline>
-                        </svg>
-                    </div>
-                    <div class="reminder-info">
-                        <span class="reminder-type">{{ reminder.type_display }}</span>
-                        <span class="reminder-schedule">{{ reminder.schedule_display }}</span>
-                    </div>
-                    <button class="btn-icon" onclick="toggleReminder('{{ reminder.id }}')" aria-label="{% if reminder.is_active %}Desactivar{% else %}Activar{% endif %} recordatorio">
-                        {% if reminder.is_active %}
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9,11 12,14 22,4"></polyline>
-                            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"></path>
-                        </svg>
-                        {% else %}
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                        </svg>
+        <!-- Photo Gallery -->
+        <div class="photo-gallery" id="photoGallery">
+            {% if photos %}
+                {% for photo in photos %}
+                    <div class="photo-item" data-photo-id="{{ photo.id }}">
+                        <div class="photo-wrapper">
+                            <img src="{{ photo.thumbnailUrl or photo.url }}" 
+                                 alt="{{ photo.caption or 'Foto de ' + person.name }}" 
+                                 loading="lazy"
+                                 data-full-url="{{ photo.url }}">
+                            
+                            <div class="photo-overlay">
+                                <button class="photo-action-btn view-btn" 
+                                        data-photo-url="{{ photo.url }}"
+                                        data-photo-caption="{{ photo.caption or '' }}"
+                                        aria-label="Ver foto en tamaño completo">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+                                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </button>
+                                
+                                <button class="photo-action-btn edit-btn" 
+                                        data-photo-id="{{ photo.id }}"
+                                        aria-label="Editar descripción de la foto">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </button>
+                                
+                                <button class="photo-action-btn delete-btn" 
+                                        data-photo-id="{{ photo.id }}"
+                                        aria-label="Eliminar foto">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% if photo.caption %}
+                            <p class="photo-caption">{{ photo.caption }}</p>
                         {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="empty-photos-state">
+                    <div class="empty-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="21,15 16,10 5,21" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>No hay fotos aún</h3>
+                    <p>Agrega las primeras fotos de {{ person.name }} para crear recuerdos especiales.</p>
+                    <button class="btn-cta" onclick="document.getElementById('uploadBtn').click()">
+                        <span>Subir primera foto</span>
                     </button>
                 </div>
-                {% endfor %}
-            </div>
-            <button class="btn-secondary" onclick="addReminder()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Agregar recordatorio
-            </button>
+            {% endif %}
         </div>
-        {% endif %}
 
-        <!-- Galería de fotos adicionales -->
-        {% if memory.additional_photos %}
-        <div class="memory-gallery">
-            <h3 class="section-title">Más fotos</h3>
-            <div class="gallery-grid">
-                {% for photo in memory.additional_photos %}
-                <div class="gallery-item" onclick="openPhotoViewer('{{ photo.url }}')">
-                    <img src="{{ photo.thumbnail_url or photo.url }}" alt="Foto del recuerdo" loading="lazy">
-                </div>
-                {% endfor %}
+        <!-- Upload Drop Zone (hidden by default) -->
+        <div class="upload-drop-zone hidden" id="uploadDropZone">
+            <div class="drop-zone-content">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <p><strong>Suelta las fotos aquí</strong></p>
+                <p>o haz clic para seleccionar</p>
             </div>
         </div>
-        {% endif %}
+    </section>
 
-        <!-- Acciones principales -->
-        <div class="memory-actions">
-            <button class="btn-primary" onclick="editMemory()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    <!-- Notes Section -->
+    {% if person.notes %}
+        <section class="notes-section">
+            <h2>Notas</h2>
+            <div class="notes-content">
+                <p>{{ person.notes }}</p>
+            </div>
+        </section>
+    {% endif %}
+</div>
+
+<!-- Photo Lightbox Modal -->
+<div class="modal-overlay hidden" id="photoLightbox" aria-hidden="true">
+    <div class="lightbox-modal" role="dialog" aria-labelledby="lightboxTitle">
+        <div class="lightbox-header">
+            <h3 id="lightboxTitle">Foto de {{ person.name }}</h3>
+            <button class="modal-close-btn" id="closeLightboxBtn" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
                 </svg>
-                Editar recuerdo
             </button>
-            
-            <button class="btn-secondary" onclick="shareMemory()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                    <polyline points="16,6 12,2 8,6"></polyline>
-                    <line x1="12" y1="2" x2="12" y2="15"></line>
+        </div>
+        
+        <div class="lightbox-content">
+            <img id="lightboxImage" src="" alt="" loading="lazy">
+            <p id="lightboxCaption" class="lightbox-caption"></p>
+        </div>
+        
+        <div class="lightbox-actions">
+            <button class="btn-secondary" id="lightboxEditBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
+                    <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z" stroke="currentColor" stroke-width="2"/>
                 </svg>
-                Compartir
-            </button>
-            
-            <button class="btn-outline btn-danger" onclick="confirmDeleteMemory()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3,6 5,6 21,6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-                Eliminar
+                <span>Editar descripción</span>
             </button>
         </div>
     </div>
 </div>
 
-<!-- Modal para visor de fotos -->
-<div class="modal" id="photoViewerModal">
-    <div class="modal-overlay" onclick="closePhotoViewer()"></div>
-    <div class="modal-content photo-viewer">
-        <button class="modal-close" onclick="closePhotoViewer()" aria-label="Cerrar">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-        <img id="photoViewerImage" src="" alt="Vista de foto">
-    </div>
-</div>
-
-<!-- Modal para agregar recordatorio -->
-<div class="modal" id="addReminderModal">
-    <div class="modal-overlay" onclick="closeAddReminderModal()"></div>
-    <div class="modal-content">
+<!-- Crop Photo Modal -->
+<div class="modal-overlay hidden" id="cropModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="cropModalTitle">
         <div class="modal-header">
-            <h2>Agregar recordatorio</h2>
-            <button class="modal-close" onclick="closeAddReminderModal()" aria-label="Cerrar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
+            <h3 id="cropModalTitle">Recortar foto</h3>
+            <button class="modal-close-btn" id="closeCropModalBtn" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
                 </svg>
             </button>
         </div>
-        <form id="addReminderForm" class="modal-body">
+        
+        <div class="modal-body">
+            <div class="crop-container">
+                <img id="cropImage" src="" alt="Imagen para recortar">
+            </div>
+            
+            <div class="crop-actions">
+                <label for="photoCaption" class="form-label">Descripción (opcional):</label>
+                <input type="text" 
+                       id="photoCaption" 
+                       placeholder="Describe esta foto..."
+                       maxlength="100"
+                       class="form-input">
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn-secondary" id="cancelCropBtn">Cancelar</button>
+            <button class="btn-cta" id="saveCropBtn">
+                <span>Guardar foto</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Caption Modal -->
+<div class="modal-overlay hidden" id="editCaptionModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="editCaptionTitle">
+        <div class="modal-header">
+            <h3 id="editCaptionTitle">Editar descripción</h3>
+            <button class="modal-close-btn" id="closeEditCaptionBtn" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <label for="editPhotoCaption" class="form-label">Descripción:</label>
+            <textarea id="editPhotoCaption" 
+                      placeholder="Describe esta foto..."
+                      maxlength="200"
+                      rows="3"
+                      class="form-textarea"></textarea>
+            <div class="character-count">
+                <span id="captionCharCount">0</span>/200 caracteres
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn-secondary" id="cancelEditCaptionBtn">Cancelar</button>
+            <button class="btn-cta" id="saveEditCaptionBtn">
+                <span>Guardar</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Person Modal -->
+<div class="modal-overlay hidden" id="editPersonModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="editPersonTitle">
+        <div class="modal-header">
+            <h3 id="editPersonTitle">Editar persona</h3>
+            <button class="modal-close-btn" id="closeEditPersonBtn" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+        </div>
+        
+        <form id="editPersonForm" class="modal-body">
             <div class="form-group">
-                <label for="reminderType">Tipo de recordatorio</label>
-                <select id="reminderType" name="type" required>
-                    <option value="">Seleccionar tipo</option>
-                    <option value="anniversary">Aniversario</option>
-                    <option value="birthday">Cumpleaños</option>
-                    <option value="location">Ubicación</option>
-                    <option value="custom">Personalizado</option>
-                </select>
+                <label for="editPersonName" class="form-label">Nombre *</label>
+                <input type="text" 
+                       id="editPersonName" 
+                       name="name"
+                       value="{{ person.name }}"
+                       required
+                       minlength="2"
+                       maxlength="60"
+                       class="form-input">
             </div>
             
             <div class="form-group">
-                <label for="reminderSchedule">Frecuencia</label>
-                <select id="reminderSchedule" name="schedule" required>
-                    <option value="">Seleccionar frecuencia</option>
-                    <option value="daily">Diario</option>
-                    <option value="weekly">Semanal</option>
-                    <option value="monthly">Mensual</option>
-                    <option value="yearly">Anual</option>
-                </select>
+                <label for="editPersonRelationship" class="form-label">Relación</label>
+                <input type="text" 
+                       id="editPersonRelationship" 
+                       name="relationship"
+                       value="{{ person.relationship or '' }}"
+                       maxlength="24"
+                       placeholder="ej: Abuela, Tío, Amigo..."
+                       class="form-input">
             </div>
             
             <div class="form-group">
-                <label for="reminderTime">Hora</label>
-                <input type="time" id="reminderTime" name="time" value="09:00">
+                <label for="editPersonNotes" class="form-label">Notas</label>
+                <textarea id="editPersonNotes" 
+                          name="notes"
+                          rows="3"
+                          maxlength="500"
+                          placeholder="Notas sobre esta persona..."
+                          class="form-textarea">{{ person.notes or '' }}</textarea>
             </div>
             
-            <div class="form-actions">
-                <button type="button" class="btn-secondary" onclick="closeAddReminderModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Crear recordatorio</button>
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           id="editPersonFavorite" 
+                           name="favorite"
+                           {{ 'checked' if person.favorite else '' }}>
+                    <span class="checkbox-custom"></span>
+                    <span>Marcar como favorito</span>
+                </label>
             </div>
         </form>
+        
+        <div class="modal-actions">
+            <button class="btn-danger" id="deletePersonBtn" data-person-id="{{ person.id }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>Eliminar</span>
+            </button>
+            
+            <div class="modal-actions-right">
+                <button class="btn-secondary" id="cancelEditPersonBtn">Cancelar</button>
+                <button class="btn-cta" type="submit" form="editPersonForm">
+                    <span>Guardar cambios</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
-
-<script>
-// Variables globales
-const memoryData = {{ memory|tojson }};
-
-// Inicializar mapa si hay ubicación
-document.addEventListener('DOMContentLoaded', function() {
-    const mapContainer = document.getElementById('memoryMap');
-    if (mapContainer && window.Maps) {
-        const lat = parseFloat(mapContainer.dataset.lat);
-        const lng = parseFloat(mapContainer.dataset.lng);
-        
-        Maps.initMap('memoryMap', { lat, lng }, 15);
-        Maps.addMarker({ lat, lng }, memoryData.title);
-    }
-});
-
-// Funciones de interacción
-function shareMemory() {
-    if (navigator.share) {
-        navigator.share({
-            title: memoryData.title,
-            text: memoryData.description,
-            url: window.location.href
-        }).catch(console.error);
-    } else {
-        // Fallback: copiar URL
-        navigator.clipboard.writeText(window.location.href)
-            .then(() => UI.showToast('URL copiada al portapapeles', 'success'))
-            .catch(() => UI.showToast('Error al compartir', 'error'));
-    }
-}
-
-function editMemory() {
-    window.location.href = `/memory/${memoryData.id}/edit`;
-}
-
-function viewPerson(personId) {
-    window.location.href = `/person/${personId}`;
-}
-
-function openInMaps() {
-    const lat = memoryData.location.lat;
-    const lng = memoryData.location.lng;
-    const url = `https://maps.google.com/?q=${lat},${lng}`;
-    window.open(url, '_blank');
-}
-
-function openPhotoViewer(photoUrl) {
-    const modal = document.getElementById('photoViewerModal');
-    const image = document.getElementById('photoViewerImage');
-    image.src = photoUrl;
-    modal.classList.add('active');
-}
-
-function closePhotoViewer() {
-    document.getElementById('photoViewerModal').classList.remove('active');
-}
-
-function addReminder() {
-    document.getElementById('addReminderModal').classList.add('active');
-}
-
-function closeAddReminderModal() {
-    document.getElementById('addReminderModal').classList.remove('active');
-}
-
-async function toggleReminder(reminderId) {
-    try {
-        const response = await API.post(`/reminders/${reminderId}/toggle`);
-        if (response.success) {
-            location.reload(); // Recargar para actualizar estado
-        }
-    } catch (error) {
-        UI.showToast('Error al cambiar recordatorio', 'error');
-    }
-}
-
-function confirmDeleteMemory() {
-    if (confirm('¿Estás seguro de que quieres eliminar este recuerdo? Esta acción no se puede deshacer.')) {
-        deleteMemory();
-    }
-}
-
-async function deleteMemory() {
-    try {
-        UI.showLoading('Eliminando recuerdo...');
-        const response = await API.delete(`/memories/${memoryData.id}`);
-        
-        if (response.success) {
-            UI.showToast('Recuerdo eliminado', 'success');
-            window.location.href = '/memories';
-        }
-    } catch (error) {
-        UI.showToast('Error al eliminar recuerdo', 'error');
-    } finally {
-        UI.hideLoading();
-    }
-}
-
-// Formulario de recordatorio
-document.getElementById('addReminderForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const data = {
-        memory_id: memoryData.id,
-        type: formData.get('type'),
-        schedule: formData.get('schedule'),
-        time: formData.get('time')
-    };
-    
-    try {
-        UI.showLoading('Creando recordatorio...');
-        const response = await API.post('/reminders', data);
-        
-        if (response.success) {
-            UI.showToast('Recordatorio creado', 'success');
-            closeAddReminderModal();
-            location.reload();
-        }
-    } catch (error) {
-        UI.showToast('Error al crear recordatorio', 'error');
-    } finally {
-        UI.hideLoading();
-    }
-});
-</script>
 {% endblock %}
 
-{% block styles %}
-<style>
-.memory-image {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    margin-bottom: var(--space-lg);
+{% block page_js %}
+<script type="application/json" id="pageData">
+{
+    "personId": "{{ person.id }}",
+    "familyId": "{{ family_id }}",
+    "maxPhotos": 6,
+    "currentPhotoCount": {{ photos|length }}
 }
-
-.memory-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.image-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-    padding: var(--space-lg);
-}
-
-.memory-meta {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    color: white;
-}
-
-.memory-date {
-    font-size: var(--font-sm);
-    font-weight: 500;
-}
-
-.memory-location {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: var(--font-sm);
-}
-
-.memory-content {
-    padding: 0 var(--space-lg) var(--space-lg);
-}
-
-.memory-title {
-    font-size: var(--font-xl);
-    font-weight: 600;
-    margin-bottom: var(--space-md);
-    color: var(--color-text);
-}
-
-.memory-description {
-    margin-bottom: var(--space-lg);
-    line-height: 1.6;
-    color: var(--color-text-secondary);
-}
-
-.person-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-surface);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-lg);
-}
-
-.person-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.person-avatar-placeholder {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-}
-
-.person-info {
-    flex: 1;
-}
-
-.person-name {
-    font-weight: 600;
-    margin-bottom: var(--space-xs);
-}
-
-.person-relationship {
-    color: var(--color-text-secondary);
-    font-size: var(--font-sm);
-}
-
-.memory-location-map {
-    margin-bottom: var(--space-lg);
-}
-
-.map-container {
-    height: 200px;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    margin-bottom: var(--space-md);
-    background: var(--color-surface);
-}
-
-.map-placeholder {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text-secondary);
-}
-
-.location-info h4 {
-    font-weight: 600;
-    margin-bottom: var(--space-xs);
-}
-
-.location-address {
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-md);
-}
-
-.section-title {
-    font-size: var(--font-lg);
-    font-weight: 600;
-    margin-bottom: var(--space-md);
-    color: var(--color-text);
-}
-
-.reminders-list {
-    margin-bottom: var(--space-md);
-}
-
-.reminder-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-surface);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-sm);
-}
-
-.reminder-item.active {
-    background: var(--color-success-light);
-}
-
-.reminder-icon {
-    color: var(--color-text-secondary);
-}
-
-.reminder-item.active .reminder-icon {
-    color: var(--color-success);
-}
-
-.reminder-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-}
-
-.reminder-type {
-    font-weight: 500;
-}
-
-.reminder-schedule {
-    font-size: var(--font-sm);
-    color: var(--color-text-secondary);
-}
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: var(--space-sm);
-    margin-bottom: var(--space-lg);
-}
-
-.gallery-item {
-    aspect-ratio: 1;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.gallery-item:hover {
-    transform: scale(1.05);
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.memory-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    margin-top: var(--space-xl);
-}
-
-.photo-viewer {
-    max-width: 90vw;
-    max-height: 90vh;
-    padding: 0;
-    background: transparent;
-}
-
-.photo-viewer img {
-    max-width: 100%;
-    max-height: 90vh;
-    object-fit: contain;
-}
-
-@media (min-width: 768px) {
-    .memory-actions {
-        flex-direction: row;
-        justify-content: center;
-    }
-    
-    .gallery-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-}
-</style>
+</script>
+<script src="{{ url_for('static', filename='js/memory_person.js') }}"></script>
 {% endblock %}

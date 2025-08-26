@@ -29,6 +29,14 @@ except Exception as e:
     print("   2. Colócalo en la raíz del proyecto")
     db = None
 
+# Service Worker route
+@app.route('/service-worker.js')
+def service_worker():
+    """Serve service worker from root path"""
+    return app.send_static_file('service-worker.js')
+
+# Routes
+
 @app.route('/')
 def home():
     """Landing page for family members with action cards"""
@@ -53,15 +61,17 @@ def map_view():
 
 @app.route('/memories')
 def memories_list():
-    """List of shared memories"""
-    # TODO: Fetch memories from Firestore
-    return render_template('memories_list.html')
+    """List of shared memories/persons"""
+    # TODO: Get familyId from session/auth
+    family_id = 'demo-family'
+    return render_template('memories_list.html', family_id=family_id)
 
-@app.route('/memory/<person_id>')
+@app.route('/memories/<person_id>')
 def memory_person(person_id):
-    """Individual person's memory page"""
-    # TODO: Fetch person data and memories
-    return render_template('memory_person.html', person_id=person_id)
+    """Individual person's memory page with photos"""
+    # TODO: Get familyId from session/auth
+    family_id = 'demo-family'
+    return render_template('memory_person.html', person_id=person_id, family_id=family_id)
 
 @app.route('/reminders')
 def reminders():
@@ -194,6 +204,247 @@ def api_switch_family():
     family_id = data.get('familyId')
     
     return jsonify({'success': True, 'message': f'Cambiado a familia {family_id}'})
+
+# Memories/Persons API Endpoints
+@app.route('/api/persons', methods=['GET'])
+def api_get_persons():
+    """Get list of persons with optional search and filters"""
+    # TODO: Validate auth.uid belongs to familyId
+    family_id = request.args.get('familyId')
+    q = request.args.get('q', '').lower()  # Search query
+    fav = request.args.get('fav')  # Filter favorites
+    limit = int(request.args.get('limit', 50))
+    cursor = request.args.get('cursor')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # TODO: Query Firestore families/{familyId}/persons
+    # For now, return mock data
+    mock_persons = [
+        {
+            'id': 'person-1',
+            'name': 'Abuela Carmen',
+            'relationship': 'abuela',
+            'photoUrl': None,
+            'favorite': True,
+            'createdAt': '2025-08-20T10:00:00Z'
+        },
+        {
+            'id': 'person-2', 
+            'name': 'Tío Miguel',
+            'relationship': 'tío',
+            'photoUrl': None,
+            'favorite': False,
+            'createdAt': '2025-08-21T15:30:00Z'
+        }
+    ]
+    
+    # Client-side filtering for MVP
+    filtered_persons = []
+    for person in mock_persons:
+        # Search filter
+        if q and q not in person['name'].lower() and q not in person['relationship'].lower():
+            continue
+        # Favorites filter  
+        if fav == 'true' and not person['favorite']:
+            continue
+        filtered_persons.append(person)
+    
+    return jsonify({
+        'persons': filtered_persons[:limit],
+        'nextCursor': None  # No pagination for MVP
+    })
+
+@app.route('/api/persons', methods=['POST'])
+def api_create_person():
+    """Create new person"""
+    # TODO: Validate auth.uid belongs to familyId
+    data = request.get_json()
+    family_id = data.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # Validations
+    name = data.get('name', '').strip()
+    if not name or len(name) < 2 or len(name) > 60:
+        return jsonify({'error': 'name must be 2-60 characters'}), 400
+    
+    relationship = data.get('relationship', '').strip()
+    if len(relationship) > 24:
+        return jsonify({'error': 'relationship must be ≤24 characters'}), 400
+    
+    notes = data.get('notes', '').strip()
+    favorite = bool(data.get('favorite', False))
+    
+    # TODO: Create document in families/{familyId}/persons/{personId}
+    import uuid
+    person_id = str(uuid.uuid4())
+    
+    return jsonify({'personId': person_id})
+
+@app.route('/api/persons/<person_id>', methods=['GET'])
+def api_get_person(person_id):
+    """Get person details with photos"""
+    # TODO: Validate auth.uid and fetch from Firestore
+    family_id = request.args.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # Mock data
+    person = {
+        'id': person_id,
+        'name': 'Abuela Carmen',
+        'relationship': 'abuela', 
+        'notes': 'Siempre nos contaba historias maravillosas.',
+        'photoUrl': None,
+        'favorite': True,
+        'createdAt': '2025-08-20T10:00:00Z',
+        'updatedAt': '2025-08-25T16:20:00Z'
+    }
+    
+    photos = [
+        {
+            'id': 'photo-1',
+            'url': 'https://example.com/photo1.webp',
+            'thumbUrl': 'https://example.com/thumb_photo1.webp',
+            'caption': 'En el jardín de casa',
+            'order': 0,
+            'createdAt': '2025-08-20T10:00:00Z'
+        }
+    ]
+    
+    return jsonify({
+        'person': person,
+        'photos': photos
+    })
+
+@app.route('/api/persons/<person_id>', methods=['PATCH'])  
+def api_update_person(person_id):
+    """Update person fields"""
+    # TODO: Validate auth.uid and update Firestore
+    data = request.get_json()
+    family_id = data.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # Validate allowed fields
+    allowed_fields = ['name', 'relationship', 'notes', 'favorite', 'photoUrl']
+    updates = {k: v for k, v in data.items() if k in allowed_fields}
+    
+    if 'name' in updates:
+        name = updates['name'].strip()
+        if not name or len(name) < 2 or len(name) > 60:
+            return jsonify({'error': 'name must be 2-60 characters'}), 400
+    
+    if 'relationship' in updates and len(updates['relationship']) > 24:
+        return jsonify({'error': 'relationship must be ≤24 characters'}), 400
+    
+    # TODO: Update families/{familyId}/persons/{personId}
+    return jsonify({'ok': True})
+
+@app.route('/api/persons/<person_id>', methods=['DELETE'])
+def api_delete_person(person_id):
+    """Delete person (soft delete with deletedAt)"""
+    # TODO: Validate auth.uid and soft delete in Firestore
+    family_id = request.args.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # TODO: Add deletedAt timestamp to families/{familyId}/persons/{personId}
+    # TODO: Also delete associated photos from Storage
+    return jsonify({'ok': True})
+
+@app.route('/api/persons/<person_id>/photos/signed-url', methods=['POST'])
+def api_get_photo_signed_url(person_id):
+    """Get signed URLs for photo upload"""
+    # TODO: Validate auth.uid and generate Cloud Storage signed URLs
+    data = request.get_json()
+    family_id = data.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # TODO: Check person exists and user has access
+    # TODO: Check photo count < 6
+    
+    import uuid
+    photo_id = str(uuid.uuid4())
+    
+    # Mock signed URLs (TODO: replace with real Cloud Storage signed URLs)
+    return jsonify({
+        'uploadUrl': f'https://storage.googleapis.com/upload/families/{family_id}/persons/{person_id}/{photo_id}.webp',
+        'publicUrl': f'https://storage.googleapis.com/families/{family_id}/persons/{person_id}/{photo_id}.webp',
+        'thumbUploadUrl': f'https://storage.googleapis.com/upload/families/{family_id}/persons/{person_id}/thumb_{photo_id}.webp',
+        'thumbPublicUrl': f'https://storage.googleapis.com/families/{family_id}/persons/{person_id}/thumb_{photo_id}.webp',
+        'photoId': photo_id
+    })
+
+@app.route('/api/persons/<person_id>/photos', methods=['POST'])
+def api_create_photo(person_id):
+    """Register photo metadata after upload"""
+    # TODO: Validate auth.uid and save to Firestore
+    data = request.get_json()
+    family_id = data.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # Validations
+    photo_id = data.get('photoId')
+    url = data.get('url')
+    thumb_url = data.get('thumbUrl')
+    caption = data.get('caption', '').strip()
+    order = int(data.get('order', 0))
+    
+    if len(caption) > 80:
+        return jsonify({'error': 'caption must be ≤80 characters'}), 400
+    
+    if not (photo_id and url and thumb_url):
+        return jsonify({'error': 'photoId, url, thumbUrl required'}), 400
+    
+    # TODO: Create families/{familyId}/persons/{personId}/photos/{photoId}
+    return jsonify({'ok': True})
+
+@app.route('/api/persons/<person_id>/photos/<photo_id>', methods=['PATCH'])
+def api_update_photo(person_id, photo_id):
+    """Update photo caption or order"""
+    # TODO: Validate auth.uid and update Firestore
+    data = request.get_json()
+    family_id = data.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    updates = {}
+    if 'caption' in data:
+        caption = data['caption'].strip()
+        if len(caption) > 80:
+            return jsonify({'error': 'caption must be ≤80 characters'}), 400
+        updates['caption'] = caption
+    
+    if 'order' in data:
+        updates['order'] = int(data['order'])
+    
+    # TODO: Update families/{familyId}/persons/{personId}/photos/{photoId}
+    return jsonify({'ok': True})
+
+@app.route('/api/persons/<person_id>/photos/<photo_id>', methods=['DELETE'])
+def api_delete_photo(person_id, photo_id):
+    """Delete photo from Storage and Firestore"""
+    # TODO: Validate auth.uid, delete from Cloud Storage and Firestore
+    family_id = request.args.get('familyId')
+    
+    if not family_id:
+        return jsonify({'error': 'familyId required'}), 400
+    
+    # TODO: Delete from families/{familyId}/persons/{personId}/photos/{photoId}
+    # TODO: Delete files from Cloud Storage
+    return jsonify({'ok': True})
 
 @app.route('/api/notifications/subscribe', methods=['POST'])
 def api_subscribe_notifications():

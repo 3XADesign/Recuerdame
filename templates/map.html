@@ -75,7 +75,7 @@
         <div class="family-members" id="familyMembers">
             <!-- Family member template -->
             <div class="family-member" onclick="focusOnMember('user1')">
-                <img src="https://via.placeholder.com/48x48" alt="Ana" class="family-member-avatar">
+                <img src="{{ url_for('static', filename='img/placeholder-48x48.svg') }}" alt="Ana" class="family-member-avatar">
                 <div class="family-member-info">
                     <h4 class="family-member-name">Ana (Hija)</h4>
                     <p class="family-member-location">Plaza Mayor, 2 min</p>
@@ -84,7 +84,7 @@
             </div>
             
             <div class="family-member" onclick="focusOnMember('user2')">
-                <img src="https://via.placeholder.com/48x48" alt="Carlos" class="family-member-avatar">
+                <img src="{{ url_for('static', filename='img/placeholder-48x48.svg') }}" alt="Carlos" class="family-member-avatar">
                 <div class="family-member-info">
                     <h4 class="family-member-name">Carlos (Hijo)</h4>
                     <p class="family-member-location">Trabajo, 15 min</p>
@@ -93,7 +93,7 @@
             </div>
             
             <div class="family-member" onclick="focusOnMember('user3')">
-                <img src="https://via.placeholder.com/48x48" alt="Rosa" class="family-member-avatar">
+                <img src="{{ url_for('static', filename='img/placeholder-48x48.svg') }}" alt="Rosa" class="family-member-avatar">
                 <div class="family-member-info">
                     <h4 class="family-member-name">Rosa (Cuidadora)</h4>
                     <p class="family-member-location">Casa, 1 min</p>
