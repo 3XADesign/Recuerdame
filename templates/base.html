@@ -46,137 +46,105 @@
     <title>{% block title %}RecuerdaMe{% endblock %}</title>
   </head>
   <body class="bg-light" data-bs-theme="light">
-    <!-- Navbar -->
-    <nav
-      class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top"
-    >
+    <!-- Skip Link para Accesibilidad -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+    
+    <!-- Navbar Moderno -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top navbar-modern">
       <div class="container-fluid">
-        <!-- Brand -->
-        <a
-          class="navbar-brand fw-bold text-primary"
-          href="{{ url_for('dashboard') }}"
-        >
-          <i class="bi bi-heart-fill me-2"></i>
-          RecuerdaMe
+        <!-- Brand Moderno -->
+        <a class="navbar-brand-modern" href="{{ url_for('dashboard') }}">
+          <i class="bi bi-heart-fill"></i>
+          <span class="gradient-text">RecuerdaMe</span>
         </a>
 
         <!-- Right side controls -->
         <div class="d-flex align-items-center gap-2 ms-auto">
-          <!-- Accessibility Controls -->
-          <button
-            class="btn btn-outline-secondary btn-sm"
-            id="toggleContrast"
-            title="Alternar alto contraste"
-            aria-label="Alternar alto contraste"
-          >
-            <i class="bi bi-circle-half"></i>
-          </button>
-
           <!-- Menu Toggle (Offcanvas trigger) -->
           <button
-            class="navbar-toggler border-0"
+            class="btn btn-ghost btn-circle"
             type="button"
             data-bs-toggle="offcanvas"
             data-bs-target="#mainMenu"
-            aria-controls="mainMenu"
+            aria-controls="mainMenu" 
             aria-label="Abrir menú"
+            title="Abrir menú de navegación"
           >
-            <span class="navbar-toggler-icon"></span>
+            <i class="bi bi-list"></i>
           </button>
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="{% block main_class %}container-fluid p-0{% endblock %}">
+    <!-- Main Content -->
+    <main id="main-content" class="{% block main_class %}container-fluid p-0{% endblock %}">
       {% block content %}{% endblock %}
     </main>
 
-    <!-- Offcanvas Menu -->
-    <div
-      class="offcanvas offcanvas-start"
-      tabindex="-1"
-      id="mainMenu"
-      aria-labelledby="mainMenuLabel"
-    >
-      <div class="offcanvas-header bg-primary text-white">
-        <h5 class="offcanvas-title" id="mainMenuLabel">
-          <i class="bi bi-list me-2"></i>
-          Menú Principal
+    <!-- Offcanvas Menu Moderno -->
+    <div class="offcanvas offcanvas-start glass-effect" tabindex="-1" id="mainMenu" aria-labelledby="mainMenuLabel">
+      <div class="offcanvas-header" style="background: var(--gradient-primary); color: white;">
+        <h5 class="offcanvas-title fw-bold" id="mainMenuLabel">
+          <i class="bi bi-heart-fill me-2"></i>
+          RecuerdaMe
         </h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="offcanvas"
-          aria-label="Cerrar"
-        ></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar menú"></button>
       </div>
       <div class="offcanvas-body p-0">
         <nav class="nav flex-column">
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 {% if request.endpoint == 'dashboard' %}active bg-primary-subtle{% endif %}"
-            href="{{ url_for('dashboard') }}"
-          >
-            <i class="bi bi-geo-alt-fill me-3 fs-5"></i>
-            <span class="fs-6">Mapa de Ubicación</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 {% if request.endpoint == 'dashboard' %}active{% endif %}" 
+             href="{{ url_for('dashboard') }}" 
+             style="{% if request.endpoint == 'dashboard' %}background: var(--primary-50); border-left: 4px solid var(--primary);{% endif %}">
+            <i class="bi bi-geo-alt-fill me-3 fs-4" style="color: var(--primary);"></i>
+            <span class="fw-medium">Mapa de Ubicación</span>
           </a>
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 {% if request.endpoint == 'memories_list' %}active bg-primary-subtle{% endif %}"
-            href="{{ url_for('memories_list') }}"
-          >
-            <i class="bi bi-people-fill me-3 fs-5"></i>
-            <span class="fs-6">Recuerdos</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 {% if request.endpoint == 'memories_list' %}active{% endif %}" 
+             href="{{ url_for('memories_list') }}"
+             style="{% if request.endpoint == 'memories_list' %}background: var(--primary-50); border-left: 4px solid var(--primary);{% endif %}">
+            <i class="bi bi-people-fill me-3 fs-4" style="color: var(--secondary);"></i>
+            <span class="fw-medium">Recuerdos</span>
           </a>
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 {% if request.endpoint == 'reminders' %}active bg-primary-subtle{% endif %}"
-            href="{{ url_for('reminders') }}"
-          >
-            <i class="bi bi-alarm-fill me-3 fs-5"></i>
-            <span class="fs-6">Recordatorios</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 {% if request.endpoint == 'reminders' %}active{% endif %}" 
+             href="{{ url_for('reminders') }}"
+             style="{% if request.endpoint == 'reminders' %}background: var(--primary-50); border-left: 4px solid var(--primary);{% endif %}">
+            <i class="bi bi-alarm-fill me-3 fs-4" style="color: var(--warning);"></i>
+            <span class="fw-medium">Recordatorios</span>
           </a>
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 {% if request.endpoint == 'alerts' %}active bg-primary-subtle{% endif %}"
-            href="{{ url_for('alerts') }}"
-          >
-            <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
-            <span class="fs-6">Alertas</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 {% if request.endpoint == 'alerts' %}active{% endif %}" 
+             href="{{ url_for('alerts') }}"
+             style="{% if request.endpoint == 'alerts' %}background: var(--primary-50); border-left: 4px solid var(--primary);{% endif %}">
+            <i class="bi bi-exclamation-triangle-fill me-3 fs-4" style="color: var(--danger);"></i>
+            <span class="fw-medium">Alertas</span>
           </a>
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 {% if request.endpoint == 'family_create' %}active bg-primary-subtle{% endif %}"
-            href="{{ url_for('family_create') }}"
-          >
-            <i class="bi bi-house-heart-fill me-3 fs-5"></i>
-            <span class="fs-6">Familia & Invitaciones</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 {% if request.endpoint == 'family_create' %}active{% endif %}" 
+             href="{{ url_for('family_create') }}"
+             style="{% if request.endpoint == 'family_create' %}background: var(--primary-50); border-left: 4px solid var(--primary);{% endif %}">
+            <i class="bi bi-house-heart-fill me-3 fs-4" style="color: var(--success);"></i>
+            <span class="fw-medium">Familia & Invitaciones</span>
           </a>
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 {% if request.endpoint == 'info_alzheimer' %}active bg-primary-subtle{% endif %}"
-            href="{{ url_for('info_alzheimer') }}"
-          >
-            <i class="bi bi-info-circle-fill me-3 fs-5"></i>
-            <span class="fs-6">Información Alzheimer</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 {% if request.endpoint == 'info_alzheimer' %}active{% endif %}" 
+             href="{{ url_for('info_alzheimer') }}"
+             style="{% if request.endpoint == 'info_alzheimer' %}background: var(--primary-50); border-left: 4px solid var(--primary);{% endif %}">
+            <i class="bi bi-info-circle-fill me-3 fs-4" style="color: var(--primary);"></i>
+            <span class="fw-medium">Información Alzheimer</span>
           </a>
 
-          <hr class="mx-3 my-2" />
+          <hr class="mx-4 my-3" style="border-color: var(--gray-300);" />
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4"
-            href="#configuracion"
-          >
-            <i class="bi bi-gear-fill me-3 fs-5"></i>
-            <span class="fs-6">Configuración</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 hover-lift" href="#configuracion">
+            <i class="bi bi-gear-fill me-3 fs-4" style="color: var(--gray-600);"></i>
+            <span class="fw-medium">Configuración</span>
           </a>
 
-          <a
-            class="nav-link d-flex align-items-center py-3 px-4 text-danger"
-            href="#cerrar-sesion"
-          >
-            <i class="bi bi-box-arrow-right me-3 fs-5"></i>
-            <span class="fs-6">Cerrar Sesión</span>
+          <a class="nav-link d-flex align-items-center py-4 px-4 hover-lift" href="#cerrar-sesion" style="color: var(--danger);">
+            <i class="bi bi-box-arrow-right me-3 fs-4"></i>
+            <span class="fw-medium">Cerrar Sesión</span>
           </a>
         </nav>
       </div>
@@ -220,6 +188,7 @@
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modern-ui.js') }}"></script>
 
     {% block scripts %}{% endblock %}
   </body>
