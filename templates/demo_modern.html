@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}Demostración Moderna - RecuerdaMe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Moderno -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center py-5" style="background: var(--gradient-primary); border-radius: var(--radius-2xl); color: white;">
+                <h1 class="display-4 fw-bold mb-3">🎨 RecuerdaMe 2.0</h1>
+                <p class="lead">Sistema de diseño moderno y accesible</p>
+                <button class="btn btn-lg" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;" onclick="showToast('¡Bienvenido al nuevo diseño!', 'success')">
+                    <i class="bi bi-rocket-takeoff me-2"></i>
+                    Probar Toast
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid Moderno -->
+    <div class="dashboard-grid">
+        <!-- Card de Estado de Familia -->
+        <div class="dashboard-card animate-fade-in">
+            <div class="dashboard-card-header">
+                <div class="dashboard-card-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <h3 class="dashboard-card-title">Estado Familiar</h3>
+                    <p class="text-muted mb-0">Todos los miembros monitoreados</p>
+                </div>
+            </div>
+            <div class="dashboard-card-body">
+                <div class="family-grid">
+                    <div class="family-member-card" data-status="online">
+                        <div class="family-member-header">
+                            <img src="https://via.placeholder.com/72x72/4A90E2/fff?text=👩" alt="María" class="family-member-avatar">
+                            <div class="family-member-info">
+                                <h3>María García</h3>
+                                <p>En casa · Hace 5 min</p>
+                            </div>
+                            <div class="status-indicator online pulse"></div>
+                        </div>
+                        <div class="family-member-actions">
+                            <button class="btn btn-primary btn-sm">
+                                <i class="bi bi-telephone"></i>
+                            </button>
+                            <button class="btn btn-soft btn-sm">
+                                <i class="bi bi-chat"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Ubicación -->
+        <div class="dashboard-card animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="dashboard-card-header">
+                <div class="dashboard-card-icon" style="background: var(--gradient-warm);">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div>
+                    <h3 class="dashboard-card-title">Ubicación Actual</h3>
+                    <p class="text-muted mb-0">Zona segura confirmada</p>
+                </div>
+            </div>
+            <div class="dashboard-card-body">
+                <div class="map-container" style="height: 200px; background: var(--gradient-soft); display: flex; align-items: center; justify-content: center;">
+                    <div class="text-center">
+                        <i class="bi bi-map fs-1 text-primary mb-2"></i>
+                        <p class="text-muted">Mapa interactivo aquí</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-success">
+                        <i class="bi bi-shield-check me-1"></i>
+                        Zona Segura
+                    </span>
+                    <small class="text-muted ms-2">Calle Mayor 123, Madrid</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Recordatorios -->
+        <div class="dashboard-card animate-fade-in" style="animation-delay: 0.4s;">
+            <div class="dashboard-card-header">
+                <div class="dashboard-card-icon" style="background: var(--gradient-sunset);">
+                    <i class="bi bi-alarm-fill"></i>
+                </div>
+                <div>
+                    <h3 class="dashboard-card-title">Recordatorios</h3>
+                    <p class="text-muted mb-0">3 recordatorios activos</p>
+                </div>
+            </div>
+            <div class="dashboard-card-body">
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-xl">
+                        <i class="bi bi-capsule text-primary fs-4"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Medicación</h6>
+                            <small class="text-muted">En 30 minutos</small>
+                        </div>
+                        <span class="badge bg-warning">Próximo</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-xl">
+                        <i class="bi bi-calendar-event text-secondary fs-4"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Cita médica</h6>
+                            <small class="text-muted">Mañana 10:00</small>
+                        </div>
+                        <span class="badge bg-info">Programado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Botones Modernos -->
+    <div class="row my-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Sistema de Botones Moderno</h2>
+            <div class="d-flex flex-wrap gap-3 justify-content-center">
+                <button class="btn btn-primary btn-lg hover-lift">
+                    <i class="bi bi-heart-fill me-2"></i>
+                    Primario
+                </button>
+                <button class="btn btn-secondary btn-lg hover-lift">
+                    <i class="bi bi-star-fill me-2"></i>
+                    Secundario
+                </button>
+                <button class="btn btn-gradient btn-lg hover-lift">
+                    <i class="bi bi-rocket-takeoff me-2"></i>
+                    Gradiente
+                </button>
+                <button class="btn btn-outline btn-lg hover-lift">
+                    <i class="bi bi-shield-check me-2"></i>
+                    Contorno
+                </button>
+                <button class="btn btn-soft btn-lg hover-lift">
+                    <i class="bi bi-cloud me-2"></i>
+                    Suave
+                </button>
+                <button class="btn btn-success btn-lg hover-lift">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Éxito
+                </button>
+                <button class="btn btn-warning btn-lg hover-lift">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Advertencia
+                </button>
+                <button class="btn btn-danger btn-lg hover-lift">
+                    <i class="bi bi-x-circle me-2"></i>
+                    Peligro
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Demo -->
+    <div class="row my-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Acciones Rápidas</h2>
+            <div class="quick-actions justify-content-center">
+                <a href="#" class="quick-action">
+                    <i class="bi bi-telephone-fill quick-action-icon" style="color: var(--success);"></i>
+                    <span class="quick-action-label">Llamar</span>
+                </a>
+                <a href="#" class="quick-action">
+                    <i class="bi bi-chat-fill quick-action-icon" style="color: var(--primary);"></i>
+                    <span class="quick-action-label">Mensaje</span>
+                </a>
+                <a href="#" class="quick-action">
+                    <i class="bi bi-geo-alt-fill quick-action-icon" style="color: var(--warning);"></i>
+                    <span class="quick-action-label">Ubicar</span>
+                </a>
+                <a href="#" class="quick-action">
+                    <i class="bi bi-heart-pulse-fill quick-action-icon" style="color: var(--danger);"></i>
+                    <span class="quick-action-label">Emergencia</span>
+                </a>
+                <a href="#" class="quick-action">
+                    <i class="bi bi-shield-check quick-action-icon" style="color: var(--success);"></i>
+                    <span class="quick-action-label">Seguro</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de Demostración -->
+    <div class="row my-5">
+        <div class="col-md-4">
+            <div class="card card-elevated hover-lift animate-on-scroll">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-lightbulb-fill text-warning me-2"></i>
+                        Card Elevado
+                    </h5>
+                    <p class="card-text">Este card tiene sombra elevada y efectos hover modernos.</p>
+                    <button class="btn btn-primary">Interactuar</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-gradient hover-lift animate-on-scroll">
+                <div class="card-body">
+                    <h5 class="card-title text-white">
+                        <i class="bi bi-palette-fill me-2"></i>
+                        Card Gradiente
+                    </h5>
+                    <p class="card-text text-white opacity-75">Card con fondo de gradiente suave y moderno.</p>
+                    <button class="btn btn-soft">Explorar</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-effect hover-lift animate-on-scroll">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-snow2 text-primary me-2"></i>
+                        Efecto Cristal
+                    </h5>
+                    <p class="card-text">Card con efecto de cristal esmerilado (glass morphism).</p>
+                    <button class="btn btn-outline">Descubrir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skeleton Loaders Demo -->
+    <div class="row my-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Skeleton Loaders</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="skeleton skeleton-title"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex gap-3">
+                                <div class="skeleton skeleton-avatar"></div>
+                                <div class="flex-grow-1">
+                                    <div class="skeleton skeleton-title" style="width: 60%;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary w-100" onclick="demoSkeletonTransition()">
+                        Demostrar Transición
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones Demo -->
+    <div class="row my-5">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">Sistema de Notificaciones</h2>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <button class="btn btn-success" onclick="showToast('Operación exitosa', 'success')">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Toast Éxito
+                </button>
+                <button class="btn btn-warning" onclick="showToast('Atención requerida', 'warning')">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Toast Advertencia
+                </button>
+                <button class="btn btn-danger" onclick="showToast('Error encontrado', 'error')">
+                    <i class="bi bi-x-circle me-2"></i>
+                    Toast Error
+                </button>
+                <button class="btn btn-primary" onclick="showToast('Información importante', 'info')">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Toast Info
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function demoSkeletonTransition() {
+    const container = document.querySelector('.col-md-4:last-child .card .card-body');
+    
+    // Mostrar skeleton
+    showSkeleton(container, 'card');
+    
+    // Después de 2 segundos, mostrar contenido real
+    setTimeout(() => {
+        const realContent = `
+            <h5 class="card-title">
+                <i class="bi bi-magic text-primary me-2"></i>
+                Contenido Cargado
+            </h5>
+            <p class="card-text">¡El contenido se ha cargado exitosamente!</p>
+            <button class="btn btn-success">
+                <i class="bi bi-check-circle me-2"></i>
+                Completado
+            </button>
+        `;
+        hideSkeleton(container, realContent);
+    }, 2000);
+}
+</script>
+{% endblock %}

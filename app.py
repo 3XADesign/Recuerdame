@@ -96,6 +96,11 @@ def memories_list():
     """Lista de recuerdos (personas)"""
     return render_template('memories_list.html')
 
+@app.route('/demo-modern')
+def demo_modern():
+    """Demostración del sistema de diseño moderno"""
+    return render_template('demo_modern.html')
+
 @app.route('/memory/<person_id>')
 def memory_person(person_id):
     """Ficha individual de una persona"""

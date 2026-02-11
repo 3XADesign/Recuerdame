@@ -1,53 +1,101 @@
 {% extends 'base.html' %}
 
-{% block title %}Mapa - RecuerdaMe{% endblock %}
+{% block title %}Ubicación Familiar - RecuerdaMe{% endblock %}
 
 {% block main_class %}position-relative p-0{% endblock %}
 
 {% block content %}
-<!-- Map Container -->
+<!-- Dashboard Moderno -->
 <div class="position-relative" style="height: calc(100vh - 64px);">
-    <!-- Google Maps -->
-    <div id="map" class="w-100 h-100"></div>
+    <!-- Mapa Principal con Efectos Modernos -->
+    <div class="map-container position-relative w-100 h-100">
+        <div id="map" class="w-100 h-100"></div>
+        
+        <!-- Overlay superior con información de familia -->
+        <div class="map-overlay">
+            <div class="d-flex align-items-center gap-3">
+                <div class="family-status-indicator pulse" data-status="online"></div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Familia García</h6>
+                    <small class="text-muted">Todos seguros</small>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- Map Controls Overlay -->
-    <div class="position-absolute top-0 end-0 p-3 d-flex flex-column gap-2" style="z-index: 1000;">
-        <button class="btn btn-primary btn-lg shadow" id="btnRefresh" 
+    <!-- Controles Flotantes Modernos -->
+    <div class="position-absolute top-0 end-0 p-4 d-flex flex-column gap-3" style="z-index: 1000;">
+        <button class="btn btn-primary btn-lg shadow-hover hover-lift" id="btnRefresh" 
                 title="Actualizar ubicación" aria-label="Actualizar ubicación">
-            <i class="bi bi-arrow-clockwise me-2"></i>
-            Refrescar
+            <i class="bi bi-arrow-clockwise fs-5"></i>
         </button>
         
-        <button class="btn btn-outline-secondary shadow" id="btnToggleRadius" 
+        <button class="btn btn-soft shadow-hover hover-lift" id="btnToggleRadius" 
                 title="Mostrar/ocultar radio seguro" aria-label="Mostrar/ocultar radio seguro">
-            <i class="bi bi-shield-check me-2"></i>
-            Radio Seguro
+            <i class="bi bi-shield-check fs-5"></i>
         </button>
         
-        <button class="btn btn-outline-secondary shadow" id="btnFollow" 
+        <button class="btn btn-gradient shadow-hover hover-lift" id="btnFollow" 
                 title="Seguir en tiempo real" aria-label="Seguir en tiempo real">
-            <i class="bi bi-crosshair me-2"></i>
-            <span class="follow-text">Seguir</span>
+            <i class="bi bi-crosshair fs-5"></i>
+        </button>
+        
+        <!-- Botón de vista cenital -->
+        <button class="btn btn-outline shadow-hover hover-lift" id="btnSatellite" 
+                title="Vista satélite" aria-label="Cambiar a vista satélite">
+            <i class="bi bi-globe fs-5"></i>
         </button>
     </div>
     
-    <!-- Status Card (Bottom) -->
-    <div class="position-absolute bottom-0 start-0 end-0 p-3" style="z-index: 1000;">
-        <div class="card shadow-lg">
-            <div class="card-body py-3">
+    <!-- Panel de Estado Moderno (Bottom) -->
+    <div class="position-absolute bottom-0 start-0 end-0 p-4" style="z-index: 1000;">
+        <div class="dashboard-card glass-effect animate-fade-in">
+            <div class="dashboard-card-body p-4">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="statusBadge" class="badge text-bg-secondary" aria-live="polite">
-                            <i class="bi bi-clock me-1"></i>
-                            Cargando...
-                        </span>
-                        <small class="text-muted" id="userInfo">{{ family.userName or 'Usuario' }}</small>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="dashboard-card-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1 fw-bold" id="userInfo">{{ family.userName or 'Usuario' }}</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span id="statusBadge" class="badge bg-success" aria-live="polite">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    En ubicación segura
+                                </span>
+                                <small class="text-muted">Hace 2 minutos</small>
+                            </div>
+                        </div>
                     </div>
-                    <small class="text-muted" id="lastUpdate" aria-live="polite">
-                        Actualizado: --:--
-                    </small>
+                    <div class="text-end">
+                        <small class="text-muted d-block" id="lastUpdate" aria-live="polite">
+                            Actualizado: {{ moment().format('HH:mm') }}
+                        </small>
+                        <small class="text-primary fw-medium">Precisión: 8m</small>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions Flotantes -->
+    <div class="position-absolute" style="bottom: 120px; right: 20px; z-index: 1000;">
+        <div class="quick-actions flex-column shadow-lg">
+            <a href="{{ url_for('family_create') }}" class="quick-action animate-bounce">
+                <i class="bi bi-people-fill quick-action-icon"></i>
+                <span class="quick-action-label">Familia</span>
+            </a>
+            <a href="{{ url_for('reminders') }}" class="quick-action">
+                <i class="bi bi-alarm-fill quick-action-icon"></i>
+                <span class="quick-action-label">Recordatorios</span>
+            </a>
+            <a href="{{ url_for('alerts') }}" class="quick-action">
+                <i class="bi bi-exclamation-triangle-fill quick-action-icon"></i>
+                <span class="quick-action-label">Alertas</span>
+            </a>
+        </div>
+    </div>
+</div>
         </div>
     </div>
     
